@@ -1,15 +1,20 @@
-package com.A105.prham.post.entity;
+package com.A105.prham.webhook.entity;
 
-import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.A105.prham.Notice.entity.Notice;
 import com.A105.prham.common.domain.BaseTimeEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,7 +24,8 @@ import lombok.NoArgsConstructor;
 //인덱싱
 //1. mmMessageId 기준으로 인덱스
 //2. mmChannelId 기준으로 인덱스
-@Table(indexes = {
+@Table(name = "posts",
+	indexes = {
 	@Index(name = "idx_mm_message_id", columnList = "mmMessageId", unique = true),
 	@Index(name = "idx_mm_channel_id", columnList = "mmChannelId")
 })
@@ -53,14 +59,28 @@ public class Post extends BaseTimeEntity {
 	@Column(nullable = false)
 	private String content;
 
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<File> files = new ArrayList<>();
+
+	@OneToOne(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Notice notice;
+
 	@Builder
-	public Post(String mmMessageId, String mmTeamId, String mmChannelId, String mmUserId, String userName, String content, Long mmCreatedAt) {
+	public Post(String mmMessageId, String mmChannelId, String mmUserId,
+		String content) {
 		this.mmMessageId = mmMessageId;
-		this.mmTeamId = mmTeamId;
 		this.mmChannelId = mmChannelId;
 		this.mmUserId = mmUserId;
-		this.userName = userName;
 		this.content = content;
-		this.mmCreatedAt = mmCreatedAt;
+	}
+
+	public void addFile(File file) {
+		this.files.add(file);
+		file.setPost(this);
+	}
+
+	public void setNotice(Notice notice) {
+		this.notice = notice;
+		notice.setPost(this);
 	}
 }
