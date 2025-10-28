@@ -5,6 +5,7 @@ services:
     image: mysql:${MYSQL_VERSION}
     container_name: ${MYSQL_CONTAINER_NAME}
     restart: always
+    command: --mysql-native-password=ON
     volumes:
       - ./mysql/data:/var/lib/mysql
     ports:
