@@ -1,6 +1,7 @@
 HELP.md
 .gradle
-.env    
+.env
+.idea/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
