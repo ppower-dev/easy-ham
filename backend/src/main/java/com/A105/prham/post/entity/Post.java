@@ -42,7 +42,7 @@ public class Post extends BaseTimeEntity {
 	private String mmUserId;
 
 	@Column(nullable = false)
-	private String authorName;
+	private String userName;
 
 	@Column(nullable = false)
 	private String mmChannelId;
@@ -54,12 +54,12 @@ public class Post extends BaseTimeEntity {
 	private String content;
 
 	@Builder
-	public Post(String mmMessageId, String mmTeamId, String mmChannelId, String mmUserId, String authorName, String content, Long mmCreatedAt) {
+	public Post(String mmMessageId, String mmTeamId, String mmChannelId, String mmUserId, String userName, String content, Long mmCreatedAt) {
 		this.mmMessageId = mmMessageId;
 		this.mmTeamId = mmTeamId;
 		this.mmChannelId = mmChannelId;
 		this.mmUserId = mmUserId;
-		this.authorName = authorName;
+		this.userName = userName;
 		this.content = content;
 		this.mmCreatedAt = mmCreatedAt;
 	}

@@ -15,7 +15,7 @@ public record MattermostPayloadDto(
 	String userId,
 
 	@JsonProperty("user_name")
-	String userName,
+	String mmUserName,
 
 	@JsonProperty("post_id")
 	String postId,
