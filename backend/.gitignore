@@ -5,7 +5,6 @@ HELP.md
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
-**/src/main/resources/
 !**/src/test/**/build/
 .properties
 ### STS ###
