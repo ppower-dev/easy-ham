@@ -19,9 +19,10 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+mysql/data/
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
