@@ -2,7 +2,7 @@ package com.A105.prham.messages.controller;
 
 import com.A105.prham.messages.dto.MattermostWebhookDTO;
 import com.A105.prham.messages.dto.ProcessedMessage;
-import com.A105.prham.search.service.ElasticsearchService;
+//import com.A105.prham.search.service.ElasticsearchService;
 import com.A105.prham.messages.service.MessageProcessorService;
 import com.A105.prham.messages.service.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class MattermostWebhookController {
 
     private final MessageProcessorService messagePreprocessor;
     private final MessageService messageService;
-    private final   ElasticsearchService elasticsearchService;
+//    private final   ElasticsearchService elasticsearchService;
     @PostMapping("/mattermost")
     public ResponseEntity<String> receiveMattermostMessage(
             @RequestBody MattermostWebhookDTO payload) {
@@ -37,7 +37,7 @@ public class MattermostWebhookController {
             messageService.saveMessage(processed);
 
             // 3. Elasticsearch 저장
-            elasticsearchService.saveMessage(processed);
+//            elasticsearchService.saveMessage(processed);
 
             return ResponseEntity.ok("Message processed and saved");
 
