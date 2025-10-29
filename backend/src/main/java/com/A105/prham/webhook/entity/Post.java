@@ -3,7 +3,7 @@ package com.A105.prham.webhook.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.A105.prham.Notice.entity.Notice;
+import com.A105.prham.notice.entity.Notice;
 import com.A105.prham.common.domain.BaseTimeEntity;
 
 import jakarta.persistence.CascadeType;
@@ -41,7 +41,7 @@ public class Post extends BaseTimeEntity {
 	@Column(name = "mm_message_id", nullable = false, unique = true)
 	private String mmMessageId;
 
-	@Column(name = "mm_channel_id", nullable = false)
+	@Column(name = "mm_team_id", nullable = false)
 	private String mmTeamId;
 
 	@Column(name = "mm_user_id", nullable = false)
