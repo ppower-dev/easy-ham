@@ -11,6 +11,7 @@ public enum ErrorCode {
     //400 BAD REQUEST
     BAD_REQUEST(400, HttpStatus.BAD_REQUEST, "잘못된 접근입니다."),
 
+    NOT_REGISTERED(403,HttpStatus.FORBIDDEN, "회원가입 후 이용해주세요."),
     //404 NOT FOUND
     NOT_FOUND(404, HttpStatus.NOT_FOUND, "해당 API를 찾을 수 없습니다."),
 
