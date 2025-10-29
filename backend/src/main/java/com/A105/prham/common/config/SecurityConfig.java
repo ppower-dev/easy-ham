@@ -1,30 +1,42 @@
 package com.A105.prham.common.config;
 
+import com.A105.prham.auth.filter.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor // JWT 필터 주입을 위해 추가
 public class SecurityConfig {
+
+    // JWT 인증 필터 주입
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/webhook/**").permitAll()  // webhook 경로는 인증 없이 허용
-                        .requestMatchers("/api/**").permitAll()          // 모든 API 허용
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/webhook/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll() // 인증 관련 경로는 허용
+//                        .requestMatchers("/api/**").authenticated() // 나머지 API는 인증 필요로 변경
+                        .anyRequest().permitAll()
                 )
-                .csrf(csrf -> csrf.disable())  // CSRF 비활성화 (API용)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
-                .httpBasic(httpBasic -> httpBasic.disable())  // HTTP Basic 인증 비활성화
-                .formLogin(formLogin -> formLogin.disable());  // 폼 로그인 비활성화
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(formLogin -> formLogin.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // JWT 필터 추가
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -32,13 +44,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("*");  // 모든 origin 허용
-        configuration.addAllowedMethod("*");         // 모든 HTTP 메소드 허용
-        configuration.addAllowedHeader("*");         // 모든 헤더 허용
-        configuration.setAllowCredentials(true);     // 인증 정보 허용
+        configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration); // /api/** 경로에 CORS 적용
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
