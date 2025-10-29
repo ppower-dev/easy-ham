@@ -1,7 +1,7 @@
 package com.A105.prham.channel.domain;
 
 import com.A105.prham.common.domain.BaseTimeEntity;
-import com.A105.prham.notice.domain.Notice;
+import com.A105.prham.notice.entity.Notice;
 import com.A105.prham.team.domain.Team;
 import com.A105.prham.user_notice_like.domain.UserNoticeLike;
 import jakarta.persistence.*;

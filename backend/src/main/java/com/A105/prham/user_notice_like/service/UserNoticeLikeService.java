@@ -3,7 +3,7 @@ package com.A105.prham.user_notice_like.service;
 import com.A105.prham.auth.util.JwtUtils;
 import com.A105.prham.common.exception.CustomException;
 import com.A105.prham.common.response.ErrorCode;
-import com.A105.prham.notice.domain.Notice;
+import com.A105.prham.notice.entity.Notice;
 import com.A105.prham.notice.repository.NoticeRepository;
 import com.A105.prham.user.domain.User;
 import com.A105.prham.user.repository.UserRepository;
