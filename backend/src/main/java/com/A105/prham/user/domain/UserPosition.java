@@ -1,4 +1,4 @@
-package com.A105.prham.user.entity;
+package com.A105.prham.user.domain;
 
 import com.A105.prham.common.domain.BaseTimeEntity;
 import com.A105.prham.position.entity.Position;

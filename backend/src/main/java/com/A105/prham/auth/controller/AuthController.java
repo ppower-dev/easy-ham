@@ -9,14 +9,12 @@ import com.A105.prham.auth.service.SsoAuthService;
 import com.A105.prham.common.response.ApiResponseDto;
 import com.A105.prham.common.response.ErrorCode;
 import com.A105.prham.common.response.SuccessCode;
-import com.A105.prham.user.entity.User;
+import com.A105.prham.user.domain.User;
 import com.A105.prham.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")

@@ -4,15 +4,11 @@ import com.A105.prham.common.response.ApiResponseDto;
 import com.A105.prham.common.response.ErrorCode;
 import com.A105.prham.common.response.SuccessCode;
 import com.A105.prham.user.dto.request.UserSignupRequest;
-import com.A105.prham.user.entity.User;
-import com.A105.prham.user.entity.UserPosition;
+import com.A105.prham.user.domain.User;
 import com.A105.prham.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
