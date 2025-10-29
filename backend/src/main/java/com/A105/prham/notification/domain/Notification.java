@@ -31,8 +31,6 @@ public class Notification {
     @CreatedDate //생성 시간 자동 설정
     private LocalDateTime createdAt;
 
-    private LocalDateTime readAt;
-
     @Indexed
     private Boolean isRead;
 }
