@@ -88,14 +88,14 @@ public class MattermostApiService {
 		return filePath;
 	}
 
-	private record MattermostFileInfoResponse(
+	public record MattermostFileInfoResponse(
 		String id,
 		String name,
 		String extension,
 		String mime_type
 	) {}
 
-	private record MattermostFileInfo(
+	public record MattermostFileInfo(
 		String id,
 		String name,
 		String downloadUrl,

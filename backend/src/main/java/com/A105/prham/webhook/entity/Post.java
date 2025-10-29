@@ -66,11 +66,13 @@ public class Post extends BaseTimeEntity {
 	private Notice notice;
 
 	@Builder
-	public Post(String mmMessageId, String mmChannelId, String mmUserId,
-		String content) {
+	public Post(String mmMessageId, String mmTeamId, String mmUserId, String userName, String mmChannelId, Long mmCreatedAt, String content) {
 		this.mmMessageId = mmMessageId;
-		this.mmChannelId = mmChannelId;
+		this.mmTeamId = mmTeamId;
 		this.mmUserId = mmUserId;
+		this.userName = userName;
+		this.mmChannelId = mmChannelId;
+		this.mmCreatedAt = mmCreatedAt;
 		this.content = content;
 	}
 

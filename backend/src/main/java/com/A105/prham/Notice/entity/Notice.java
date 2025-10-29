@@ -34,7 +34,7 @@ public class Notice extends BaseTimeEntity {
 	@JoinColumn(name = "post_id", nullable = false, updatable = false)
 	private Post post;
 
-	protected void setPost(Post post) {
+	public void setPost(Post post) {
 		this.post = post;
 	}
 
