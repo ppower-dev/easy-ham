@@ -1445,7 +1445,7 @@ src/
 
 #### ✅ 3-1. Mock 데이터 파일 생성
 **파일**: `src/services/mock/mockNotices.ts`
-- [ ] DashboardPage의 공지 6개 이동
+- [x] DashboardPage의 공지 6개 이동
   ```typescript
   import type { Notice } from '@/types/notice';
 
@@ -1473,46 +1473,44 @@ src/
   ```
 
 **파일**: `src/services/mock/mockEvents.ts`
-- [ ] CalendarPage의 이벤트 11개 이동
+- [x] CalendarPage의 이벤트 11개 이동
 
 **파일**: `src/services/mock/mockNotifications.ts`
-- [ ] 알림 데이터 이동
+- [x] 알림 데이터 이동
 
 **파일**: `src/services/mock/mockFeatures.ts`
-- [ ] App.tsx의 Feature 데이터 이동
+- [x] App.tsx의 Feature 데이터 이동
 
 **파일**: `src/services/mock/mockUser.ts`
-- [ ] 초기 사용자 데이터
+- [x] 초기 사용자 데이터
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: 모든 Mock 데이터 파일 생성 완료 (공지 6개, 이벤트 11개, 알림 4개, Feature 4개, 사용자 1개, 채용공고 3개)
 ```
 
 #### ✅ 3-2. API 서비스 인터페이스 (추후 실제 API 대체)
 **파일**: `src/services/api/client.ts`
-- [ ] API 클라이언트 기본 설정
+- [x] API 클라이언트 기본 설정
 
 **파일**: `src/services/api/notices.ts`
-- [ ] Notice API 함수들 (현재는 Mock 반환)
+- [x] Notice API 함수들 (현재는 Mock 반환)
 
 **파일**: `src/services/api/events.ts`
-- [ ] Event API 함수들
+- [x] Event API 함수들
 
 **파일**: `src/services/api/auth.ts`
-- [ ] Auth API 함수들
+- [x] Auth API 함수들
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: 모든 API 서비스 인터페이스 생성 완료 (현재 Mock 반환, 추후 실제 API로 대체 가능)
 ```
 
 ---
@@ -2411,7 +2409,7 @@ import type { Notice } from '@/types/notice';
 - [x] Phase 0: 사전 준비 및 React Router 도입 (100%)
 - [x] Phase 1: 기반 구조 생성 (100%)
 - [x] Phase 2: Zustand 스토어 생성 (100%)
-- [ ] Phase 3: Mock 데이터 분리 (0%)
+- [x] Phase 3: Mock 데이터 분리 (100%)
 - [ ] Phase 4: 공통 컴포넌트 생성 (0%)
 - [ ] Phase 5: Custom Hooks 생성 (0%)
 - [ ] Phase 6: DashboardPage 리팩토링 (0%)
@@ -2422,7 +2420,7 @@ import type { Notice } from '@/types/notice';
 - [ ] Phase 11: 테스트 및 검증 (0%)
 - [ ] Phase 12: 최종 정리 (0%)
 
-**전체 완료율**: 23.1% (Phase 0-2 완료)
+**전체 완료율**: 30.8% (Phase 0-3 완료)
 
 ---
 
@@ -2442,6 +2440,6 @@ import type { Notice } from '@/types/notice';
 
 ---
 
-**마지막 업데이트**: 2025-10-30 (Phase 0-2 완료)
+**마지막 업데이트**: 2025-10-30 (Phase 0-3 완료)
 **작성자**: Claude Code
-**버전**: 2.3
+**버전**: 2.4
