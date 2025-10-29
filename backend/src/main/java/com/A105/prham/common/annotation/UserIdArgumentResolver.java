@@ -1,8 +1,12 @@
 package com.A105.prham.common.annotation;
 
+import com.A105.prham.auth.dto.response.UserInfoResponse;
+import com.A105.prham.auth.service.SsoAuthService;
 import com.A105.prham.auth.util.JwtUtils;
 import com.A105.prham.common.exception.CustomException;
 import com.A105.prham.common.response.ErrorCode;
+import com.A105.prham.user.domain.User;
+import com.A105.prham.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +22,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final JwtUtils jwtUtils;
+    private final SsoAuthService ssoAuthService;
+    private final UserRepository userRepository;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -48,12 +53,23 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
             }
 
             // 2. 기존 JwtUtils 메소드 사용해서 userId 추출
-            Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
+            UserInfoResponse userInfo = ssoAuthService.getUserInfo(token);
 
-            if (userId == null && annotation.required()) {
-                throw new CustomException(ErrorCode.USER_NOT_FOUND);
+            if (userInfo == null || userInfo.getEmail() == null) {
+                if (annotation.required()) {
+                    throw new CustomException(ErrorCode.USER_NOT_FOUND);
+                }
+                return null;
             }
 
+            // 3. 이메일로 우리 DB에서 사용자 찾기/생성
+            User user = userRepository.findByEmail(userInfo.getEmail())
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+            Long userId = user.getId();
+
+            log.debug("SSO 사용자 {}({})의 userId: {}",
+                    userInfo.getName(), userInfo.getEmail(), userId);
             return userId;
 
         } catch (Exception e) {
