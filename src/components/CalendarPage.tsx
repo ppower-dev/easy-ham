@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
@@ -44,17 +45,8 @@ interface CalendarEvent {
   subcategory: string; // '할일', '특강', '정보', '이벤트'
 }
 
-interface CalendarPageProps {
-  onLogout?: () => void;
-  onNavigateToMyPage?: () => void;
-  onNavigateToDashboard?: () => void;
-}
-
-export function CalendarPage({
-  onLogout,
-  onNavigateToMyPage,
-  onNavigateToDashboard,
-}: CalendarPageProps) {
+export function CalendarPage() {
+  const navigate = useNavigate();
   // 알림 드롭다운 상태
   const [notificationOpen, setNotificationOpen] =
     useState(false);
@@ -624,7 +616,7 @@ export function CalendarPage({
           <div
             className="text-2xl cursor-pointer"
             style={{ fontWeight: 800 }}
-            onClick={onNavigateToDashboard}
+            onClick={() => navigate('/dashboard')}
           >
             편리
             <span className="text-[var(--brand-orange)]">
@@ -715,7 +707,7 @@ export function CalendarPage({
               <DropdownMenuItem
                 onClick={() => {
                   setProfileOpen(false);
-                  onNavigateToMyPage?.();
+                  navigate('/mypage');
                 }}
                 className="cursor-pointer"
               >
@@ -725,7 +717,7 @@ export function CalendarPage({
               <DropdownMenuItem
                 onClick={() => {
                   setProfileOpen(false);
-                  onLogout?.();
+                  navigate('/');
                 }}
                 className="cursor-pointer text-red-600"
               >

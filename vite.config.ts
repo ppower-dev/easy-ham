@@ -4,7 +4,15 @@
   import path from 'path';
 
   export default defineConfig({
-    plugins: [react()],
+    plugins: [
+      react({
+        jsxImportSource: '@emotion/react',
+      }),
+    ],
+    esbuild: {
+      jsxFactory: 'jsx',
+      jsxInject: `import { jsx } from '@emotion/react'`,
+    },
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {

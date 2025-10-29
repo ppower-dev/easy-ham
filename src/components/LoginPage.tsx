@@ -1,25 +1,27 @@
+import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { ArrowLeft, Lightbulb } from 'lucide-react';
 
-interface LoginPageProps {
-  onBack: () => void;
-  onLoginSuccess: (isFirstLogin: boolean) => void;
-}
+export function LoginPage() {
+  const navigate = useNavigate();
 
-export function LoginPage({ onBack, onLoginSuccess }: LoginPageProps) {
   const handleSSAFYLogin = () => {
     // TODO: SSAFY SSO 연동
     // 1. SSO 팝업 열림
     // 2. 백엔드가 토큰 받아서 유저 확인
     // 3. 백엔드 응답에 따라 분기
     console.log('SSAFY SSO 로그인 시작');
-    
+
     // 와이어프레임용: 항상 최초 로그인으로 간주
     const isFirstLogin = true;
-    
+
     // 실제로는 백엔드 응답을 기다린 후:
     setTimeout(() => {
-      onLoginSuccess(isFirstLogin);
+      if (isFirstLogin) {
+        navigate('/signup');
+      } else {
+        navigate('/dashboard');
+      }
     }, 500);
   };
 
@@ -90,7 +92,7 @@ export function LoginPage({ onBack, onLoginSuccess }: LoginPageProps) {
         <div className="w-full max-w-md space-y-8">
           {/* Back Button */}
           <button
-            onClick={onBack}
+            onClick={() => navigate('/')}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />

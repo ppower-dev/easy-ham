@@ -1,15 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
 import { X, ArrowLeft } from 'lucide-react';
-
-interface SignUpPageProps {
-  onComplete: () => void;
-  onBack: () => void;
-}
 
 const jobOptions = [
   '프론트엔드',
@@ -36,7 +32,8 @@ const techStackOptions = [
 
 const campusOptions = ['서울', '대전', '광주', '구미', '부산'];
 
-export function SignUpPage({ onComplete, onBack }: SignUpPageProps) {
+export function SignUpPage() {
+  const navigate = useNavigate();
   const [campus, setCampus] = useState('');
   const [classNumber, setClassNumber] = useState('');
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
@@ -77,7 +74,7 @@ export function SignUpPage({ onComplete, onBack }: SignUpPageProps) {
       desiredJobs: selectedJobs,
       techStack: selectedTechStack,
     });
-    onComplete();
+    navigate('/dashboard');
   };
 
   return (
@@ -88,7 +85,7 @@ export function SignUpPage({ onComplete, onBack }: SignUpPageProps) {
           <Button
             type="button"
             variant="ghost"
-            onClick={onBack}
+            onClick={() => navigate('/login')}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 -ml-2"
             style={{ fontWeight: 500 }}
           >

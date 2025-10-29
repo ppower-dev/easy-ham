@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -24,10 +25,6 @@ import {
   X
 } from 'lucide-react';
 
-interface MyPageProps {
-  onBack: () => void;
-}
-
 // 기술 스택 옵션 (SignUpPage와 동일)
 const techStackOptions = [
   'React', 'Vue', 'Angular', 'Svelte',
@@ -39,7 +36,9 @@ const techStackOptions = [
   'Git', 'Jenkins', 'GitHub Actions',
 ];
 
-export function MyPage({ onBack }: MyPageProps) {
+export function MyPage() {
+  const navigate = useNavigate();
+
   // 프로필 정보 상태
   const [nickname, setNickname] = useState('김싸피');
   const [profileImage, setProfileImage] = useState('');
@@ -144,7 +143,7 @@ export function MyPage({ onBack }: MyPageProps) {
       {/* 헤더 */}
       <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
         <button
-          onClick={onBack}
+          onClick={() => navigate('/dashboard')}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -457,10 +456,10 @@ export function MyPage({ onBack }: MyPageProps) {
 
           {/* 저장 버튼 */}
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={onBack}>
+            <Button variant="outline" onClick={() => navigate('/dashboard')}>
               취소
             </Button>
-            <Button 
+            <Button
               onClick={handleSave}
               className="bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white"
             >

@@ -1,12 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './components/ui/button';
 import { ChevronLeft, ChevronRight, Sparkles, Bell, Search, Zap } from 'lucide-react';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
-import { LoginPage } from './components/LoginPage';
-import { SignUpPage } from './components/SignUpPage';
-import { DashboardPage } from './components/DashboardPage';
-import { MyPage } from './components/MyPage';
-import { CalendarPage } from './components/CalendarPage';
 
 const features = [
   {
@@ -39,11 +35,9 @@ const features = [
   },
 ];
 
-type PageState = 'landing' | 'login' | 'signup' | 'dashboard' | 'mypage' | 'calendar';
-
 export default function App() {
+  const navigate = useNavigate();
   const [currentFeature, setCurrentFeature] = useState(0);
-  const [currentPage, setCurrentPage] = useState<PageState>('landing');
   const featuresRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -64,7 +58,7 @@ export default function App() {
 
   const scrollToFeatures = () => {
     if (featuresRef.current) {
-      featuresRef.current.scrollIntoView({ 
+      featuresRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       });
@@ -72,72 +66,8 @@ export default function App() {
   };
 
   const handleLoginClick = () => {
-    setCurrentPage('login');
+    navigate('/login');
   };
-
-  const handleBackToLanding = () => {
-    setCurrentPage('landing');
-  };
-
-  const handleLoginSuccess = (isFirstLogin: boolean) => {
-    if (isFirstLogin) {
-      // 최초 로그인 - 추가 정보 입력 페이지로
-      setCurrentPage('signup');
-    } else {
-      // 기존 사용자 - 대시보드로
-      setCurrentPage('dashboard');
-    }
-  };
-
-  const handleSignUpComplete = () => {
-    // 회원가입 완료 - 대시보드로
-    setCurrentPage('dashboard');
-  };
-
-  const handleNavigateToMyPage = () => {
-    setCurrentPage('mypage');
-  };
-
-  const handleNavigateToDashboard = () => {
-    setCurrentPage('dashboard');
-  };
-
-  const handleNavigateToCalendar = () => {
-    setCurrentPage('calendar');
-  };
-
-  // 페이지별 렌더링
-  if (currentPage === 'login') {
-    return <LoginPage onBack={handleBackToLanding} onLoginSuccess={handleLoginSuccess} />;
-  }
-
-  if (currentPage === 'signup') {
-    return <SignUpPage onComplete={handleSignUpComplete} onBack={handleBackToLanding} />;
-  }
-
-  if (currentPage === 'dashboard') {
-    return (
-      <DashboardPage 
-        onLogout={handleBackToLanding} 
-        onNavigateToMyPage={handleNavigateToMyPage}
-        onNavigateToCalendar={handleNavigateToCalendar}
-      />
-    );
-  }
-
-  if (currentPage === 'mypage') {
-    return <MyPage onBack={handleNavigateToDashboard} />;
-  }
-
-  if (currentPage === 'calendar') {
-    return (
-      <CalendarPage 
-        onLogout={handleBackToLanding}
-        onNavigateToMyPage={handleNavigateToMyPage}
-        onNavigateToDashboard={handleNavigateToDashboard}
-      />
-    );
-  }
 
   const feature = features[currentFeature];
   const Icon = feature.icon;

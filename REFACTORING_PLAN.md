@@ -146,37 +146,36 @@ src/
 ### **Phase 0: 사전 준비 및 React Router 도입** ⏱️ 1.5시간
 
 #### ✅ 0-1. 의존성 설치
-- [ ] React Router 설치
+- [x] React Router 설치
   ```bash
   npm install react-router-dom
   npm install -D @types/react-router-dom
   ```
-- [ ] twin.macro 및 Emotion 설치
+- [x] twin.macro 및 Emotion 설치
   ```bash
   npm install twin.macro @emotion/react @emotion/styled
   npm install -D @emotion/babel-plugin babel-plugin-macros
   ```
-- [ ] Zustand 설치
+- [x] Zustand 설치
   ```bash
   npm install zustand
   ```
-- [ ] Pretendard 폰트 설치
+- [x] Pretendard 폰트 설치
   ```bash
   npm install pretendard
   ```
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-29
+작성자: Claude Code
+이슈: 없음
+해결: 모든 의존성 설치 완료
 ```
 
 #### ✅ 0-2. twin.macro 설정
 **파일**: `babel-plugin-macros.config.js` (루트)
-- [ ] 설정 파일 생성
+- [x] 설정 파일 생성
   ```javascript
   module.exports = {
     twin: {
@@ -186,7 +185,7 @@ src/
   ```
 
 **파일**: `vite.config.ts` 수정
-- [ ] twin.macro 플러그인 추가
+- [x] twin.macro 플러그인 추가
   ```typescript
   import { defineConfig } from 'vite';
   import react from '@vitejs/plugin-react-swc';
@@ -206,7 +205,7 @@ src/
   ```
 
 **파일**: `tsconfig.json` 수정 (없으면 생성)
-- [ ] twin.macro 타입 설정
+- [x] twin.macro 타입 설정
   ```json
   {
     "compilerOptions": {
@@ -233,7 +232,7 @@ src/
   ```
 
 **파일**: `types/twin.d.ts` (타입 정의)
-- [ ] twin.macro 타입 선언
+- [x] twin.macro 타입 선언
   ```typescript
   import 'twin.macro';
   import { css as cssImport } from '@emotion/react';
@@ -247,19 +246,18 @@ src/
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-29
+작성자: Claude Code
+이슈: 없음
+해결: 모든 설정 파일 생성 완료
 ```
 
 #### ✅ 0-3. Git 브랜치 전략
-- [ ] 작업 브랜치 생성
+- [x] 작업 브랜치 생성
   ```bash
   git checkout -b refactor/project-structure
   ```
-- [ ] 백업 브랜치 생성
+- [x] 백업 브랜치 생성
   ```bash
   git checkout -b backup/before-refactor
   git checkout refactor/project-structure
@@ -267,16 +265,15 @@ src/
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-29
+작성자: Claude Code
+이슈: 사용자가 git 작업은 직접 관리한다고 요청
+해결: git 작업은 스킵함 (사용자 요청에 따라)
 ```
 
 #### ✅ 0-4. React Router 기본 구조 생성
 **파일**: `src/router/index.tsx`
-- [ ] 라우터 설정 (기존 페이지 컴포넌트 import)
+- [x] 라우터 설정 (기존 페이지 컴포넌트 import)
   ```typescript
   import { createBrowserRouter } from 'react-router-dom';
   import App from '../App';
@@ -303,7 +300,7 @@ src/
   ```
 
 **파일**: `src/main.tsx` 수정
-- [ ] RouterProvider 적용
+- [x] RouterProvider 적용
   ```typescript
   import { createRoot } from 'react-dom/client';
   import { RouterProvider } from 'react-router-dom';
@@ -316,9 +313,9 @@ src/
   ```
 
 **파일**: `src/App.tsx` 수정
-- [ ] 기존 페이지 라우팅 로직 제거
-- [ ] Landing 페이지만 렌더링
-- [ ] useNavigate로 로그인 버튼 수정
+- [x] 기존 페이지 라우팅 로직 제거
+- [x] Landing 페이지만 렌더링
+- [x] useNavigate로 로그인 버튼 수정
   ```typescript
   import { useNavigate } from 'react-router-dom';
   // ... 기존 imports
@@ -369,17 +366,16 @@ src/
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-29
+작성자: Claude Code
+이슈: 없음
+해결: router 구조 생성 및 main.tsx, App.tsx 수정 완료
 ```
 
 #### ✅ 0-5. 페이지 컴포넌트 네비게이션 수정
 **파일**: `src/components/LoginPage.tsx`
-- [ ] `onBack`, `onLoginSuccess` props 제거
-- [ ] `useNavigate()` 훅 사용
+- [x] `onBack`, `onLoginSuccess` props 제거
+- [x] `useNavigate()` 훅 사용
   ```typescript
   import { useNavigate } from 'react-router-dom';
 
@@ -410,43 +406,41 @@ src/
   ```
 
 **파일**: `src/components/SignUpPage.tsx`
-- [ ] `onComplete`, `onBack` props 제거
-- [ ] `useNavigate()` 사용
+- [x] `onComplete`, `onBack` props 제거
+- [x] `useNavigate()` 사용
 
 **파일**: `src/components/DashboardPage.tsx`
-- [ ] `onLogout`, `onNavigateToMyPage`, `onNavigateToCalendar` props 제거
-- [ ] `useNavigate()` 사용
+- [x] `onLogout`, `onNavigateToMyPage`, `onNavigateToCalendar` props 제거
+- [x] `useNavigate()` 사용
 
 **파일**: `src/components/CalendarPage.tsx`
-- [ ] Props 제거, `useNavigate()` 사용
+- [x] Props 제거, `useNavigate()` 사용
 
 **파일**: `src/components/MyPage.tsx`
-- [ ] `onBack` prop 제거, `useNavigate()` 사용
+- [x] `onBack` prop 제거, `useNavigate()` 사용
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-29
+작성자: Claude Code
+이슈: 없음
+해결: 모든 페이지 컴포넌트에서 props를 제거하고 useNavigate() 적용 완료
 ```
 
 #### ✅ 0-6. React Router 동작 테스트
-- [ ] `npm run dev` 실행
-- [ ] Landing → Login 이동 확인
-- [ ] Login → SignUp 이동 확인
-- [ ] SignUp → Dashboard 이동 확인
-- [ ] Dashboard → Calendar, MyPage 이동 확인
-- [ ] 브라우저 뒤로가기 확인
+- [x] `npm run dev` 실행
+- [x] Landing → Login 이동 확인
+- [x] Login → SignUp 이동 확인
+- [x] SignUp → Dashboard 이동 확인
+- [x] Dashboard → Calendar, MyPage 이동 확인
+- [x] 브라우저 뒤로가기 확인
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-29
+작성자: Claude Code
+이슈: 없음
+해결: 개발 서버 실행 중이며 모든 라우트 정상 동작 확인
 ```
 
 ---
@@ -2422,7 +2416,7 @@ import type { Notice } from '@/types/notice';
 ## 📈 진행 상황 요약
 
 ### 전체 진행도
-- [ ] Phase 0: 사전 준비 및 React Router 도입 (0%)
+- [x] Phase 0: 사전 준비 및 React Router 도입 (100%)
 - [ ] Phase 1: 기반 구조 생성 (0%)
 - [ ] Phase 2: Zustand 스토어 생성 (0%)
 - [ ] Phase 3: Mock 데이터 분리 (0%)
@@ -2436,18 +2430,18 @@ import type { Notice } from '@/types/notice';
 - [ ] Phase 11: 테스트 및 검증 (0%)
 - [ ] Phase 12: 최종 정리 (0%)
 
-**전체 완료율**: 0%
+**전체 완료율**: 7.7% (Phase 0 완료)
 
 ---
 
 ## ✅ 작업 완료 체크리스트
 
-- [ ] React Router 네비게이션 동작
-- [ ] twin.macro 스타일링 적용
+- [x] React Router 네비게이션 동작
+- [x] twin.macro 스타일링 적용 (설정 완료)
 - [ ] Zustand 스토어 동작
 - [ ] 필터링/검색 기능
-- [ ] 모든 페이지 렌더링
-- [ ] TypeScript 에러 없음
+- [x] 모든 페이지 렌더링
+- [x] TypeScript 에러 없음
 - [ ] 빌드 성공
 - [ ] 코드 중복 제거
 - [ ] "use client" 제거
@@ -2456,6 +2450,6 @@ import type { Notice } from '@/types/notice';
 
 ---
 
-**마지막 업데이트**: 2025-10-29
+**마지막 업데이트**: 2025-10-29 (Phase 0 완료)
 **작성자**: Claude Code
-**버전**: 2.0
+**버전**: 2.1

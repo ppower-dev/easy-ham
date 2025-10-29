@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
@@ -70,13 +71,9 @@ interface JobPosting {
   logo: string;
 }
 
-interface DashboardPageProps {
-  onLogout?: () => void;
-  onNavigateToMyPage?: () => void;
-  onNavigateToCalendar?: () => void;
-}
+export function DashboardPage() {
+  const navigate = useNavigate();
 
-export function DashboardPage({ onLogout, onNavigateToMyPage, onNavigateToCalendar }: DashboardPageProps) {
   // 알림 드롭다운 상태
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -422,20 +419,20 @@ export function DashboardPage({ onLogout, onNavigateToMyPage, onNavigateToCalend
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => {
                   setProfileOpen(false);
-                  onNavigateToMyPage?.();
+                  navigate('/mypage');
                 }}
                 className="cursor-pointer"
               >
                 <Settings className="w-4 h-4 mr-2" />
                 마이페이지
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => {
                   setProfileOpen(false);
-                  onLogout?.();
+                  navigate('/');
                 }}
                 className="cursor-pointer text-red-600"
               >
@@ -711,11 +708,11 @@ export function DashboardPage({ onLogout, onNavigateToMyPage, onNavigateToCalend
                 <CalendarIcon className="w-4 h-4" />
                 마감 캘린더
               </h3>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="w-6 h-6"
-                onClick={onNavigateToCalendar}
+                onClick={() => navigate('/calendar')}
               >
                 <Plus className="w-4 h-4" />
               </Button>
