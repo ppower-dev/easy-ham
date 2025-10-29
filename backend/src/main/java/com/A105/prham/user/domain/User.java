@@ -1,9 +1,8 @@
-package com.A105.prham.user.entity;
+package com.A105.prham.user.domain;
 
 import com.A105.prham.auth.entity.RefreshToken;
 import com.A105.prham.campus.entity.Campus;
 import com.A105.prham.common.domain.BaseTimeEntity;
-import com.A105.prham.common.entity.Notification;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,8 +39,8 @@ public class User extends BaseTimeEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private RefreshToken refreshToken;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Notification> notifications = new HashSet<>();
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<Notification> notifications = new HashSet<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserSkill> userSkills = new HashSet<>();
