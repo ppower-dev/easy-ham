@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.A105.prham.common.config.MattermostConfig;
 import com.A105.prham.webhook.dto.MattermostWebhookDto;
@@ -12,7 +13,6 @@ import com.A105.prham.webhook.entity.Post;
 import com.A105.prham.webhook.repository.FileRepository;
 import com.A105.prham.webhook.repository.PostRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +38,7 @@ public class WebhookService {
 			// 채널 필터링
 			if (!mattermostConfig.isAllowedChannel(dto.channelId())) {
 				log.info("채널 허용 목록에 없음, 수집 안함. 채널아이디: {}, 채널명: {}", dto.channelId(), dto.channelName());
+				return;
 			}
 
 			// 중복 체크

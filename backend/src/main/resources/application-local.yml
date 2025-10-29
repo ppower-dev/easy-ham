@@ -30,7 +30,11 @@ logging:
   level:
     org.springframework.messaging: INFO
     org.springframework.web.socket: INFO
+    com.A105.prham: DEBUG
     com.A105.prham.webhook: DEBUG
+    com.A105.prham.webhook.service.WebhookService: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
 
 custom:
   service:
