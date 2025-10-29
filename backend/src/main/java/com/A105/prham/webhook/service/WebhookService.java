@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.A105.prham.common.config.MattermostConfig;
 import com.A105.prham.webhook.dto.MattermostWebhookDto;
 import com.A105.prham.webhook.entity.File;
 import com.A105.prham.webhook.entity.Post;
@@ -23,6 +24,7 @@ public class WebhookService {
 	private final PostRepository postRepository;
 	private final FileRepository fileRepository;
 	private final MattermostApiService mattermostApiService;
+	private final MattermostConfig mattermostConfig;
 
 	// Webhook 메시지 처리
 	// Post 저장
@@ -32,6 +34,11 @@ public class WebhookService {
 		try{
 			// null 검사와 유효성 검사
 			validateWebhookPayload(dto);
+
+			// 채널 필터링
+			if (!mattermostConfig.isAllowedChannel(dto.channelId())) {
+				log.info("채널 허용 목록에 없음, 수집 안함. 채널아이디: {}, 채널명: {}", dto.channelId(), dto.channelName());
+			}
 
 			// 중복 체크
 			if(postRepository.existsByMmMessageId((dto.postId()))){
@@ -59,7 +66,10 @@ public class WebhookService {
 			if(dto.fileIds() != null && !dto.fileIds().isEmpty()){
 				processFiles(savedPost, dto.fileIds());
 			}
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
+			log.error("유효하지 않은 webhook", e.getMessage());
+		}
+		catch (Exception e) {
 			// 비동기처리라 예외 안던짐
 			log.error("에러 발생 비상!", dto != null ? dto.postId() : "null", e);
 		}

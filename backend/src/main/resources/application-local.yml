@@ -3,6 +3,10 @@ spring:
     activate:
       on-profile: local
 
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration
+
   sql:
     init:
       mode: always
@@ -26,8 +30,21 @@ logging:
   level:
     org.springframework.messaging: INFO
     org.springframework.web.socket: INFO
-
+    com.A105.prham.webhook: DEBUG
 
 custom:
   service:
     url: "http://localhost:8080"
+
+
+mattermost:
+  api:
+    base-url: "http://k13a105.p.ssafy.io:8065"
+    token: "knq57dxp4fg7xddoq7xc9mbnwc"
+  webhook:
+    allowed-channels:
+      - "s9xrhop6d7dtifqen4s5u5xcre"    # seoul_1_notice 채널 ID
+      - "xo7t47x6ztfdproccizthfwnow"        # all_notice 채널 ID
+      - "ofn1mdxx9trrxfhmew7jsyuqqw"        # job_notice 채널 ID
+      - "ez1ozubu13nuxkaqkf8khcsnoy"          # job_info 채널 ID
+    blocked-channels: []

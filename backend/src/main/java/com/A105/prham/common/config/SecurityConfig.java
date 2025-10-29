@@ -17,7 +17,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/webhook/**").permitAll()  // webhook 경로는 인증 없이 허용
+                        .requestMatchers("/api/v1/webhook/**").permitAll()  // webhook 경로는 인증 없이 허용
                         .requestMatchers("/api/**").permitAll()          // 모든 API 허용
                         .anyRequest().authenticated()
                 )

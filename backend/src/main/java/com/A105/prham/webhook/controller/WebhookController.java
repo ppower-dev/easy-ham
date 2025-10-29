@@ -25,15 +25,12 @@ public class WebhookController {
 	 * [POST /api/v1/webhooks/messages]
 	 */
 	@PostMapping("/messages")
-	public ResponseEntity<Void> handleMattermostWebhook(@RequestBody MattermostWebhookDto payload) {
-
+	public ResponseEntity<ApiResponseDto<Void>> handleMattermostWebhook(
+		@RequestBody MattermostWebhookDto payload
+	) {
 		webhookService.processWebhook(payload);
 
-		ApiResponseDto<Void> response = ApiResponseDto.success(SuccessCode.WEBHOOK_RECEIVED);
-
-		return ResponseEntity
-			.status(response.httpStatus())
-			.body(response);
+		return ResponseEntity.ok(ApiResponseDto.<Void>success(SuccessCode.WEBHOOK_RECEIVED));
 	}
 
 }
