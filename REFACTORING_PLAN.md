@@ -1515,98 +1515,49 @@ src/
 
 ---
 
-### **Phase 4: 공통 컴포넌트 생성 (twin.macro 사용)** ⏱️ 4시간
+### **Phase 4: 공통 컴포넌트 생성 (Tailwind CSS만 사용)** ⏱️ 4시간
 
-#### ✅ 4-1. GlobalStyles 설정
-**파일**: `src/styles/GlobalStyles.tsx`
-- [ ] twin.macro 글로벌 스타일 (디자인 토큰 사용)
-  ```typescript
-  import { Global } from '@emotion/react';
-  import tw, { css, GlobalStyles as BaseStyles } from 'twin.macro';
-  import { colors, typography } from './tokens';
+**⚠️ 중요 결정: twin.macro 사용 중단**
+- 날짜: 2025-10-30
+- 이유: Tailwind v4와 twin.macro 호환성 문제, 기존 CSS 스타일 어긋남
+- 결정: Tailwind CSS만 사용, styled-components는 추후 고려
+- 영향: 모든 컴포넌트는 Tailwind 유틸리티 클래스만 사용
 
-  const customStyles = css`
-    :root {
-      /* 브랜드 색상 CSS 변수 */
-      --brand-orange: ${colors.brand.orange};
-      --brand-orange-dark: ${colors.brand.orangeDark};
-      --brand-orange-light: ${colors.brand.orangeLight};
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      ${tw`antialiased`}
-      font-family: ${typography.fontFamily.primary};
-      line-height: ${typography.lineHeight.normal};
-      color: ${colors.text.primary};
-      background-color: ${colors.background.primary};
-    }
-
-    /* 스크롤바 스타일링 (선택) */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: ${colors.gray[100]};
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: ${colors.gray[300]};
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: ${colors.gray[400]};
-    }
-  `;
-
-  export const GlobalStyles = () => (
-    <>
-      <BaseStyles />
-      <Global styles={customStyles} />
-    </>
-  );
-  ```
-
-**파일**: `src/main.tsx` 수정
-- [ ] GlobalStyles 추가
-  ```typescript
-  import { createRoot } from 'react-dom/client';
-  import { RouterProvider } from 'react-router-dom';
-  import { router } from './router';
-  import 'pretendard/dist/web/static/pretendard.css';
-  import './index.css';
-  import { GlobalStyles } from './styles/GlobalStyles';
-
-  createRoot(document.getElementById('root')!).render(
-    <>
-      <GlobalStyles />
-      <RouterProvider router={router} />
-    </>
-  );
-  ```
+#### ✅ 4-1. twin.macro 완전 제거
+**작업 내용**:
+- [x] `src/types/twin.d.ts` 삭제
+- [x] `babel-plugin-macros.config.js` 삭제
+- [x] `vite.config.ts`에서 jsxImportSource, babel 설정 제거
+- [x] `package.json`에서 의존성 제거:
+  - `twin.macro` 제거
+  - `@emotion/react` 제거
+  - `@emotion/styled` 제거
+  - `@emotion/babel-plugin` 제거
+  - `babel-plugin-macros` 제거
+- [x] `npm install` 실행 (68개 패키지 제거됨)
+- [x] 빌드 성공 확인
+- [x] 개발 서버 정상 동작 확인
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: twin.macro와 Tailwind v4 호환성 문제 발생
+      - GlobalStyles 적용 시 기존 CSS 레이아웃 어긋남
+      - Tailwind v4는 twin.macro가 아직 완벽히 지원하지 않음
+      - "Missing './lib/util/toPath' specifier in 'tailwindcss' package" 빌드 에러
+해결: twin.macro 완전 제거
+      - twin.macro, @emotion 관련 패키지 전부 삭제 (68개 패키지 제거)
+      - babel-plugin-macros 설정 제거
+      - vite.config.ts 단순화 (react() 플러그인만 사용)
+      - Phase 4 이후 모든 컴포넌트는 Tailwind 유틸리티 클래스만 사용
 ```
 
 #### ✅ 4-2. Header 컴포넌트
 **파일**: `src/components/layouts/Header/index.tsx`
-- [ ] twin.macro 사용
+- [ ] Tailwind CSS 사용 (twin.macro 대신)
   ```typescript
-  import tw from 'twin.macro';
+  // twin.macro 제거
   import { useNavigate } from 'react-router-dom';
   import { Bell, User, ChevronLeft } from 'lucide-react';
   import { NotificationDropdown } from './NotificationDropdown';

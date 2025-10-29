@@ -5,12 +5,7 @@
 
   export default defineConfig({
     plugins: [
-      react({
-        jsxImportSource: '@emotion/react',
-        babel: {
-          plugins: ['babel-plugin-macros'],
-        },
-      }),
+      react(),
     ],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
