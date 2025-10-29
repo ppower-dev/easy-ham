@@ -37,8 +37,8 @@ public class WebhookService {
 
 			// 채널 필터링
 			if (!mattermostConfig.isAllowedChannel(dto.channelId())) {
-				log.info("채널 허용 목록에 없음, 수집 안함. 채널아이디: {}, 채널명: {}", dto.channelId(), dto.channelName());
-				return;
+				log.info("🔍 Checking channel: {}, allowed channels: {}",
+					dto.channelId(), mattermostConfig.getAllowedChannelList());				return;
 			}
 
 			// 중복 체크
