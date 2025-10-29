@@ -7,12 +7,11 @@
     plugins: [
       react({
         jsxImportSource: '@emotion/react',
+        babel: {
+          plugins: ['babel-plugin-macros'],
+        },
       }),
     ],
-    esbuild: {
-      jsxFactory: 'jsx',
-      jsxInject: `import { jsx } from '@emotion/react'`,
-    },
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {

@@ -448,17 +448,17 @@ src/
 ### **Phase 1: 기반 구조 생성** ⏱️ 2시간
 
 #### ✅ 1-1. 폴더 구조 생성
-- [ ] 필수 폴더 생성
+- [x] 필수 폴더 생성
   ```bash
   mkdir -p src/{pages,components/{layouts,common,modals},hooks,stores,services/{api,mock},types,constants,utils,styles,router}
   ```
-- [ ] 페이지별 폴더 생성
+- [x] 페이지별 폴더 생성
   ```bash
   mkdir -p src/pages/{Landing,Login,SignUp,Dashboard,Calendar,MyPage}
   mkdir -p src/pages/Dashboard/components
   mkdir -p src/pages/Calendar/components
   ```
-- [ ] 공통 컴포넌트 폴더 생성
+- [x] 공통 컴포넌트 폴더 생성
   ```bash
   mkdir -p src/components/layouts/Header
   mkdir -p src/components/common/{ImageWithFallback,Badge,EmptyState}
@@ -467,23 +467,22 @@ src/
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: 모든 폴더 구조 생성 완료
 ```
 
 #### ✅ 1-2. TypeScript 타입 정의
 **파일**: `src/types/index.ts`
-- [ ] 모든 타입 export
+- [x] 모든 타입 export
 
 **파일**: `src/types/common.ts`
-- [ ] `ApiResponse<T>` 타입
-- [ ] `PaginationParams` 타입
+- [x] `ApiResponse<T>` 타입
+- [x] `PaginationParams` 타입
 
 **파일**: `src/types/user.ts`
-- [ ] `User` 인터페이스
+- [x] `User` 인터페이스
   ```typescript
   export interface User {
     id: string;
@@ -514,7 +513,7 @@ src/
   ```
 
 **파일**: `src/types/notice.ts`
-- [ ] `Notice` 인터페이스
+- [x] `Notice` 인터페이스
   ```typescript
   export interface Notice {
     id: number;
@@ -547,7 +546,7 @@ src/
   ```
 
 **파일**: `src/types/event.ts`
-- [ ] `CalendarEvent` 인터페이스
+- [x] `CalendarEvent` 인터페이스
   ```typescript
   export interface CalendarEvent {
     id: number;
@@ -566,7 +565,7 @@ src/
   ```
 
 **파일**: `src/types/filter.ts`
-- [ ] `FilterState` 인터페이스
+- [x] `FilterState` 인터페이스
   ```typescript
   import type { Subcategory } from './notice';
 
@@ -590,16 +589,15 @@ src/
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: 모든 타입 정의 완료
 ```
 
 #### ✅ 1-3. 디자인 토큰 정의
 **파일**: `src/styles/tokens.ts`
-- [ ] 디자인 토큰 정의 (색상, 타이포그래피, 간격 등)
+- [x] 디자인 토큰 정의 (색상, 타이포그래피, 간격 등)
   ```typescript
   /**
    * 디자인 토큰
@@ -796,7 +794,7 @@ src/
   ```
 
 **파일**: `src/main.tsx` 수정
-- [ ] Pretendard 폰트 import 추가
+- [x] Pretendard 폰트 import 추가
   ```typescript
   import { createRoot } from 'react-dom/client';
   import { RouterProvider } from 'react-router-dom';
@@ -810,7 +808,7 @@ src/
   ```
 
 **파일**: `src/index.css` 또는 `src/styles/globals.css` 수정
-- [ ] 폰트 패밀리 적용
+- [x] 폰트 패밀리 적용
   ```css
   @tailwind base;
   @tailwind components;
@@ -835,16 +833,15 @@ src/
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: 디자인 토큰 정의 완료, Pretendard 폰트 적용 완료
 ```
 
 #### ✅ 1-4. 상수 파일 생성
 **파일**: `src/constants/index.ts`
-- [ ] 모든 상수 export
+- [x] 모든 상수 export
   ```typescript
   export * from './channels';
   export * from './categories';
@@ -854,7 +851,7 @@ src/
   ```
 
 **파일**: `src/constants/channels.ts`
-- [ ] `CHANNEL_OPTIONS` 상수
+- [x] `CHANNEL_OPTIONS` 상수
   ```typescript
   export const CHANNEL_OPTIONS = [
     '전체',
@@ -868,7 +865,7 @@ src/
   ```
 
 **파일**: `src/constants/categories.ts`
-- [ ] 카테고리 상수
+- [x] 카테고리 상수
   ```typescript
   export const SUBCATEGORIES = ['할일', '특강', '정보', '이벤트'] as const;
 
@@ -877,7 +874,7 @@ src/
   ```
 
 **파일**: `src/constants/options.ts`
-- [ ] `CAMPUS_OPTIONS`, `JOB_OPTIONS`, `TECH_STACK_OPTIONS`
+- [x] `CAMPUS_OPTIONS`, `JOB_OPTIONS`, `TECH_STACK_OPTIONS`
   ```typescript
   export const CAMPUS_OPTIONS = ['서울', '대전', '광주', '구미', '부울경'] as const;
 
@@ -915,7 +912,7 @@ src/
   ```
 
 **파일**: `src/constants/colors.ts`
-- [ ] 색상 맵
+- [x] 색상 맵
   ```typescript
   export const CATEGORY_COLORS = {
     할일: {
@@ -959,7 +956,7 @@ src/
   ```
 
 **파일**: `src/constants/config.ts`
-- [ ] 설정 상수
+- [x] 설정 상수
   ```typescript
   export const FEATURE_CAROUSEL_INTERVAL = 5000; // 5초
   export const MAX_SUBSCRIBED_KEYWORDS = 5;
@@ -968,16 +965,15 @@ src/
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: 모든 상수 파일 생성 완료
 ```
 
 #### ✅ 1-5. 유틸 함수 생성
 **파일**: `src/utils/colorUtils.ts`
-- [ ] 색상 유틸 함수 (디자인 토큰 사용)
+- [x] 색상 유틸 함수 (디자인 토큰 사용)
   ```typescript
   import { colors } from '@/styles/tokens';
   import type { Subcategory } from '@/types/notice';
@@ -1018,7 +1014,7 @@ src/
   ```
 
 **파일**: `src/utils/dateUtils.ts`
-- [ ] 날짜 유틸 함수
+- [x] 날짜 유틸 함수
   ```typescript
   export const formatDate = (date: Date | string, format = 'YYYY.MM.DD'): string => {
     const d = typeof date === 'string' ? new Date(date) : date;
@@ -1106,7 +1102,7 @@ src/
   ```
 
 **파일**: `src/utils/filterUtils.ts`
-- [ ] 필터 유틸 함수
+- [x] 필터 유틸 함수
   ```typescript
   import type { Notice } from '@/types/notice';
   import type { Subcategory } from '@/types/notice';
@@ -1203,7 +1199,7 @@ src/
   ```
 
 **파일**: `src/utils/formatUtils.ts`
-- [ ] 포맷 유틸
+- [x] 포맷 유틸
   ```typescript
   export const truncate = (text: string, maxLength: number): string => {
     if (text.length <= maxLength) return text;
@@ -1227,11 +1223,10 @@ src/
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: 모든 유틸 함수 생성 완료
 ```
 
 ---
@@ -2417,7 +2412,7 @@ import type { Notice } from '@/types/notice';
 
 ### 전체 진행도
 - [x] Phase 0: 사전 준비 및 React Router 도입 (100%)
-- [ ] Phase 1: 기반 구조 생성 (0%)
+- [x] Phase 1: 기반 구조 생성 (100%)
 - [ ] Phase 2: Zustand 스토어 생성 (0%)
 - [ ] Phase 3: Mock 데이터 분리 (0%)
 - [ ] Phase 4: 공통 컴포넌트 생성 (0%)
@@ -2430,7 +2425,7 @@ import type { Notice } from '@/types/notice';
 - [ ] Phase 11: 테스트 및 검증 (0%)
 - [ ] Phase 12: 최종 정리 (0%)
 
-**전체 완료율**: 7.7% (Phase 0 완료)
+**전체 완료율**: 15.4% (Phase 0-1 완료)
 
 ---
 
@@ -2450,6 +2445,6 @@ import type { Notice } from '@/types/notice';
 
 ---
 
-**마지막 업데이트**: 2025-10-29 (Phase 0 완료)
+**마지막 업데이트**: 2025-10-30 (Phase 0-1 완료)
 **작성자**: Claude Code
-**버전**: 2.1
+**버전**: 2.2
