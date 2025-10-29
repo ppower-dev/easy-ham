@@ -38,25 +38,25 @@ public class Post extends BaseTimeEntity {
 	@Column(name = "post_id")
 	private Long id;
 
-	@Column(nullable = false, unique = true)
+	@Column(name = "mm_message_id", nullable = false, unique = true)
 	private String mmMessageId;
 
-	@Column(nullable = false)
+	@Column(name = "mm_channel_id", nullable = false)
 	private String mmTeamId;
 
-	@Column(nullable = false)
+	@Column(name = "mm_user_id", nullable = false)
 	private String mmUserId;
 
-	@Column(nullable = false)
+	@Column(name = "mm_user_name", nullable = false)
 	private String userName;
 
-	@Column(nullable = false)
+	@Column(name = "mm_channel_id", nullable = false)
 	private String mmChannelId;
 
-	@Column(nullable = false)
+	@Column(name = "mm_created_at", nullable = false)
 	private Long mmCreatedAt;
 
-	@Column(nullable = false)
+	@Column(name = "content", columnDefinition = "TEXT", nullable = false)
 	private String content;
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
