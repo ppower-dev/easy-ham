@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:${MYSQL_VERSION:-8.0}
+    container_name: ${MYSQL_CONTAINER_NAME:-prham-mysql}
+    restart: always
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --lower_case_table_names=2
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - '${MYSQL_HOST_PORT:-3306}:3306'
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-mymm_db}
+      MYSQL_USER: ${MYSQL_USER:-prham_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-prham_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      TZ: Asia/Seoul
+    networks:
+      - prham-network
+
+  mongodb:
+    image: mongo:${MONGO_VERSION:-7.0}
+    container_name: ${MONGO_CONTAINER_NAME:-prham-mongodb}
+    restart: always
+    ports:
+      - '${MONGO_HOST_PORT:-27017}:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin_password}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-prham_db}
+      TZ: Asia/Seoul
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - prham-network
+
+volumes:
+  mysql-data:
+  mongodb-data:
+
+networks:
+  prham-network:
+    driver: bridge
