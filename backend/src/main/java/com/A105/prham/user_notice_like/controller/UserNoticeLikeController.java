@@ -19,4 +19,10 @@ public class UserNoticeLikeController {
     public ApiResponseDto addBookmark(@UserId(required = true) Long userId, @PathVariable Long noticeId) {
         return ApiResponseDto.success(SuccessCode.BOOKMARK_SAVE_SUCCESS, userNoticeLikeService.saveBookmarks(userId, noticeId));
     }
+
+    @DeleteMapping("/{noticeId}")
+    public ApiResponseDto deleteBookmark(@UserId(required = true) Long userId, @PathVariable Long noticeId) {
+        userNoticeLikeService.deleteBookmarks(userId, noticeId);
+        return ApiResponseDto.success(SuccessCode.BOOKMARK_DELETE_SUCCESS);
+    }
 }

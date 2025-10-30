@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserNoticeLikeRepository extends JpaRepository<UserNoticeLike, Long> {
     boolean existsByUserAndNotice(User user, Notice notice);
+
+    UserNoticeLike findByUserAndNotice(User user, Notice notice);
 }
