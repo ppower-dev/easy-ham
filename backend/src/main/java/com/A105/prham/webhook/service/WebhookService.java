@@ -90,7 +90,7 @@ public class WebhookService {
 					.build();
 
 				post.addFile(file);
-				fileRepository.save(file);
+				// fileRepository.save(file); //cascadeType all 로 자동 저장
 
 			} catch (Exception e) {
 				// 파일 실패는 전체 처리를 중단하지 않음
