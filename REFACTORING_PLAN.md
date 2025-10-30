@@ -1555,165 +1555,123 @@ src/
 
 #### ✅ 4-2. Header 컴포넌트
 **파일**: `src/components/layouts/Header/index.tsx`
-- [ ] Tailwind CSS 사용 (twin.macro 대신)
-  ```typescript
-  // twin.macro 제거
-  import { useNavigate } from 'react-router-dom';
-  import { Bell, User, ChevronLeft } from 'lucide-react';
-  import { NotificationDropdown } from './NotificationDropdown';
-  import { ProfileMenu } from './ProfileMenu';
-
-  interface HeaderProps {
-    showBackButton?: boolean;
-    onBack?: () => void;
-  }
-
-  export const Header = ({ showBackButton, onBack }: HeaderProps) => {
-    const navigate = useNavigate();
-
-    return (
-      <header tw="flex items-center justify-between px-8 py-6 bg-white border-b border-gray-200">
-        <div tw="flex items-center gap-4">
-          {showBackButton && (
-            <button onClick={onBack || (() => navigate(-1))} tw="p-2 hover:bg-gray-100 rounded-lg">
-              <ChevronLeft tw="w-6 h-6" />
-            </button>
-          )}
-          <button onClick={() => navigate('/dashboard')} tw="flex items-center gap-2 cursor-pointer">
-            <div tw="w-10 h-10 rounded-xl bg-[var(--brand-orange)] flex items-center justify-center">
-              <span tw="text-xl">🐹</span>
-            </div>
-            <span tw="text-2xl font-bold">편리햄!</span>
-          </button>
-        </div>
-
-        <div tw="flex items-center gap-4">
-          <NotificationDropdown />
-          <ProfileMenu />
-        </div>
-      </header>
-    );
-  };
-  ```
+- [x] Tailwind CSS 사용 (twin.macro 제거)
+  - 로고 및 앱명 표시
+  - 대시보드로 네비게이션
+  - 우측 액션 (알림, 프로필)
 
 **파일**: `src/components/layouts/Header/NotificationDropdown.tsx`
-- [ ] 알림 드롭다운 (useNotificationStore 사용)
+- [x] 알림 드롭다운 (useNotificationStore 사용)
+  - 알림 목록 표시
+  - 읽음/읽지않음 상태 관리
+  - 모두 읽음 버튼
+  - 아이콘 및 색상 분류
 
 **파일**: `src/components/layouts/Header/ProfileMenu.tsx`
-- [ ] 프로필 메뉴 (useAuthStore 사용)
+- [x] 프로필 메뉴 (useAuthStore 사용)
+  - 사용자 정보 표시
+  - 마이페이지 네비게이션
+  - 로그아웃 기능
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: Header, NotificationDropdown, ProfileMenu 컴포넌트 생성 완료
 ```
 
 #### ✅ 4-3. PageLayout 컴포넌트
 **파일**: `src/components/layouts/PageLayout.tsx`
-- [ ] Header + Children
-  ```typescript
-  import tw from 'twin.macro';
-  import { Header } from './Header';
-
-  interface PageLayoutProps {
-    children: React.ReactNode;
-    showBackButton?: boolean;
-    onBack?: () => void;
-  }
-
-  export const PageLayout = ({
-    children,
-    showBackButton,
-    onBack,
-  }: PageLayoutProps) => {
-    return (
-      <div tw="min-h-screen bg-gray-50">
-        <Header showBackButton={showBackButton} onBack={onBack} />
-        <main>{children}</main>
-      </div>
-    );
-  };
-  ```
+- [x] Header + Children (Tailwind CSS)
+  - 레이아웃 감싸기
+  - min-h-screen 배경색
+  - 헤더 포함
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: PageLayout 컴포넌트 생성 완료
 ```
 
 #### ✅ 4-4. Badge 컴포넌트
 **파일**: `src/components/common/Badge/DdayBadge.tsx`
-- [ ] D-day 배지 (twin.macro)
-  ```typescript
-  import tw, { styled } from 'twin.macro';
-  import { getDdayBadgeColor } from '@/utils/colorUtils';
-
-  interface DdayBadgeProps {
-    dday: number | null;
-  }
-
-  const StyledBadge = styled.span<{ color: string }>`
-    ${tw`px-2 py-1 rounded text-xs font-semibold text-white`}
-    background-color: ${(props) => props.color};
-  `;
-
-  export const DdayBadge = ({ dday }: DdayBadgeProps) => {
-    if (dday === null) return null;
-
-    const color = getDdayBadgeColor(dday);
-    const text = dday === 0 ? 'D-Day' : dday > 0 ? `D-${dday}` : '마감';
-
-    return <StyledBadge color={color.hex}>{text}</StyledBadge>;
-  };
-  ```
+- [x] D-day 배지 (Tailwind CSS)
+  - 동적 배경색 (유틸 함수 사용)
+  - D-Day, D-n, 마감 텍스트 표시
+  - null 처리
 
 **파일**: `src/components/common/Badge/CategoryBadge.tsx`
-- [ ] 카테고리 배지
+- [x] 카테고리 배지
+  - solid/outline 두 가지 variant
+  - 카테고리별 색상
+  - 텍스트 색상 처리
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: DdayBadge, CategoryBadge 컴포넌트 생성 완료
 ```
 
 #### ✅ 4-5. ImageWithFallback 마이그레이션
 **파일**: `src/components/common/ImageWithFallback/index.tsx`
-- [ ] 기존 코드 + twin.macro
+- [x] 기존 코드 마이그레이션
+  - 이미지 로드 실패 시 폴백 이미지 표시
+  - 에러 상태 관리
+  - TypeScript 타입 추가
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: ImageWithFallback 컴포넌트 마이그레이션 완료
 ```
 
 #### ✅ 4-6. MessageDetailModal 리팩토링
 **파일**: `src/components/modals/MessageDetailModal/index.tsx`
-- [ ] twin.macro 적용
-- [ ] 하위 컴포넌트로 분리
+- [x] Tailwind CSS 적용
+- [x] 하위 컴포넌트로 분리
+  - 모달 메인 컴포넌트
+  - 마크다운 렌더링
+  - 첨부파일 관리
 
 **파일**: `src/components/modals/MessageDetailModal/components/MessageHeader.tsx`
+- [x] 메시지 헤더 (D-day, 카테고리, 제목)
+  - 배지 색상 처리
+  - DialogHeader 구조
+
 **파일**: `src/components/modals/MessageDetailModal/components/MessageMeta.tsx`
+- [x] 메시지 메타정보 (채널, 작성자, 날짜)
+  - 아이콘 표시
+  - 날짜 정보
+
 **파일**: `src/components/modals/MessageDetailModal/components/AttachmentList.tsx`
+- [x] 첨부파일 목록
+  - 이미지 미리보기
+  - 파일 다운로드
+  - 타입별 아이콘
+
+**DashboardPage 업데이트**:
+- [x] import 경로 변경
+  - 새로운 모달 컴포넌트 위치
+  - 타입 정의 업데이트
+  - Subcategory 타입 적용
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: MessageDetailModal import 경로 변경 필요
+     NoticeItem의 subcategory 타입 불일치
+     사용하지 않는 import 정리
+해결: 모든 컴포넌트 분리 완료
+      DashboardPage import 및 타입 업데이트
+      빌드 성공 확인
 ```
 
 ---
@@ -2361,7 +2319,13 @@ import type { Notice } from '@/types/notice';
 - [x] Phase 1: 기반 구조 생성 (100%)
 - [x] Phase 2: Zustand 스토어 생성 (100%)
 - [x] Phase 3: Mock 데이터 분리 (100%)
-- [ ] Phase 4: 공통 컴포넌트 생성 (0%)
+- [x] Phase 4: 공통 컴포넌트 생성 (100%)
+  - [x] 4-1. twin.macro 완전 제거
+  - [x] 4-2. Header 컴포넌트 (Header, NotificationDropdown, ProfileMenu)
+  - [x] 4-3. PageLayout 컴포넌트
+  - [x] 4-4. Badge 컴포넌트 (DdayBadge, CategoryBadge)
+  - [x] 4-5. ImageWithFallback 마이그레이션
+  - [x] 4-6. MessageDetailModal 리팩토링 (3개 하위 컴포넌트)
 - [ ] Phase 5: Custom Hooks 생성 (0%)
 - [ ] Phase 6: DashboardPage 리팩토링 (0%)
 - [ ] Phase 7: CalendarPage 리팩토링 (0%)
@@ -2371,7 +2335,7 @@ import type { Notice } from '@/types/notice';
 - [ ] Phase 11: 테스트 및 검증 (0%)
 - [ ] Phase 12: 최종 정리 (0%)
 
-**전체 완료율**: 30.8% (Phase 0-3 완료)
+**전체 완료율**: 38.5% (Phase 0-4 완료)
 
 ---
 
@@ -2391,6 +2355,6 @@ import type { Notice } from '@/types/notice';
 
 ---
 
-**마지막 업데이트**: 2025-10-30 (Phase 0-3 완료)
+**마지막 업데이트**: 2025-10-30 (Phase 0-4 완료)
 **작성자**: Claude Code
-**버전**: 2.4
+**버전**: 3.0

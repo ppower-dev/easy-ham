@@ -18,14 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
-import { 
-  Bell, 
-  User, 
-  Search, 
-  Bookmark, 
+import {
+  Bell,
+  User,
+  Search,
+  Bookmark,
   Check,
   Calendar as CalendarIcon,
-  ChevronDown,
   Plus,
   RotateCcw,
   Briefcase,
@@ -37,7 +36,9 @@ import {
   LogOut,
   Settings
 } from 'lucide-react';
-import { MessageDetailModal, MessageDetail, MessageAttachment } from './MessageDetailModal';
+import { MessageDetailModal, type MessageDetail } from '@/components/modals/MessageDetailModal';
+import type { Attachment } from '@/components/modals/MessageDetailModal/components/AttachmentList';
+import type { Subcategory } from '@/types/notice';
 
 // 타입 정의
 interface NotificationItem {
@@ -51,7 +52,7 @@ interface NoticeItem {
   id: number;
   dday: number | null;
   category: string;
-  subcategory: string;
+  subcategory: Subcategory;
   title: string;
   date: string;
   bookmarked: boolean;
@@ -282,7 +283,7 @@ export function DashboardPage() {
     // 더미 데이터: Mattermost URL과 첨부파일
     const mattermostUrl = `https://mattermost.ssafy.com/ssafy/pl/message${notice.id}`;
     
-    const attachments: MessageAttachment[] = notice.id === 1 ? [
+    const attachments: Attachment[] = notice.id === 1 ? [
       {
         id: 'att1',
         name: '발표자료_템플릿.pptx',
