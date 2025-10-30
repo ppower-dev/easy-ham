@@ -1680,151 +1680,68 @@ src/
 
 #### ✅ 5-1. useNoticeFilter 훅
 **파일**: `src/hooks/useNoticeFilter.ts`
-- [ ] 필터 로직 통합 (useFilterStore 사용)
-  ```typescript
-  import { useMemo } from 'react';
-  import { useFilterStore } from '@/stores/useFilterStore';
-  import {
-    filterNoticesByChannels,
-    filterNoticesByCategories,
-    filterNoticesBySearch,
-    filterNoticesByPeriod,
-    sortNotices,
-  } from '@/utils/filterUtils';
-  import type { Notice } from '@/types/notice';
-
-  export const useNoticeFilter = (notices: Notice[]) => {
-    const {
-      selectedChannels,
-      selectedAcademicCategories,
-      selectedCareerCategories,
-      searchQuery,
-      periodFilter,
-      sortBy,
-    } = useFilterStore();
-
-    const filteredNotices = useMemo(() => {
-      let result = notices;
-
-      // 채널 필터
-      result = filterNoticesByChannels(result, selectedChannels);
-
-      // 카테고리 필터
-      const allCategories = [
-        ...selectedAcademicCategories,
-        ...selectedCareerCategories,
-      ];
-      result = filterNoticesByCategories(result, allCategories);
-
-      // 검색 필터
-      result = filterNoticesBySearch(result, searchQuery);
-
-      // 기간 필터
-      result = filterNoticesByPeriod(result, periodFilter);
-
-      // 정렬
-      result = sortNotices(result, sortBy);
-
-      return result;
-    }, [
-      notices,
-      selectedChannels,
-      selectedAcademicCategories,
-      selectedCareerCategories,
-      searchQuery,
-      periodFilter,
-      sortBy,
-    ]);
-
-    return { filteredNotices };
-  };
-  ```
+- [x] 필터 로직 통합 (useFilterStore 사용)
+  - 채널, 카테고리, 검색, 기간, 정렬 필터
+  - useMemo로 의존성 최적화
+  - 필터 적용 여부 판단
+  - 결과 개수 반환
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: useNoticeFilter 훅 생성 완료
 ```
 
 #### ✅ 5-2. useCalendarEvents 훅
 **파일**: `src/hooks/useCalendarEvents.ts`
-- [ ] 이벤트 데이터 관리
+- [x] 이벤트 데이터 관리
+  - 현재 달 이벤트 조회
+  - 특정 날짜 이벤트 조회
+  - 기간별 이벤트 조회
+  - 오늘/다가오는 이벤트 조회
+  - FilterStore 기반 필터링
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: useCalendarEvents 훅 생성 완료
 ```
 
 #### ✅ 5-3. useDateNavigation 훅
 **파일**: `src/hooks/useDateNavigation.ts`
-- [ ] 날짜 네비게이션 로직
-  ```typescript
-  import { useState } from 'react';
-
-  export type ViewMode = 'week' | 'month';
-
-  export const useDateNavigation = (initialDate = new Date()) => {
-    const [currentDate, setCurrentDate] = useState(initialDate);
-    const [viewMode, setViewMode] = useState<ViewMode>('week');
-
-    const goToPrevious = () => {
-      setCurrentDate((prev) => {
-        const newDate = new Date(prev);
-        if (viewMode === 'week') {
-          newDate.setDate(prev.getDate() - 7);
-        } else {
-          newDate.setMonth(prev.getMonth() - 1);
-        }
-        return newDate;
-      });
-    };
-
-    const goToNext = () => {
-      setCurrentDate((prev) => {
-        const newDate = new Date(prev);
-        if (viewMode === 'week') {
-          newDate.setDate(prev.getDate() + 7);
-        } else {
-          newDate.setMonth(prev.getMonth() + 1);
-        }
-        return newDate;
-      });
-    };
-
-    const goToToday = () => {
-      setCurrentDate(new Date());
-    };
-
-    const toggleViewMode = () => {
-      setViewMode((prev) => (prev === 'week' ? 'month' : 'week'));
-    };
-
-    return {
-      currentDate,
-      viewMode,
-      goToPrevious,
-      goToNext,
-      goToToday,
-      toggleViewMode,
-      setCurrentDate,
-    };
-  };
-  ```
+- [x] 날짜 네비게이션 로직
+  - 주간/월간 뷰 전환
+  - 이전/다음 기간 이동
+  - 오늘로 이동
+  - 날짜 포맷팅 (주간 범위, 월년)
+  - 주의 날짜 배열 생성
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: useDateNavigation 훅 생성 완료
+```
 
-해결:
+#### ✅ 5-4. useAuth 훅
+**파일**: `src/hooks/useAuth.ts`
+- [x] 인증 로직 통합 (useAuthStore 사용)
+  - 사용자 정보 조회
+  - 로그인/로그아웃 처리
+  - 사용자 정보 업데이트
+  - 자동 네비게이션 처리
+
+**이슈 기록**:
+```
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: useAuth 훅 생성 완료
 ```
 
 ---
@@ -2326,7 +2243,11 @@ import type { Notice } from '@/types/notice';
   - [x] 4-4. Badge 컴포넌트 (DdayBadge, CategoryBadge)
   - [x] 4-5. ImageWithFallback 마이그레이션
   - [x] 4-6. MessageDetailModal 리팩토링 (3개 하위 컴포넌트)
-- [ ] Phase 5: Custom Hooks 생성 (0%)
+- [x] Phase 5: Custom Hooks 생성 (100%)
+  - [x] 5-1. useNoticeFilter 훅
+  - [x] 5-2. useCalendarEvents 훅
+  - [x] 5-3. useDateNavigation 훅
+  - [x] 5-4. useAuth 훅
 - [ ] Phase 6: DashboardPage 리팩토링 (0%)
 - [ ] Phase 7: CalendarPage 리팩토링 (0%)
 - [ ] Phase 8: 나머지 페이지 리팩토링 (0%)
@@ -2335,7 +2256,7 @@ import type { Notice } from '@/types/notice';
 - [ ] Phase 11: 테스트 및 검증 (0%)
 - [ ] Phase 12: 최종 정리 (0%)
 
-**전체 완료율**: 38.5% (Phase 0-4 완료)
+**전체 완료율**: 46.2% (Phase 0-5 완료)
 
 ---
 
@@ -2355,6 +2276,6 @@ import type { Notice } from '@/types/notice';
 
 ---
 
-**마지막 업데이트**: 2025-10-30 (Phase 0-4 완료)
+**마지막 업데이트**: 2025-10-30 (Phase 0-5 완료)
 **작성자**: Claude Code
-**버전**: 3.0
+**버전**: 3.1
