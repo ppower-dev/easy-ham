@@ -2,13 +2,15 @@ package com.A105.prham.channel.entity;
 
 import com.A105.prham.common.domain.BaseTimeEntity;
 import com.A105.prham.notice.entity.Notice;
-import com.A105.prham.team.domain.Team;
+import com.A105.prham.team.entity.Team;
+import com.A105.prham.user_notice.entity.UserNotice;
 import com.A105.prham.user_notice_like.entity.UserNoticeLike;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,9 +31,12 @@ public class Channel extends BaseTimeEntity {
     @JoinColumn(name = "team_id")
     private Team team;
 
-    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL)
-    private List<Notice> notices;
+    @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Notice> notices = new ArrayList<>();
 
-    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL)
-    private List<UserNoticeLike> userNoticeLikes;
+    @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserNoticeLike> userNoticeLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserNotice> userNoticed = new ArrayList<>();
 }
