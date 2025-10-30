@@ -37,11 +37,11 @@ public class UserNoticeLike extends BaseTimeEntity { //북마크
     @ManyToOne(fetch = FetchType.LAZY)
     private Team team;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "code_id")
-    @OneToOne(fetch = FetchType.LAZY)
-    private Subcode code;
+    private Subcode subcode;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "upper_code_id")
     private Maincode maincode;
 
@@ -57,11 +57,11 @@ public class UserNoticeLike extends BaseTimeEntity { //북마크
     private Boolean isLiked;
 
     @Builder
-    public UserNoticeLike(User user, Notice notice, Team team, Subcode code, Maincode maincode, Channel channel, Post post, Boolean isLiked) {
+    public UserNoticeLike(User user, Notice notice, Team team, Subcode subcode, Maincode maincode, Channel channel, Post post, Boolean isLiked) {
         this.user = user;
         this.notice = notice;
         this.team = team;
-        this.code = code;
+        this.subcode = subcode;
         this.maincode = maincode;
         this.channel = channel;
         this.post = post;

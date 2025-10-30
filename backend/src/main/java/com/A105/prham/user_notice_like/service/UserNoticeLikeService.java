@@ -44,7 +44,7 @@ public class UserNoticeLikeService {
                 .user(user)
                 .notice(notice)
                 .team(notice.getTeam())
-                .code(notice.getSubcode())
+                .subcode(notice.getSubcode())
                 .maincode(notice.getMaincode())
                 .channel(notice.getChannel())
                 .post(notice.getPost())
