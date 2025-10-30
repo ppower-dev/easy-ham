@@ -3,7 +3,7 @@ import App from '../App';
 import { LoginPage } from '../components/LoginPage';
 import { SignUpPage } from '../components/SignUpPage';
 import DashboardPage from '../pages/Dashboard';
-import { CalendarPage } from '../components/CalendarPage';
+import CalendarPage from '../pages/Calendar';
 import { MyPage } from '../components/MyPage';
 
 export const router = createBrowserRouter([
