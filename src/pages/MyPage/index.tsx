@@ -1,21 +1,21 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card } from './ui/card';
-import { Badge } from './ui/badge';
-import { Separator } from './ui/separator';
-import { 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
-import { 
-  ArrowLeft, 
-  User, 
+} from '@/components/ui/select';
+import {
+  ArrowLeft,
+  User,
   Camera,
   GraduationCap,
   Briefcase,
@@ -24,17 +24,7 @@ import {
   Save,
   X
 } from 'lucide-react';
-
-// 기술 스택 옵션 (SignUpPage와 동일)
-const techStackOptions = [
-  'React', 'Vue', 'Angular', 'Svelte',
-  'Node.js', 'Spring', 'Django', 'FastAPI', 'Express',
-  'Python', 'Java', 'JavaScript', 'TypeScript', 'C++', 'Go',
-  'MySQL', 'PostgreSQL', 'MongoDB', 'Redis',
-  'Docker', 'Kubernetes', 'AWS', 'GCP', 'Azure',
-  'TensorFlow', 'PyTorch', 'Scikit-learn',
-  'Git', 'Jenkins', 'GitHub Actions',
-];
+import { CAMPUS_OPTIONS, JOB_OPTIONS, TECH_STACK_OPTIONS } from '@/constants/options';
 
 export function MyPage() {
   const navigate = useNavigate();
@@ -47,7 +37,7 @@ export function MyPage() {
   const [selectedJobs, setSelectedJobs] = useState<string[]>([
     '백엔드 개발자', '풀스택 개발자'
   ]);
-  
+
   // 구독 키워드 상태
   const [subscribedKeywords, setSubscribedKeywords] = useState<string[]>([
     '프로젝트', '취업', '특강'
@@ -61,22 +51,8 @@ export function MyPage() {
   const [customTech, setCustomTech] = useState('');
 
   const availableKeywords = [
-    '프로젝트', '취업', '특강', '공지', '이벤트', 'MT', '스터디', '멘토링', 
+    '프로젝트', '취업', '특강', '공지', '이벤트', 'MT', '스터디', '멘토링',
     '채용', '코딩테스트', '알고리즘', '면접', '포트폴리오', '제출', '발표'
-  ];
-
-  const campusOptions = ['서울', '대전', '광주', '구미', '부울경'];
-  const jobOptions = [
-    '프론트엔드',
-    '백엔드',
-    '풀스택',
-    'AI/ML',
-    '데이터 엔지니어',
-    'DevOps',
-    '모바일',
-    '게임 개발',
-    '보안',
-    '기타',
   ];
 
   // 희망 직무 토글
@@ -224,7 +200,7 @@ export function MyPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {campusOptions.map((option) => (
+                    {CAMPUS_OPTIONS.map((option) => (
                       <SelectItem key={option} value={option}>
                         {option}
                       </SelectItem>
@@ -282,7 +258,7 @@ export function MyPage() {
                   자주 선택하는 직무
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {jobOptions.map((job) => (
+                  {JOB_OPTIONS.map((job) => (
                     <button
                       key={job}
                       type="button"
@@ -433,7 +409,7 @@ export function MyPage() {
                   자주 사용하는 기술
                 </p>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
-                  {techStackOptions.map((tech) => (
+                  {TECH_STACK_OPTIONS.map((tech) => (
                     <button
                       key={tech}
                       type="button"

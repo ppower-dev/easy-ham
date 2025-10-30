@@ -1,15 +1,15 @@
 import { createBrowserRouter } from 'react-router-dom';
-import App from '../App';
-import { LoginPage } from '../components/LoginPage';
-import { SignUpPage } from '../components/SignUpPage';
+import LandingPage from '../pages/Landing';
+import { LoginPage } from '../pages/Login';
+import { SignUpPage } from '../pages/SignUp';
 import DashboardPage from '../pages/Dashboard';
 import CalendarPage from '../pages/Calendar';
-import { MyPage } from '../components/MyPage';
+import { MyPage } from '../pages/MyPage';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    element: <LandingPage />,
   },
   {
     path: '/login',

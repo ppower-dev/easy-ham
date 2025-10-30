@@ -1,36 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Badge } from './ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { X, ArrowLeft } from 'lucide-react';
-
-const jobOptions = [
-  '프론트엔드',
-  '백엔드',
-  '풀스택',
-  'AI/ML',
-  '데이터 엔지니어',
-  'DevOps',
-  '모바일',
-  '게임 개발',
-  '보안',
-  '기타',
-];
-
-const techStackOptions = [
-  'React', 'Vue', 'Angular', 'Svelte',
-  'Node.js', 'Spring', 'Django', 'FastAPI', 'Express',
-  'Python', 'Java', 'JavaScript', 'TypeScript', 'C++', 'Go',
-  'MySQL', 'PostgreSQL', 'MongoDB', 'Redis',
-  'Docker', 'Kubernetes', 'AWS', 'GCP', 'Azure',
-  'TensorFlow', 'PyTorch', 'Scikit-learn',
-  'Git', 'Jenkins', 'GitHub Actions',
-];
-
-const campusOptions = ['서울', '대전', '광주', '구미', '부산'];
+import { CAMPUS_OPTIONS, JOB_OPTIONS, TECH_STACK_OPTIONS } from '@/constants/options';
 
 export function SignUpPage() {
   const navigate = useNavigate();
@@ -124,7 +100,7 @@ export function SignUpPage() {
                     <SelectValue placeholder="캠퍼스 선택" />
                   </SelectTrigger>
                   <SelectContent>
-                    {campusOptions.map((campusOption) => (
+                    {CAMPUS_OPTIONS.map((campusOption) => (
                       <SelectItem key={campusOption} value={campusOption}>
                         {campusOption}
                       </SelectItem>
@@ -153,7 +129,7 @@ export function SignUpPage() {
             <Label>
               희망 직무 <span className="text-[var(--brand-orange)]">*</span>
             </Label>
-            
+
             {/* 선택된 직무 */}
             {selectedJobs.length > 0 && (
               <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg">
@@ -182,7 +158,7 @@ export function SignUpPage() {
                 자주 선택하는 직무
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {jobOptions.map((job) => (
+                {JOB_OPTIONS.map((job) => (
                   <button
                     key={job}
                     type="button"
@@ -207,7 +183,7 @@ export function SignUpPage() {
             <Label>
               기술 스택 <span className="text-gray-500 text-sm" style={{ fontWeight: 400 }}>(선택)</span>
             </Label>
-            
+
             {/* 선택된 기술 스택 */}
             {selectedTechStack.length > 0 && (
               <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg">
@@ -236,7 +212,7 @@ export function SignUpPage() {
                 자주 사용하는 기술
               </p>
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
-                {techStackOptions.map((tech) => (
+                {TECH_STACK_OPTIONS.map((tech) => (
                   <button
                     key={tech}
                     type="button"

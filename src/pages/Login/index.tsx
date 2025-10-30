@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { ArrowLeft, Lightbulb } from 'lucide-react';
 
 export function LoginPage() {
@@ -33,7 +33,7 @@ export function LoginPage() {
         <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-radial from-white/20 to-transparent rounded-full blur-2xl"></div>
         <div className="absolute bottom-20 left-20 w-[500px] h-[500px] bg-gradient-radial from-yellow-300/15 to-transparent rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-orange-400/10 to-transparent rounded-full blur-3xl"></div>
-        
+
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-12">
             <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
@@ -41,7 +41,7 @@ export function LoginPage() {
             </div>
             <span className="text-3xl" style={{ fontWeight: 700 }}>편리햄!</span>
           </div>
-          
+
           <div className="space-y-6 max-w-md">
             <h1 className="text-5xl" style={{ fontWeight: 700, lineHeight: 1.2 }}>
               공지사항 관리,

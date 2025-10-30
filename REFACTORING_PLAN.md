@@ -2132,52 +2132,74 @@ src/pages/Calendar/
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
 해결:
+- App.tsx에서 Landing 페이지 로직 완전히 분리
+- HeroSection, FeatureCarousel 컴포넌트로 모듈화
+- Gradient 배경과 Feature Carousel 자동 회전 기능 보존
+- RefObject 타입 에러 해결 (HTMLElement | null)
+- 라우터에 LandingPage 연결 완료
 ```
 
 #### ✅ 8-2. Login 페이지
 **파일**: `src/pages/Login/index.tsx`
-- [ ] twin.macro 적용
-- [ ] useAuthStore 사용
+- [x] src/pages/Login/ 구조로 마이그레이션 완료
+- [x] import 경로를 @/ alias로 변경
+- [ ] twin.macro 적용 (프로젝트에 twin.macro 없음, 스킵)
+- [ ] useAuthStore 사용 (향후 추가 예정)
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
 해결:
+- src/components/LoginPage.tsx → src/pages/Login/index.tsx로 마이그레이션
+- 브랜드 색상, gradient 배경, 모든 스타일 100% 보존
+- 라우터 import 경로 업데이트 완료
+- 기존 components/LoginPage.tsx 삭제
 ```
 
 #### ✅ 8-3. SignUp 페이지
 **파일**: `src/pages/SignUp/index.tsx`
-- [ ] 상수 import
-- [ ] twin.macro 적용
+- [x] src/pages/SignUp/ 구조로 마이그레이션 완료
+- [x] 상수 import (CAMPUS_OPTIONS, JOB_OPTIONS, TECH_STACK_OPTIONS)
+- [x] import 경로를 @/ alias로 변경
+- [ ] twin.macro 적용 (프로젝트에 twin.macro 없음, 스킵)
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
 해결:
+- src/components/SignUpPage.tsx → src/pages/SignUp/index.tsx로 마이그레이션
+- 하드코딩된 배열을 constants/options.ts의 상수로 변경
+- 그라데이션 배경, Badge 선택 스타일 100% 보존
+- 라우터 import 경로 업데이트 완료
+- 기존 components/SignUpPage.tsx 삭제
 ```
 
 #### ✅ 8-4. MyPage 페이지
 **파일**: `src/pages/MyPage/index.tsx`
-- [ ] useAuthStore 사용
+- [x] src/pages/MyPage/ 구조로 마이그레이션 완료
+- [x] 상수 import (CAMPUS_OPTIONS, JOB_OPTIONS, TECH_STACK_OPTIONS)
+- [x] import 경로를 @/ alias로 변경
+- [ ] useAuthStore 사용 (향후 추가 예정)
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
 해결:
+- src/components/MyPage.tsx → src/pages/MyPage/index.tsx로 마이그레이션
+- 하드코딩된 배열을 constants/options.ts의 상수로 변경
+- 프로필 카드, 아이콘, 브랜드 색상 모두 100% 보존
+- 라우터 import 경로 업데이트 완료
+- 기존 components/MyPage.tsx 삭제
 ```
 
 ---
@@ -2560,17 +2582,23 @@ import type { Notice } from '@/types/notice';
   - [x] 6.5-1. mockNotices.ts 확장 (캘린더 필드 추가, 17개 통합 데이터)
   - [x] 6.5-2. mockEvents.ts 폐기 (백업, import 제거)
   - [x] 6.5-3. 빌드 검증 (성공, 에러 없음)
-- [ ] Phase 7: CalendarPage 리팩토링 (0%)
-  - [ ] 7-1. Calendar 하위 컴포넌트 생성 (EventCard, CalendarHeader, WeekView, MonthView, Sidebar)
-  - [ ] 7-2. Calendar 페이지 조립 (1,415줄 → 200줄, 86% 감소)
-  - [ ] 7-3. 빌드 검증 및 기능 확인
-- [ ] Phase 8: 나머지 페이지 리팩토링 (0%)
+- [x] Phase 7: CalendarPage 리팩토링 (100%)
+  - [x] 7-1. Calendar 하위 컴포넌트 생성 (EventCard, CalendarHeader, WeekView, MonthView, Sidebar)
+  - [x] 7-2. Calendar 페이지 조립 (1,415줄 → 200줄, 86% 감소)
+  - [x] 7-3. 빌드 검증 및 기능 확인
+- [x] Phase 8: 나머지 페이지 리팩토링 (100%)
+  - [x] 8-1. Landing 페이지 분리 (HeroSection, FeatureCarousel)
+  - [x] 8-2. Login 페이지 마이그레이션
+  - [x] 8-3. SignUp 페이지 마이그레이션 및 constants 통합
+  - [x] 8-4. MyPage 마이그레이션 및 constants 통합
+  - [x] 라우터 업데이트 및 기존 파일 정리
+  - [x] 빌드 검증 성공 (npm run build, npm run dev)
 - [ ] Phase 9: ProtectedRoute 및 라우터 최종 정리 (0%)
 - [ ] Phase 10: "use client" 제거 (0%)
 - [ ] Phase 11: 테스트 및 검증 (0%)
 - [ ] Phase 12: 최종 정리 (0%)
 
-**전체 완료율**: 54.6% → 61.9% (Phase 6.5 완료)
+**전체 완료율**: 66.7% (Phase 0-8 완료, Phase 9-12 남음)
 
 ---
 
@@ -2590,37 +2618,60 @@ import type { Notice } from '@/types/notice';
 
 ---
 
-**마지막 업데이트**: 2025-10-31 (Phase 0-6.5 완료, 61.9%)
+**마지막 업데이트**: 2025-10-30 (Phase 0-8 완료, 66.7%)
 **작성자**: Claude Code + 사용자 협업
-**버전**: 3.4
+**버전**: 4.0
 
 ---
 
-## 🎯 다음 세션 (31일) 시작 가이드
+## 🎯 Phase 8 완료 요약
 
-### 준비 사항
-- [x] 서비스 컨텍스트 문서화 (📱 서비스 개요 추가)
-- [x] Phase 6.5 상세 계획 작성
-- [x] Phase 7 상세 계획 작성
-- [x] 모킹데이터 통합 전략 수립 (옵션 B 선택)
+### 완료된 작업
+✅ **8-1. Landing 페이지 분리**
+- App.tsx에서 Landing 페이지 완전 분리
+- HeroSection, FeatureCarousel 컴포넌트로 모듈화
+- Gradient 배경, Feature Carousel 자동 회전 기능 보존
 
-### 다음 세션 작업 순서
-1. **Phase 6.5 실행** (1시간)
-   - mockNotices.ts 확장 (캘린더 필드 추가)
-   - mockEvents.ts 폐기
-   - 빌드 검증
+✅ **8-2. Login 페이지**
+- `src/pages/Login/index.tsx`로 마이그레이션
+- 브랜드 색상, gradient 배경 100% 보존
 
-2. **Phase 7 실행** (6시간)
-   - 7-1. Calendar 하위 컴포넌트 생성 (4시간)
-   - 7-2. Calendar 페이지 조립 (2시간)
-   - 7-3. 빌드 검증 (30분)
+✅ **8-3. SignUp 페이지**
+- `src/pages/SignUp/index.tsx`로 마이그레이션
+- Constants 통합 (CAMPUS_OPTIONS, JOB_OPTIONS, TECH_STACK_OPTIONS)
 
-3. **문서화** (30분)
-   - REFACTORING_PLAN.md 체크 표시
-   - 이슈 기록 작성
+✅ **8-4. MyPage**
+- `src/pages/MyPage/index.tsx`로 마이그레이션
+- Constants 통합, 프로필 카드 스타일 보존
+
+✅ **라우터 및 정리**
+- 라우터 import 경로 모두 업데이트
+- 기존 components/ 폴더의 페이지 파일 삭제
+- 빌드 성공 (npm run build, npm run dev)
 
 ### 주의사항
-- Phase 6.5는 Phase 7의 전제조건 (mockNotices 통합 필수)
-- mockNotices가 Dashboard와 Calendar 모두에 사용됨 (단일 진실 공급원)
-- CalendarPage UI/색상 변경 없음 (컴포넌트 분리만 진행)
-- 월간뷰: EventCard 미사용, 제목 앞 컬러 막대 표시 유지
+⚠️ **MessageDetailModal 중복 파일 존재**
+- `src/components/MessageDetailModal.tsx` (구버전) - Calendar 페이지에서 사용 중
+- `src/components/modals/MessageDetailModal/index.tsx` (리팩토링 버전) - Dashboard 페이지에서 사용 중
+- Calendar 페이지를 리팩토링 버전으로 통일 필요 (Phase 9에서 처리 권장)
+
+---
+
+## 🎯 다음 세션 시작 가이드
+
+### 다음 작업: Phase 9 - ProtectedRoute 및 라우터 최종 정리
+1. **MessageDetailModal 통합** (30분)
+   - Calendar 페이지를 리팩토링된 MessageDetailModal로 변경
+   - 구버전 `src/components/MessageDetailModal.tsx` 삭제
+
+2. **ProtectedRoute 구현** (30분)
+   - useAuthStore와 연동한 인증 체크
+   - 미인증 시 로그인 페이지로 리다이렉트
+
+3. **라우터 최종 업데이트** (30분)
+   - ProtectedRoute로 Dashboard, Calendar, MyPage 보호
+   - 빌드 검증
+
+### 주의사항
+- MessageDetailModal 통합 시 Calendar 페이지의 props 타입 확인 필수
+- useAuthStore는 이미 생성되어 있음 (Phase 2 완료)
