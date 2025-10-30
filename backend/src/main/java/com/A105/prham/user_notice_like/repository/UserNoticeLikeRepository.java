@@ -2,11 +2,12 @@ package com.A105.prham.user_notice_like.repository;
 
 import com.A105.prham.notice.entity.Notice;
 import com.A105.prham.user.entity.User;
+import com.A105.prham.user_notice.entity.UserNotice;
 import com.A105.prham.user_notice_like.entity.UserNoticeLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserNoticeLikeRepository extends JpaRepository<UserNoticeLike, Long> {
-    boolean existsByUserAndNotice(User user, Notice notice);
+    boolean existsByUserAndUserNotice(User user, UserNotice userNotice);
 
-    UserNoticeLike findByUserAndNotice(User user, Notice notice);
+    UserNoticeLike findByUserAndUserNotice(User user, UserNotice userNotice);
 }
