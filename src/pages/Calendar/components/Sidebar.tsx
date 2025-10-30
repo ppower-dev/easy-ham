@@ -80,7 +80,8 @@ export function Sidebar({
   };
 
   return (
-    <div className="w-1/4 bg-white border-r p-5 overflow-y-auto">
+    // 너비 조절 가능
+    <div className="bg-white border-r p-5 overflow-y-auto" style={{ width: '16%', minWidth: '280px', maxWidth: '320px' }}>
       {/* 미니 달력 */}
       <Card className="p-4 mb-6 shadow-sm">
         {/* 헤더 */}
