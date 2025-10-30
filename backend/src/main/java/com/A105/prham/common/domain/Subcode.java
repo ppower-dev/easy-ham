@@ -1,6 +1,6 @@
-package com.A105.prham.subcode.domain;
+package com.A105.prham.common.domain;
 
-import com.A105.prham.maincode.domain.Maincode;
+import com.A105.prham.common.domain.Maincode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

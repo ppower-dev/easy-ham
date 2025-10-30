@@ -1,4 +1,4 @@
-package com.A105.prham.maincode.domain;
+package com.A105.prham.common.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
