@@ -3,7 +3,6 @@
  */
 
 export { getMockNotices, getMockJobPostings } from './mockNotices';
-export { getMockEvents } from './mockEvents';
 export { getMockNotifications } from './mockNotifications';
 export { getMockFeatures } from './mockFeatures';
 export { getMockUser } from './mockUser';

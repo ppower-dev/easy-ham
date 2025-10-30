@@ -30,4 +30,12 @@ export interface Notice {
   mattermostUrl?: string;
   createdAt: string;
   updatedAt: string;
+
+  // 캘린더 필드
+  startDate?: string | Date;      // 이벤트/공지 시작일
+  endDate?: string | Date;        // 다중일 이벤트 종료일
+  startTime?: string;             // 시작 시간 (예: "14:00")
+  endTime?: string;               // 종료 시간 (예: "16:00")
+  location?: string;              // 행사 장소 (예: "대강당")
+  allDay?: boolean;               // 종일 여부
 }

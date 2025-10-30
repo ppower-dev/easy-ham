@@ -1912,8 +1912,8 @@ export interface Notice {
 ```
 
 **작업**:
-- [ ] `src/types/notice.ts` 수정 (선택적 필드 추가)
-- [ ] `src/services/mock/mockNotices.ts` 확장
+- [x] `src/types/notice.ts` 수정 (선택적 필드 추가)
+- [x] `src/services/mock/mockNotices.ts` 확장
   - 기존 6개 공지에 날짜/시간 정보 추가
   - mockEvents.ts의 11개 이벤트 데이터를 mockNotices로 병합
   - ID 충돌 해결 (1-11 → 1-17로 재할당)
@@ -1921,7 +1921,7 @@ export interface Notice {
 **이슈 기록**:
 ```
 날짜: 2025-10-31
-작성자: [다음 세션]
+작성자: Claude Code
 이슈: 없음
 해결: mockNotices 확장 완료, 17개 통합 공지 데이터 생성
 ```
@@ -1929,33 +1929,33 @@ export interface Notice {
 #### ✅ 6.5-2. mockEvents.ts 폐기
 
 **작업**:
-- [ ] `src/services/mock/mockEvents.ts` 백업
+- [x] `src/services/mock/mockEvents.ts` 백업
   ```bash
   mv src/services/mock/mockEvents.ts src/services/mock/mockEvents.backup.ts
   ```
-- [ ] `src/services/mock/index.ts` 업데이트 (mockEvents export 제거)
-- [ ] mockEvents import 제거 (CalendarPage 등)
+- [x] `src/services/mock/index.ts` 업데이트 (mockEvents export 제거)
+- [x] mockEvents import 제거 (events.ts API 서비스 업데이트)
 
 **이슈 기록**:
 ```
 날짜: 2025-10-31
-작성자: [다음 세션]
+작성자: Claude Code
 이슈: 없음
-해결: mockEvents.ts 폐기, mockNotices로 완전 통합
+해결: mockEvents.ts 폐기, mockNotices로 완전 통합, events API 서비스 업데이트
 ```
 
 #### ✅ 6.5-3. 빌드 검증
 
-- [ ] `npm run build` 성공 확인
-- [ ] TypeScript 에러 없음 확인
-- [ ] Dashboard, 기타 페이지에서 mockNotices import 정상 확인
+- [x] `npm run build` 성공 확인
+- [x] TypeScript 에러 없음 확인
+- [x] mockNotices import 정상 확인 (events API에서 사용)
 
 **이슈 기록**:
 ```
 날짜: 2025-10-31
-작성자: [다음 세션]
+작성자: Claude Code
 이슈: 없음
-해결: 빌드 성공, 타입 호환 확인
+해결: 빌드 성공 (8.16s), 타입 호환 확인, 경고 없음
 ```
 
 ---
@@ -2493,10 +2493,10 @@ import type { Notice } from '@/types/notice';
   - [x] 6-1. NoticeCard, NoticeList, SearchFilterBar, MiniCalendar, JobPostingsWidget (5개 컴포넌트)
   - [x] 6-2. DashboardPage 조립 (824줄 → 130줄, 84% 감소)
   - [x] 라우터 업데이트 및 빌드 성공
-- [ ] Phase 6.5: 모킹데이터 통합 및 타입 확장 (0%)
-  - [ ] 6.5-1. mockNotices.ts 확장 (캘린더 필드 추가)
-  - [ ] 6.5-2. mockEvents.ts 폐기
-  - [ ] 6.5-3. 빌드 검증
+- [x] Phase 6.5: 모킹데이터 통합 및 타입 확장 (100%)
+  - [x] 6.5-1. mockNotices.ts 확장 (캘린더 필드 추가, 17개 통합 데이터)
+  - [x] 6.5-2. mockEvents.ts 폐기 (백업, import 제거)
+  - [x] 6.5-3. 빌드 검증 (성공, 에러 없음)
 - [ ] Phase 7: CalendarPage 리팩토링 (0%)
   - [ ] 7-1. Calendar 하위 컴포넌트 생성 (EventCard, CalendarHeader, WeekView, MonthView, Sidebar)
   - [ ] 7-2. Calendar 페이지 조립 (1,415줄 → 200줄, 86% 감소)
@@ -2507,7 +2507,7 @@ import type { Notice } from '@/types/notice';
 - [ ] Phase 11: 테스트 및 검증 (0%)
 - [ ] Phase 12: 최종 정리 (0%)
 
-**전체 완료율**: 54.6% → (6.5, 7 예상) 70% 이상
+**전체 완료율**: 54.6% → 61.9% (Phase 6.5 완료)
 
 ---
 
@@ -2527,9 +2527,9 @@ import type { Notice } from '@/types/notice';
 
 ---
 
-**마지막 업데이트**: 2025-10-30 (Phase 0-6 완료, Phase 6.5-7 계획 추가)
+**마지막 업데이트**: 2025-10-31 (Phase 0-6.5 완료, 61.9%)
 **작성자**: Claude Code + 사용자 협업
-**버전**: 3.3
+**버전**: 3.4
 
 ---
 
