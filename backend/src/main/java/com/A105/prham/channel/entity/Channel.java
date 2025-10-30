@@ -1,15 +1,14 @@
-package com.A105.prham.channel.domain;
+package com.A105.prham.channel.entity;
 
 import com.A105.prham.common.domain.BaseTimeEntity;
 import com.A105.prham.notice.entity.Notice;
 import com.A105.prham.team.domain.Team;
-import com.A105.prham.user_notice_like.domain.UserNoticeLike;
+import com.A105.prham.user_notice_like.entity.UserNoticeLike;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity

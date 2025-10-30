@@ -1,4 +1,4 @@
-package com.A105.prham.user.domain;
+package com.A105.prham.user.entity;
 
 import com.A105.prham.auth.entity.RefreshToken;
 import com.A105.prham.campus.entity.Campus;
