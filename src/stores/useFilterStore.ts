@@ -27,9 +27,9 @@ interface FilterState {
 }
 
 const initialState = {
-  selectedChannels: [],
-  selectedAcademicCategories: [] as Subcategory[],
-  selectedCareerCategories: [] as Subcategory[],
+  selectedChannels: ['13기-공지사항', '13기-취업공고', '13기-취업정보', '서울1반-공지사항'],
+  selectedAcademicCategories: ['할일', '특강', '정보', '이벤트'] as Subcategory[],
+  selectedCareerCategories: ['할일', '특강', '정보', '이벤트'] as Subcategory[],
   searchQuery: '',
   periodFilter: '전체' as PeriodFilter,
   sortBy: 'latest' as SortOption,

@@ -1750,37 +1750,63 @@ src/
 
 #### ✅ 6-1. Dashboard 하위 컴포넌트 생성
 **파일**: `src/pages/Dashboard/components/NoticeCard.tsx`
-- [ ] twin.macro 사용
+- [x] NoticeCard 컴포넌트 (북마크, 완료 버튼 포함)
 
 **파일**: `src/pages/Dashboard/components/NoticeList.tsx`
+- [x] NoticeList 컴포넌트 (공지사항 그리드 렌더링)
+
 **파일**: `src/pages/Dashboard/components/SearchFilterBar.tsx`
+- [x] SearchFilterBar 컴포넌트 (검색, 필터, 정렬 통합)
+
 **파일**: `src/pages/Dashboard/components/MiniCalendar.tsx`
+- [x] MiniCalendar 컴포넌트 (달력 위젯)
+
 **파일**: `src/pages/Dashboard/components/JobPostingsWidget.tsx`
+- [x] JobPostingsWidget 컴포넌트 (채용공고 위젯)
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
-
-해결:
+날짜: 2025-10-30
+작성자: Claude Code
+이슈: 없음
+해결: 모든 하위 컴포넌트 생성 완료 (5개 컴포넌트)
 ```
 
 #### ✅ 6-2. Dashboard 페이지 조립
 **파일**: `src/pages/Dashboard/index.tsx`
-- [ ] PageLayout 사용
-- [ ] useNoticeFilter 훅
-- [ ] Zustand stores 사용
-- [ ] 하위 컴포넌트 조합
-- [ ] 824줄 → 150줄 목표
+- [x] PageLayout 사용
+- [x] useNoticeFilter 훅 적용
+- [x] useFilterStore (Zustand) 사용
+- [x] 하위 컴포넌트 조합
+- [x] 824줄 → 130줄 달성 (약 84% 줄임)
+- [x] 빌드 성공 확인
+
+**라우터 업데이트**:
+- [x] `src/router/index.tsx` 업데이트 (새 경로로 import 변경)
+- [x] 기존 DashboardPage.tsx를 DashboardPage.backup.tsx로 이름 변경
+
+**Mock 데이터 인덱스**:
+- [x] `src/services/mock/index.ts` 생성 (모든 mock 함수 export)
 
 **이슈 기록**:
 ```
-날짜:
-작성자:
-이슈:
+날짜: 2025-10-30
+작성자: Claude Code
 
-해결:
+이슈 #1: 초기에 mock 폴더 import 에러 발생
+  - 원인: Vite가 폴더를 직접 import 불가
+  - 해결: src/services/mock/index.ts 생성으로 폴더 export 문제 해결
+         빌드 성공 (5.78초), 개발 서버 정상 동작 확인
+
+이슈 #2: 대시보드 페이지 렌더링 시 "notices.map is not a function" 에러
+  - 원인: useNoticeFilter 훅이 객체 반환 ({ filteredNotices, totalCount, hasFilters })
+         하지만 DashboardPage에서 직접 배열로 사용하려고 함
+  - 해결: const { filteredNotices } = useNoticeFilter(notices) 로 수정
+         FilterStore의 초기값을 설정하여 첫 로드 시 빈 필터 상태 해결:
+         - selectedChannels: 4개 채널 기본값
+         - selectedAcademicCategories: 4개 카테고리 기본값
+         - selectedCareerCategories: 4개 카테고리 기본값
+         빌드 성공 (5.93초), 페이지 렌더링 정상 확인
 ```
 
 ---
@@ -2248,7 +2274,10 @@ import type { Notice } from '@/types/notice';
   - [x] 5-2. useCalendarEvents 훅
   - [x] 5-3. useDateNavigation 훅
   - [x] 5-4. useAuth 훅
-- [ ] Phase 6: DashboardPage 리팩토링 (0%)
+- [x] Phase 6: DashboardPage 리팩토링 (100%)
+  - [x] 6-1. NoticeCard, NoticeList, SearchFilterBar, MiniCalendar, JobPostingsWidget (5개 컴포넌트)
+  - [x] 6-2. DashboardPage 조립 (824줄 → 130줄, 84% 감소)
+  - [x] 라우터 업데이트 및 빌드 성공
 - [ ] Phase 7: CalendarPage 리팩토링 (0%)
 - [ ] Phase 8: 나머지 페이지 리팩토링 (0%)
 - [ ] Phase 9: ProtectedRoute 및 라우터 최종 정리 (0%)
@@ -2256,7 +2285,7 @@ import type { Notice } from '@/types/notice';
 - [ ] Phase 11: 테스트 및 검증 (0%)
 - [ ] Phase 12: 최종 정리 (0%)
 
-**전체 완료율**: 46.2% (Phase 0-5 완료)
+**전체 완료율**: 54.6% (Phase 0-6 완료)
 
 ---
 
@@ -2276,6 +2305,6 @@ import type { Notice } from '@/types/notice';
 
 ---
 
-**마지막 업데이트**: 2025-10-30 (Phase 0-5 완료)
+**마지막 업데이트**: 2025-10-30 (Phase 0-6 완료)
 **작성자**: Claude Code
-**버전**: 3.1
+**버전**: 3.2
