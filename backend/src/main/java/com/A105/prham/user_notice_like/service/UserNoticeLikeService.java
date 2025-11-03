@@ -50,6 +50,7 @@ public class UserNoticeLikeService {
                 .maincode(userNotice.getMaincode())
                 .channel(userNotice.getChannel())
                 .post(userNotice.getPost())
+                .userNotice(userNotice)
                 .isLiked(true)
                 .build();
 

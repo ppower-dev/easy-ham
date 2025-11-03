@@ -60,7 +60,7 @@ public class UserNotice extends BaseTimeEntity {
     @Column(name = "is_completed", nullable = false)
     private Boolean isCompleted;
 
-    @OneToMany(mappedBy = "usernotice", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "userNotice", fetch = FetchType.LAZY)
     private List<UserNoticeLike> userNoticeLikes = new ArrayList<>();
 
     @Builder
