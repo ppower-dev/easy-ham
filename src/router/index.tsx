@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { ProtectedRoute } from './ProtectedRoute';
 import LandingPage from '../pages/Landing';
 import { LoginPage } from '../pages/Login';
 import { SignUpPage } from '../pages/SignUp';
@@ -21,14 +22,26 @@ export const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <DashboardPage />,
+    element: (
+      <ProtectedRoute>
+        <DashboardPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/calendar',
-    element: <CalendarPage />,
+    element: (
+      <ProtectedRoute>
+        <CalendarPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: '/mypage',
-    element: <MyPage />,
+    element: (
+      <ProtectedRoute>
+        <MyPage />
+      </ProtectedRoute>
+    ),
   },
 ]);

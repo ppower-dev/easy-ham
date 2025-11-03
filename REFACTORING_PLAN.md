@@ -2208,7 +2208,7 @@ src/pages/Calendar/
 
 #### ✅ 9-1. ProtectedRoute 컴포넌트
 **파일**: `src/router/ProtectedRoute.tsx`
-- [ ] 인증 확인
+- [x] 인증 확인
   ```typescript
   import { Navigate } from 'react-router-dom';
   import { useAuthStore } from '@/stores/useAuthStore';
@@ -2239,8 +2239,8 @@ src/pages/Calendar/
 
 #### ✅ 9-2. Router 최종 업데이트
 **파일**: `src/router/index.tsx`
-- [ ] 모든 페이지를 새 경로로 업데이트
-- [ ] ProtectedRoute 적용
+- [x] 모든 페이지를 새 경로로 업데이트
+- [x] ProtectedRoute 적용
   ```typescript
   import { createBrowserRouter } from 'react-router-dom';
   import { ProtectedRoute } from './ProtectedRoute';
@@ -2593,12 +2593,15 @@ import type { Notice } from '@/types/notice';
   - [x] 8-4. MyPage 마이그레이션 및 constants 통합
   - [x] 라우터 업데이트 및 기존 파일 정리
   - [x] 빌드 검증 성공 (npm run build, npm run dev)
-- [ ] Phase 9: ProtectedRoute 및 라우터 최종 정리 (0%)
+- [x] Phase 9: ProtectedRoute 및 라우터 최종 정리 (100%)
+  - [x] 9-1. ProtectedRoute 컴포넌트 생성
+  - [x] 9-2. Router에 ProtectedRoute 적용
+  - [x] 빌드 및 개발 서버 검증 성공
 - [ ] Phase 10: "use client" 제거 (0%)
 - [ ] Phase 11: 테스트 및 검증 (0%)
 - [ ] Phase 12: 최종 정리 (0%)
 
-**전체 완료율**: 66.7% (Phase 0-8 완료, Phase 9-12 남음)
+**전체 완료율**: 75.0% (Phase 0-9 완료, Phase 10-12 남음)
 
 ---
 
@@ -2618,9 +2621,45 @@ import type { Notice } from '@/types/notice';
 
 ---
 
-**마지막 업데이트**: 2025-10-30 (Phase 0-8 완료, 66.7%)
+**마지막 업데이트**: 2025-11-03 (Phase 0-9 완료, 75.0%)
 **작성자**: Claude Code + 사용자 협업
-**버전**: 4.0
+**버전**: 4.1
+
+---
+
+## 🎯 Phase 9 완료 요약
+
+### 완료된 작업
+✅ **9-1. ProtectedRoute 컴포넌트 생성**
+- `src/router/ProtectedRoute.tsx` 생성
+- useAuthStore와 연동한 인증 체크
+- 미인증 시 `/login`으로 자동 리다이렉트
+
+✅ **9-2. Router 최종 업데이트**
+- `src/router/index.tsx` 업데이트
+- ProtectedRoute로 Dashboard, Calendar, MyPage 보호
+- 인증이 필요한 페이지와 공개 페이지 명확히 분리
+
+✅ **빌드 및 검증**
+- 빌드 성공 (npm run build)
+- 개발 서버 정상 동작 확인 (npm run dev)
+- TypeScript 에러 없음
+
+### 주요 변경사항
+```typescript
+// ProtectedRoute로 보호되는 페이지
+- /dashboard (Dashboard 페이지)
+- /calendar (Calendar 페이지)
+- /mypage (MyPage)
+
+// 공개 페이지
+- / (Landing 페이지)
+- /login (Login 페이지)
+- /signup (SignUp 페이지)
+```
+
+### 다음 작업
+Phase 10에서 "use client" 지시어를 제거하여 Vite + React 프로젝트에 맞게 최적화할 예정입니다.
 
 ---
 
@@ -2659,19 +2698,20 @@ import type { Notice } from '@/types/notice';
 
 ## 🎯 다음 세션 시작 가이드
 
-### 다음 작업: Phase 9 - ProtectedRoute 및 라우터 최종 정리
-1. **MessageDetailModal 통합** (30분)
-   - Calendar 페이지를 리팩토링된 MessageDetailModal로 변경
-   - 구버전 `src/components/MessageDetailModal.tsx` 삭제
+### 다음 작업: Phase 10 - "use client" 제거
+1. **일괄 제거** (20분)
+   - UI 컴포넌트 36개 파일에서 "use client" 지시어 제거
+   - Git Bash에서 실행:
+     ```bash
+     find src/components/ui -type f -name "*.tsx" -exec sed -i "1{/^['\"]use client['\"]/d;}" {} +
+     ```
+   - 수동 확인 및 빌드 검증
 
-2. **ProtectedRoute 구현** (30분)
-   - useAuthStore와 연동한 인증 체크
-   - 미인증 시 로그인 페이지로 리다이렉트
-
-3. **라우터 최종 업데이트** (30분)
-   - ProtectedRoute로 Dashboard, Calendar, MyPage 보호
-   - 빌드 검증
+2. **이유**
+   - 이 프로젝트는 Vite + React 기반 (CSR)
+   - "use client"는 Next.js의 Server Component 전용 지시어
+   - Vite 프로젝트에서는 불필요하며 혼란을 야기할 수 있음
 
 ### 주의사항
-- MessageDetailModal 통합 시 Calendar 페이지의 props 타입 확인 필수
-- useAuthStore는 이미 생성되어 있음 (Phase 2 완료)
+- sed 명령어는 Git Bash에서 실행 (Windows CMD에서는 동작하지 않음)
+- 제거 후 반드시 빌드 검증 필요 (npm run build)
