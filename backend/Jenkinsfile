@@ -5,10 +5,10 @@ pipeline {
     environment {
         PROJECT_DIR = '.'
         FRONTEND_DIR = "${PROJECT_DIR}/frontend"
-        BACKEND_DIR = "${PROJECT_DIR}/BE/twenty"
-        DOCKER_FRONTEND_IMAGE = 'yes130/twenty-fe'
-        DOCKER_BACKEND_IMAGE = 'yes130/twenty-be'
-        DOCKER_HUB_CREDENTIAL_ID = 'dockerhub-jenkins'
+        BACKEND_DIR = "${PROJECT_DIR}/BE/pyeonriham"
+        DOCKER_FRONTEND_IMAGE = 'yes130/pyeonriham-fe'
+        DOCKER_BACKEND_IMAGE = 'yes130/pyeonriham-be'
+        DOCKER_HUB_CREDENTIAL_ID = 'hyerin'
         IMAGE_TAG = 'latest'
         // VITE_APP_BASE_URL = 'TBD'  // 나중에 설정
     }
@@ -17,9 +17,9 @@ pipeline {
         stage('Checkout') {
             steps {
                 cleanWs()
-                git url: 'https://lab.ssafy.com/s13-blochain-transaction-sub1/S13P21A208.git', 
+                git url: 'https://lab.ssafy.com/s13-final/S13P31A105.git', 
                     branch: 'release', 
-                    credentialsId: 'gitlab-jenkins'
+                    credentialsId: 'jenkins-token'
             }
         }
         
