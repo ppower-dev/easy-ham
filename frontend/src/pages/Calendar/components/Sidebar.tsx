@@ -58,12 +58,8 @@ export function Sidebar({
 }: SidebarProps) {
   const miniCalendarWeeks = getMiniCalendarDays();
 
-  const getCategoryButtonColor = (
-    subcategory: string,
-    isSelected: boolean,
-  ) => {
-    if (!isSelected)
-      return "bg-white text-gray-600 border-gray-200";
+  const getCategoryButtonColor = (subcategory: string, isSelected: boolean) => {
+    if (!isSelected) return "bg-white text-gray-600 border-gray-200";
 
     switch (subcategory) {
       case "할일":
@@ -72,7 +68,7 @@ export function Sidebar({
         return "bg-blue-100 text-blue-700 border-blue-300";
       case "정보":
         return "bg-green-100 text-green-700 border-green-300";
-      case "이벤트":
+      case "행사":
         return "bg-purple-100 text-purple-700 border-purple-300";
       default:
         return "bg-gray-100 text-gray-700 border-gray-200";
@@ -81,7 +77,10 @@ export function Sidebar({
 
   return (
     // 너비 조절 가능
-    <div className="bg-white border-r p-5 overflow-y-auto" style={{ width: '16%', minWidth: '280px', maxWidth: '320px' }}>
+    <div
+      className="bg-white border-r p-5 overflow-y-auto"
+      style={{ width: "16%", minWidth: "280px", maxWidth: "320px" }}
+    >
       {/* 미니 달력 */}
       <Card className="p-4 mb-6 shadow-sm">
         {/* 헤더 */}
@@ -98,10 +97,7 @@ export function Sidebar({
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <div
-            className="text-sm"
-            style={{ fontWeight: 700 }}
-          >
+          <div className="text-sm" style={{ fontWeight: 700 }}>
             {formatMonthYear(currentDate)}
           </div>
           <Button
@@ -133,33 +129,25 @@ export function Sidebar({
         >
           {/* 요일 헤더 */}
           <div className="grid grid-cols-7 gap-1 mb-1">
-            {["일", "월", "화", "수", "목", "금", "토"].map(
-              (day, idx) => (
-                <div
-                  key={day}
-                  className="text-center text-[10px] text-gray-500 h-6 flex items-center justify-center"
-                  style={{
-                    color:
-                      idx === 0
-                        ? "#ef4444"
-                        : idx === 6
-                          ? "#3b82f6"
-                          : undefined,
-                  }}
-                >
-                  {day}
-                </div>
-              ),
-            )}
+            {["일", "월", "화", "수", "목", "금", "토"].map((day, idx) => (
+              <div
+                key={day}
+                className="text-center text-[10px] text-gray-500 h-6 flex items-center justify-center"
+                style={{
+                  color:
+                    idx === 0 ? "#ef4444" : idx === 6 ? "#3b82f6" : undefined,
+                }}
+              >
+                {day}
+              </div>
+            ))}
           </div>
 
           {/* 날짜 */}
           {miniCalendarWeeks.map((week, weekIdx) => {
             const isSelectedWeek =
               viewMode === "week" &&
-              week.some((d) =>
-                selectedWeek.some((sd) => isSameDay(d, sd)),
-              );
+              week.some((d) => selectedWeek.some((sd) => isSameDay(d, sd)));
 
             return (
               <div
@@ -170,20 +158,15 @@ export function Sidebar({
                 style={
                   isSelectedWeek
                     ? {
-                        backgroundColor:
-                          "rgba(255, 138, 61, 0.08)",
+                        backgroundColor: "rgba(255, 138, 61, 0.08)",
                       }
                     : {}
                 }
               >
                 {week.map((date, dayIdx) => {
-                  const hasEvents =
-                    getEventsForDate(date).length > 0;
+                  const hasEvents = getEventsForDate(date).length > 0;
                   const today = isToday(date);
-                  const currentMonth = isCurrentMonth(
-                    date,
-                    currentDate,
-                  );
+                  const currentMonth = isCurrentMonth(date, currentDate);
 
                   return (
                     <div
@@ -192,20 +175,16 @@ export function Sidebar({
                         today
                           ? "bg-[var(--brand-orange)] text-white"
                           : currentMonth
-                            ? "text-gray-700 hover:bg-gray-100"
-                            : "text-gray-300"
+                          ? "text-gray-700 hover:bg-gray-100"
+                          : "text-gray-300"
                       }`}
                       style={{
                         color:
-                          !today &&
-                          currentMonth &&
-                          dayIdx === 0
+                          !today && currentMonth && dayIdx === 0
                             ? "#ef4444"
-                            : !today &&
-                                currentMonth &&
-                                dayIdx === 6
-                              ? "#3b82f6"
-                              : undefined,
+                            : !today && currentMonth && dayIdx === 6
+                            ? "#3b82f6"
+                            : undefined,
                       }}
                       onClick={() => {
                         if (viewMode === "week") {
@@ -257,11 +236,7 @@ export function Sidebar({
                   onClick={() => onToggleChannel(channel)}
                   className="w-full h-8 px-3 rounded-md text-xs text-left flex items-center gap-2 transition-colors hover:bg-gray-100"
                   style={{
-                    fontWeight: selectedChannels.includes(
-                      channel,
-                    )
-                      ? 700
-                      : 500,
+                    fontWeight: selectedChannels.includes(channel) ? 700 : 500,
                   }}
                 >
                   <div
@@ -296,38 +271,27 @@ export function Sidebar({
         <div>
           <div className="flex items-center gap-1.5 mb-2">
             <GraduationCap className="w-3.5 h-3.5 text-gray-500" />
-            <span
-              className="text-xs text-gray-600"
-              style={{ fontWeight: 700 }}
-            >
+            <span className="text-xs text-gray-600" style={{ fontWeight: 700 }}>
               학사
             </span>
           </div>
           <div className="grid grid-cols-2 gap-1.5">
-            {["할일", "특강", "정보", "이벤트"].map(
-              (category) => (
-                <button
-                  key={category}
-                  onClick={() =>
-                    onToggleCategory(category, true)
-                  }
-                  className={`h-8 rounded-md text-xs flex items-center justify-center gap-1 border transition-colors ${getCategoryButtonColor(
-                    category,
-                    selectedAcademicCategories.includes(
-                      category,
-                    ),
-                  )}`}
-                  style={{ fontWeight: 500 }}
-                >
-                  {selectedAcademicCategories.includes(
-                    category,
-                  ) && (
-                    <span className="text-[10px]">✓</span>
-                  )}
-                  {category}
-                </button>
-              ),
-            )}
+            {["할일", "특강", "정보", "행사"].map((category) => (
+              <button
+                key={category}
+                onClick={() => onToggleCategory(category, true)}
+                className={`h-8 rounded-md text-xs flex items-center justify-center gap-1 border transition-colors ${getCategoryButtonColor(
+                  category,
+                  selectedAcademicCategories.includes(category)
+                )}`}
+                style={{ fontWeight: 500 }}
+              >
+                {selectedAcademicCategories.includes(category) && (
+                  <span className="text-[10px]">✓</span>
+                )}
+                {category}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -335,38 +299,27 @@ export function Sidebar({
         <div>
           <div className="flex items-center gap-1.5 mb-2">
             <Briefcase className="w-3.5 h-3.5 text-gray-500" />
-            <span
-              className="text-xs text-gray-600"
-              style={{ fontWeight: 700 }}
-            >
+            <span className="text-xs text-gray-600" style={{ fontWeight: 700 }}>
               취업
             </span>
           </div>
           <div className="grid grid-cols-2 gap-1.5">
-            {["할일", "특강", "정보", "이벤트"].map(
-              (category) => (
-                <button
-                  key={category}
-                  onClick={() =>
-                    onToggleCategory(category, false)
-                  }
-                  className={`h-8 rounded-md text-xs flex items-center justify-center gap-1 border transition-colors ${getCategoryButtonColor(
-                    category,
-                    selectedCareerCategories.includes(
-                      category,
-                    ),
-                  )}`}
-                  style={{ fontWeight: 500 }}
-                >
-                  {selectedCareerCategories.includes(
-                    category,
-                  ) && (
-                    <span className="text-[10px]">✓</span>
-                  )}
-                  {category}
-                </button>
-              ),
-            )}
+            {["할일", "특강", "정보", "행사"].map((category) => (
+              <button
+                key={category}
+                onClick={() => onToggleCategory(category, false)}
+                className={`h-8 rounded-md text-xs flex items-center justify-center gap-1 border transition-colors ${getCategoryButtonColor(
+                  category,
+                  selectedCareerCategories.includes(category)
+                )}`}
+                style={{ fontWeight: 500 }}
+              >
+                {selectedCareerCategories.includes(category) && (
+                  <span className="text-[10px]">✓</span>
+                )}
+                {category}
+              </button>
+            ))}
           </div>
         </div>
 

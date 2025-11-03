@@ -33,10 +33,7 @@ export function WeekView({
   isToday,
   isSameDay,
 }: WeekViewProps) {
-  const getCategoryColor = (
-    category: string,
-    subcategory: string,
-  ) => {
+  const getCategoryColor = (category: string, subcategory: string) => {
     // 학사/취업 구분 없이 서브카테고리로만 구분 (대시보드와 동일)
     switch (subcategory) {
       case "할일":
@@ -45,7 +42,7 @@ export function WeekView({
         return "bg-blue-100 text-blue-700 border-blue-300";
       case "정보":
         return "bg-green-100 text-green-700 border-green-300";
-      case "이벤트":
+      case "행사":
         return "bg-purple-100 text-purple-700 border-purple-300";
       default:
         return "bg-gray-100 text-gray-700 border-gray-200";
@@ -70,27 +67,15 @@ export function WeekView({
                 style={{
                   fontWeight: 500,
                   color:
-                    idx === 0
-                      ? "#ef4444"
-                      : idx === 6
-                        ? "#3b82f6"
-                        : undefined,
+                    idx === 0 ? "#ef4444" : idx === 6 ? "#3b82f6" : undefined,
                 }}
               >
-                {
-                  [
-                    "일",
-                    "월",
-                    "화",
-                    "수",
-                    "목",
-                    "금",
-                    "토",
-                  ][day.getDay()]
-                }
+                {["일", "월", "화", "수", "목", "금", "토"][day.getDay()]}
               </div>
               <div
-                className={`text-base ${today ? "text-[var(--brand-orange)]" : ""}`}
+                className={`text-base ${
+                  today ? "text-[var(--brand-orange)]" : ""
+                }`}
                 style={{ fontWeight: 700 }}
               >
                 {formatDate(day)}
@@ -110,9 +95,7 @@ export function WeekView({
             <div
               key={idx}
               className={`border-r last:border-r-0 p-3 overflow-y-auto ${
-                today
-                  ? "bg-blue-50 bg-opacity-30"
-                  : ""
+                today ? "bg-blue-50 bg-opacity-30" : ""
               }`}
             >
               {dayEvents.length === 0 ? (
@@ -125,33 +108,27 @@ export function WeekView({
                     <Card
                       key={event.id}
                       className="p-2.5 cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() =>
-                        onEventClick(event)
-                      }
+                      onClick={() => onEventClick(event)}
                     >
                       {/* 카테고리 라벨 */}
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1">
                           <Badge
-                            className={`text-[10px] px-1.5 py-0 border ${getCategoryColor(event.category, event.subcategory)}`}
+                            className={`text-[10px] px-1.5 py-0 border ${getCategoryColor(
+                              event.category,
+                              event.subcategory
+                            )}`}
                           >
-                            {event.category}/
-                            {event.subcategory}
+                            {event.category}/{event.subcategory}
                           </Badge>
-                          {!isSameDay(
-                            event.startDate,
-                            event.endDate,
-                          ) && (
+                          {!isSameDay(event.startDate, event.endDate) && (
                             <span
                               className="text-[10px] text-gray-400"
                               style={{
                                 fontWeight: 500,
                               }}
                             >
-                              {formatDate(
-                                event.startDate,
-                              )}
-                              ~
+                              {formatDate(event.startDate)}~
                             </span>
                           )}
                         </div>
@@ -159,18 +136,16 @@ export function WeekView({
                       </div>
 
                       {/* 시간 */}
-                      {event.startTime &&
-                        event.endTime && (
-                          <div
-                            className="text-sm"
-                            style={{
-                              fontWeight: 700,
-                            }}
-                          >
-                            {event.startTime}~
-                            {event.endTime}
-                          </div>
-                        )}
+                      {event.startTime && event.endTime && (
+                        <div
+                          className="text-sm"
+                          style={{
+                            fontWeight: 700,
+                          }}
+                        >
+                          {event.startTime}~{event.endTime}
+                        </div>
+                      )}
 
                       {/* 제목 */}
                       <div
