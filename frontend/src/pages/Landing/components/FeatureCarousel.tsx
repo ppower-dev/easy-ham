@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Sparkles, Bell, Search, Zap } from 'lucide-react';
 import { ImageWithFallback } from '@/components/figma/ImageWithFallback';
@@ -63,15 +63,15 @@ export function FeatureCarousel({ featuresRef }: FeatureCarouselProps) {
   return (
     <section
       ref={featuresRef}
-      className="h-screen flex items-center justify-center bg-white px-8"
+      className="min-h-screen flex items-center justify-center bg-white px-4 sm:px-6 md:px-8 py-16 md:py-20"
     >
       <div className="max-w-7xl w-full mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Left - Text Content */}
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--brand-orange-light)] rounded-full">
-              <Icon className="w-5 h-5 text-[var(--brand-orange)]" />
-              <span className="text-sm text-gray-800" style={{ fontWeight: 600 }}>
+          <div className="space-y-4 md:space-y-6 pt-4 sm:pt-6 md:pt-0">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[var(--brand-orange-light)] rounded-full">
+              <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--brand-orange)]" />
+              <span className="text-xs sm:text-sm text-gray-800" style={{ fontWeight: 600 }}>
                 주요 기능 {currentFeature + 1} / {features.length}
               </span>
             </div>
@@ -128,18 +128,14 @@ export function FeatureCarousel({ featuresRef }: FeatureCarouselProps) {
           </div>
 
           {/* Right - Image */}
-          <div className="relative">
-            <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-gray-100">
+          <div className="relative mt-8 lg:mt-0 max-w-md mx-auto lg:max-w-none">
+            <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-gray-100 mb-6">
               <ImageWithFallback
                 src={feature.image}
                 alt={feature.title}
                 className="w-full h-full object-cover"
               />
             </div>
-
-            {/* Decorative elements */}
-            <div className="absolute -top-6 -right-6 w-24 h-24 bg-[var(--brand-orange-light)] rounded-full blur-3xl opacity-50"></div>
-            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-[var(--brand-orange)] rounded-full blur-3xl opacity-30"></div>
           </div>
         </div>
       </div>
