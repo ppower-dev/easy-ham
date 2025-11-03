@@ -16,7 +16,6 @@ export const authApi = {
   }): Promise<User> => {
     // TODO: 실제 API 호출로 대체
     // return apiClient.post<User>('/auth/login', credentials).then(res => res.data);
-    console.log('Login with:', credentials);
     return Promise.resolve(getMockUser());
   },
 

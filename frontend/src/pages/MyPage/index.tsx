@@ -103,14 +103,6 @@ export function MyPage() {
   // 저장 핸들러
   const handleSave = () => {
     // TODO: 백엔드에 저장
-    console.log('저장:', {
-      nickname,
-      campus,
-      classNumber,
-      selectedJobs,
-      selectedTechStack,
-      subscribedKeywords
-    });
     alert('프로필이 저장되었습니다!');
   };
 

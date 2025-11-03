@@ -44,12 +44,6 @@ export function SignUpPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: 백엔드에 추가 정보 전송
-    console.log('회원가입 정보:', {
-      campus,
-      classNumber,
-      desiredJobs: selectedJobs,
-      techStack: selectedTechStack,
-    });
     navigate('/dashboard');
   };
 

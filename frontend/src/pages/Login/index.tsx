@@ -10,7 +10,6 @@ export function LoginPage() {
     // 1. SSO 팝업 열림
     // 2. 백엔드가 토큰 받아서 유저 확인
     // 3. 백엔드 응답에 따라 분기
-    console.log('SSAFY SSO 로그인 시작');
 
     // 와이어프레임용: 항상 최초 로그인으로 간주
     const isFirstLogin = true;
