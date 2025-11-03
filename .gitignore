@@ -198,5 +198,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+build/
+
 # AI Tools
 CLAUDE.md
