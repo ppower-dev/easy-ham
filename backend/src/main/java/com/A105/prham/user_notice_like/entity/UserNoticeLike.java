@@ -1,12 +1,13 @@
-package com.A105.prham.user_notice_like.domain;
+package com.A105.prham.user_notice_like.entity;
 
-import com.A105.prham.channel.domain.Channel;
+import com.A105.prham.channel.entity.Channel;
 import com.A105.prham.common.domain.BaseTimeEntity;
 import com.A105.prham.common.domain.Maincode;
 import com.A105.prham.notice.entity.Notice;
 import com.A105.prham.common.domain.Subcode;
-import com.A105.prham.team.domain.Team;
-import com.A105.prham.user.domain.User;
+import com.A105.prham.team.entity.Team;
+import com.A105.prham.user.entity.User;
+import com.A105.prham.user_notice.entity.UserNotice;
 import com.A105.prham.webhook.entity.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -37,11 +38,11 @@ public class UserNoticeLike extends BaseTimeEntity { //북마크
     @ManyToOne(fetch = FetchType.LAZY)
     private Team team;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "code_id")
-    @OneToOne(fetch = FetchType.LAZY)
-    private Subcode code;
+    private Subcode subcode;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "upper_code_id")
     private Maincode maincode;
 
@@ -53,18 +54,23 @@ public class UserNoticeLike extends BaseTimeEntity { //북마크
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_notice_id")
+    private UserNotice userNotice;
+
     @Column(nullable = false)
     private Boolean isLiked;
 
     @Builder
-    public UserNoticeLike(User user, Notice notice, Team team, Subcode code, Maincode maincode, Channel channel, Post post, Boolean isLiked) {
+    public UserNoticeLike(User user, Notice notice, Team team, Subcode subcode, Maincode maincode, Channel channel, Post post, UserNotice userNotice, Boolean isLiked) {
         this.user = user;
         this.notice = notice;
         this.team = team;
-        this.code = code;
+        this.subcode = subcode;
         this.maincode = maincode;
         this.channel = channel;
         this.post = post;
+        this.userNotice = userNotice;
         this.isLiked = isLiked;
     }
 }

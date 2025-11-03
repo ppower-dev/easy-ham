@@ -6,16 +6,9 @@ import java.util.List;
 import com.A105.prham.notice.entity.Notice;
 import com.A105.prham.common.domain.BaseTimeEntity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import com.A105.prham.user_notice.entity.UserNotice;
+import com.A105.prham.user_notice_like.entity.UserNoticeLike;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -64,6 +57,12 @@ public class Post extends BaseTimeEntity {
 
 	@OneToOne(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Notice notice;
+
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<UserNotice> userNotices = new ArrayList<>();
+
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<UserNoticeLike> userNoticeLikes = new ArrayList<>();
 
 	@Builder
 	public Post(String mmMessageId, String mmTeamId, String mmUserId, String userName, String mmChannelId, Long mmCreatedAt, String content) {
