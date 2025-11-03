@@ -3,9 +3,9 @@
  * Dashboard와 Calendar 페이지에서 공유
  */
 
-import { create } from 'zustand';
-import type { Subcategory } from '@/types/notice';
-import type { PeriodFilter, SortOption } from '@/types/filter';
+import { create } from "zustand";
+import type { Subcategory } from "@/types/notice";
+import type { PeriodFilter, SortOption } from "@/types/filter";
 
 interface FilterState {
   // 상태
@@ -27,12 +27,17 @@ interface FilterState {
 }
 
 const initialState = {
-  selectedChannels: ['13기-공지사항', '13기-취업공고', '13기-취업정보', '서울1반-공지사항'],
-  selectedAcademicCategories: ['할일', '특강', '정보', '이벤트'] as Subcategory[],
-  selectedCareerCategories: ['할일', '특강', '정보', '이벤트'] as Subcategory[],
-  searchQuery: '',
-  periodFilter: '전체' as PeriodFilter,
-  sortBy: 'latest' as SortOption,
+  selectedChannels: [
+    "13기-공지사항",
+    "13기-취업공고",
+    "13기-취업정보",
+    "서울1반-공지사항",
+  ],
+  selectedAcademicCategories: ["할일", "특강", "정보", "행사"] as Subcategory[],
+  selectedCareerCategories: ["할일", "특강", "정보", "행사"] as Subcategory[],
+  searchQuery: "",
+  periodFilter: "전체" as PeriodFilter,
+  sortBy: "latest" as SortOption,
 };
 
 export const useFilterStore = create<FilterState>((set) => ({

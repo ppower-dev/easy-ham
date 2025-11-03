@@ -34,26 +34,14 @@ export function MonthView({
       <div className="bg-white rounded-lg shadow-sm h-full flex flex-col overflow-hidden">
         {/* 요일 헤더 */}
         <div className="grid grid-cols-7 border-b">
-          {[
-            "일",
-            "월",
-            "화",
-            "수",
-            "목",
-            "금",
-            "토",
-          ].map((day, idx) => (
+          {["일", "월", "화", "수", "목", "금", "토"].map((day, idx) => (
             <div
               key={day}
               className="text-center py-3 text-sm border-r last:border-r-0"
               style={{
                 fontWeight: 600,
                 color:
-                  idx === 0
-                    ? "#ef4444"
-                    : idx === 6
-                      ? "#3b82f6"
-                      : "#374151",
+                  idx === 0 ? "#ef4444" : idx === 6 ? "#3b82f6" : "#374151",
               }}
             >
               {day}
@@ -69,21 +57,15 @@ export function MonthView({
               className="grid grid-cols-7 flex-1 border-b last:border-b-0"
             >
               {week.map((date, dayIdx) => {
-                const dayEvents =
-                  getEventsForDate(date);
+                const dayEvents = getEventsForDate(date);
                 const today = isToday(date);
-                const currentMonth = isCurrentMonth(
-                  date,
-                  currentDate,
-                );
+                const currentMonth = isCurrentMonth(date, currentDate);
 
                 return (
                   <div
                     key={dayIdx}
                     className={`border-r last:border-r-0 p-2 cursor-pointer hover:bg-gray-50 transition-colors ${
-                      !currentMonth
-                        ? "bg-gray-50"
-                        : ""
+                      !currentMonth ? "bg-gray-50" : ""
                     }`}
                     onClick={() => onDateClick(date, week)}
                   >
@@ -94,13 +76,11 @@ export function MonthView({
                           today
                             ? "bg-[var(--brand-orange)] text-white"
                             : currentMonth
-                              ? "text-gray-700"
-                              : "text-gray-400"
+                            ? "text-gray-700"
+                            : "text-gray-400"
                         }`}
                         style={{
-                          fontWeight: today
-                            ? 700
-                            : 500,
+                          fontWeight: today ? 700 : 500,
                         }}
                       >
                         {date.getDate()}
@@ -118,40 +98,35 @@ export function MonthView({
                     {/* 이벤트 제목 표시 */}
                     {dayEvents.length > 0 && (
                       <div className="space-y-0.5">
-                        {dayEvents
-                          .slice(0, 3)
-                          .map((event) => {
-                            // 서브카테고리별 세로선 색상
-                            const getBorderColor =
-                              () => {
-                                switch (
-                                  event.subcategory
-                                ) {
-                                  case "할일":
-                                    return "border-red-500";
-                                  case "특강":
-                                    return "border-blue-500";
-                                  case "정보":
-                                    return "border-green-500";
-                                  case "이벤트":
-                                    return "border-purple-500";
-                                  default:
-                                    return "border-gray-400";
-                                }
-                              };
+                        {dayEvents.slice(0, 3).map((event) => {
+                          // 서브카테고리별 세로선 색상
+                          const getBorderColor = () => {
+                            switch (event.subcategory) {
+                              case "할일":
+                                return "border-red-500";
+                              case "특강":
+                                return "border-blue-500";
+                              case "정보":
+                                return "border-green-500";
+                              case "행사":
+                                return "border-purple-500";
+                              default:
+                                return "border-gray-400";
+                            }
+                          };
 
-                            return (
-                              <div
-                                key={event.id}
-                                className={`text-sm truncate pl-2 border-l-[3px] ${getBorderColor()}`}
-                                style={{
-                                  fontWeight: 500,
-                                }}
-                              >
-                                {event.title}
-                              </div>
-                            );
-                          })}
+                          return (
+                            <div
+                              key={event.id}
+                              className={`text-sm truncate pl-2 border-l-[3px] ${getBorderColor()}`}
+                              style={{
+                                fontWeight: 500,
+                              }}
+                            >
+                              {event.title}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>

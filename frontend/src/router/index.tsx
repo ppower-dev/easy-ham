@@ -1,27 +1,27 @@
-import { createBrowserRouter } from 'react-router-dom';
-import { ProtectedRoute } from './ProtectedRoute';
-import LandingPage from '../pages/Landing';
-import { LoginPage } from '../pages/Login';
-import { SignUpPage } from '../pages/SignUp';
-import DashboardPage from '../pages/Dashboard';
-import CalendarPage from '../pages/Calendar';
-import { MyPage } from '../pages/MyPage';
+import { createBrowserRouter } from "react-router-dom";
+import { ProtectedRoute } from "./ProtectedRoute";
+import LandingPage from "../pages/Landing";
+import { LoginPage } from "../pages/Login";
+import { SignUpPage } from "../pages/SignUp";
+import DashboardPage from "../pages/Dashboard";
+import CalendarPage from "../pages/Calendar";
+import { MyPage } from "../pages/MyPage";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <LandingPage />,
   },
   {
-    path: '/login',
+    path: "/login",
     element: <LoginPage />,
   },
   {
-    path: '/signup',
+    path: "/signup",
     element: <SignUpPage />,
   },
   {
-    path: '/dashboard',
+    path: "/dashboard",
     element: (
       <ProtectedRoute>
         <DashboardPage />
@@ -29,7 +29,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/calendar',
+    path: "/calendar",
     element: (
       <ProtectedRoute>
         <CalendarPage />
@@ -37,7 +37,7 @@ export const router = createBrowserRouter([
     ),
   },
   {
-    path: '/mypage',
+    path: "/mypage",
     element: (
       <ProtectedRoute>
         <MyPage />

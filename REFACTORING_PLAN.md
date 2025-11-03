@@ -25,7 +25,7 @@
                        ↓
         ┌──────────────────────────────┐
         │  세부 분류 (2단계)            │
-        │  할일 / 특강 / 정보 / 이벤트  │
+        │  할일 / 특강 / 정보 / 행사   │
         └──────────────────────────────┘
                        ↓
          ┌─────────────┬────────────────┐
@@ -39,17 +39,19 @@
 ### 주요 기능
 
 1. **통합 검색** (Dashboard)
+
    - 모든 공지를 키워드로 검색
    - 카테고리별로 필터링하여 검색 범위 축소 가능
 
 2. **캘린더 뷰** (Calendar)
+
    - 날짜가 있는 공지/이벤트를 달력에 표시
    - 주간/월간 뷰 지원
    - 시간/장소 정보 표시
 
 3. **카테고리 분류**
    - 1차: 학사 vs 취업
-   - 2차: 할일, 특강, 정보, 이벤트
+   - 2차: 할일, 특강, 정보, 행사
 
 ### 데이터 구조의 의미
 
@@ -63,6 +65,7 @@
 ## 📊 현재 상태 분석
 
 ### 문제점 요약
+
 - ✗ 거대한 단일 파일 컴포넌트 (최대 1,424줄)
 - ✗ 코드 중복 (색상 함수, 필터 로직, 상수 등)
 - ✗ 하드코딩된 데이터 (공지 6개, 이벤트 11개, 알림 등)
@@ -73,20 +76,22 @@
 - ✗ 불필요한 `"use client"` 지시어 36개 파일
 
 ### 파일 크기 현황
-| 파일명 | 줄 수 | 상태 |
-|--------|------|------|
-| CalendarPage.tsx | 1,424줄 | 🔴 매우 큼 |
-| DashboardPage.tsx | 824줄 | 🔴 큼 |
-| MyPage.tsx | 476줄 | 🟡 중간 |
-| SignUpPage.tsx | 278줄 | 🟡 중간 |
-| MessageDetailModal.tsx | 257줄 | 🟡 중간 |
-| LoginPage.tsx | 147줄 | 🟢 적정 |
+
+| 파일명                 | 줄 수   | 상태       |
+| ---------------------- | ------- | ---------- |
+| CalendarPage.tsx       | 1,424줄 | 🔴 매우 큼 |
+| DashboardPage.tsx      | 824줄   | 🔴 큼      |
+| MyPage.tsx             | 476줄   | 🟡 중간    |
+| SignUpPage.tsx         | 278줄   | 🟡 중간    |
+| MessageDetailModal.tsx | 257줄   | 🟡 중간    |
+| LoginPage.tsx          | 147줄   | 🟢 적정    |
 
 ---
 
 ## 🎯 리팩토링 목표
 
 ### 최종 목표 구조
+
 ```
 src/
 ├── pages/                          # 페이지 컴포넌트
@@ -188,6 +193,7 @@ src/
 ```
 
 ### 기술 스택
+
 - ✅ **스타일링**: Tailwind CSS + Emotion (twin.macro로 결합)
 - ✅ **라우팅**: React Router v6
 - ✅ **상태 관리**: Zustand
@@ -200,6 +206,7 @@ src/
 ### **Phase 0: 사전 준비 및 React Router 도입** ⏱️ 1.5시간
 
 #### ✅ 0-1. 의존성 설치
+
 - [x] React Router 설치
   ```bash
   npm install react-router-dom
@@ -220,6 +227,7 @@ src/
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-29
 작성자: Claude Code
@@ -228,29 +236,33 @@ src/
 ```
 
 #### ✅ 0-2. twin.macro 설정
+
 **파일**: `babel-plugin-macros.config.js` (루트)
+
 - [x] 설정 파일 생성
   ```javascript
   module.exports = {
     twin: {
-      preset: 'emotion',
+      preset: "emotion",
     },
   };
   ```
 
 **파일**: `vite.config.ts` 수정
+
 - [x] twin.macro 플러그인 추가
+
   ```typescript
-  import { defineConfig } from 'vite';
-  import react from '@vitejs/plugin-react-swc';
-  import path from 'path';
+  import { defineConfig } from "vite";
+  import react from "@vitejs/plugin-react-swc";
+  import path from "path";
 
   export default defineConfig({
     plugins: [
       react({
-        jsxImportSource: '@emotion/react',
+        jsxImportSource: "@emotion/react",
         babel: {
-          plugins: ['babel-plugin-macros'],
+          plugins: ["babel-plugin-macros"],
         },
       }),
     ],
@@ -259,6 +271,7 @@ src/
   ```
 
 **파일**: `tsconfig.json` 수정 (없으면 생성)
+
 - [x] twin.macro 타입 설정
   ```json
   {
@@ -286,19 +299,22 @@ src/
   ```
 
 **파일**: `types/twin.d.ts` (타입 정의)
-- [x] twin.macro 타입 선언
-  ```typescript
-  import 'twin.macro';
-  import { css as cssImport } from '@emotion/react';
-  import styledImport from '@emotion/styled';
 
-  declare module 'twin.macro' {
+- [x] twin.macro 타입 선언
+
+  ```typescript
+  import "twin.macro";
+  import { css as cssImport } from "@emotion/react";
+  import styledImport from "@emotion/styled";
+
+  declare module "twin.macro" {
     const styled: typeof styledImport;
     const css: typeof cssImport;
   }
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-29
 작성자: Claude Code
@@ -307,6 +323,7 @@ src/
 ```
 
 #### ✅ 0-3. Git 브랜치 전략
+
 - [x] 작업 브랜치 생성
   ```bash
   git checkout -b refactor/project-structure
@@ -318,6 +335,7 @@ src/
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-29
 작성자: Claude Code
@@ -326,52 +344,59 @@ src/
 ```
 
 #### ✅ 0-4. React Router 기본 구조 생성
+
 **파일**: `src/router/index.tsx`
+
 - [x] 라우터 설정 (기존 페이지 컴포넌트 import)
+
   ```typescript
-  import { createBrowserRouter } from 'react-router-dom';
-  import App from '../App';
-  import { LoginPage } from '../components/LoginPage';
-  import { SignUpPage } from '../components/SignUpPage';
-  import { DashboardPage } from '../components/DashboardPage';
-  import { CalendarPage } from '../components/CalendarPage';
-  import { MyPage } from '../components/MyPage';
+  import { createBrowserRouter } from "react-router-dom";
+  import App from "../App";
+  import { LoginPage } from "../components/LoginPage";
+  import { SignUpPage } from "../components/SignUpPage";
+  import { DashboardPage } from "../components/DashboardPage";
+  import { CalendarPage } from "../components/CalendarPage";
+  import { MyPage } from "../components/MyPage";
 
   export const router = createBrowserRouter([
     {
-      path: '/',
+      path: "/",
       element: <App />,
       children: [
         { index: true, element: <div>Landing</div> }, // 임시
       ],
     },
-    { path: '/login', element: <LoginPage /> },
-    { path: '/signup', element: <SignUpPage /> },
-    { path: '/dashboard', element: <DashboardPage /> },
-    { path: '/calendar', element: <CalendarPage /> },
-    { path: '/mypage', element: <MyPage /> },
+    { path: "/login", element: <LoginPage /> },
+    { path: "/signup", element: <SignUpPage /> },
+    { path: "/dashboard", element: <DashboardPage /> },
+    { path: "/calendar", element: <CalendarPage /> },
+    { path: "/mypage", element: <MyPage /> },
   ]);
   ```
 
 **파일**: `src/main.tsx` 수정
-- [x] RouterProvider 적용
-  ```typescript
-  import { createRoot } from 'react-dom/client';
-  import { RouterProvider } from 'react-router-dom';
-  import { router } from './router';
-  import './index.css';
 
-  createRoot(document.getElementById('root')!).render(
+- [x] RouterProvider 적용
+
+  ```typescript
+  import { createRoot } from "react-dom/client";
+  import { RouterProvider } from "react-router-dom";
+  import { router } from "./router";
+  import "./index.css";
+
+  createRoot(document.getElementById("root")!).render(
     <RouterProvider router={router} />
   );
   ```
 
 **파일**: `src/App.tsx` 수정
+
 - [x] 기존 페이지 라우팅 로직 제거
 - [x] Landing 페이지만 렌더링
 - [x] useNavigate로 로그인 버튼 수정
+
   ```typescript
-  import { useNavigate } from 'react-router-dom';
+  import { useNavigate } from "react-router-dom";
   // ... 기존 imports
 
   export default function App() {
@@ -395,7 +420,7 @@ src/
               <div className="flex gap-4 justify-center pt-4">
                 <Button
                   size="lg"
-                  onClick={() => navigate('/login')} // 수정
+                  onClick={() => navigate("/login")} // 수정
                   className="bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white px-8 py-6 text-lg"
                   style={{ fontWeight: 600 }}
                 >
@@ -410,7 +435,10 @@ src/
         </section>
 
         {/* Features Section */}
-        <section ref={featuresRef} className="h-screen flex items-center justify-center bg-white px-8">
+        <section
+          ref={featuresRef}
+          className="h-screen flex items-center justify-center bg-white px-8"
+        >
           {/* ... 기존 코드 */}
         </section>
       </div>
@@ -419,6 +447,7 @@ src/
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-29
 작성자: Claude Code
@@ -427,11 +456,14 @@ src/
 ```
 
 #### ✅ 0-5. 페이지 컴포넌트 네비게이션 수정
+
 **파일**: `src/components/LoginPage.tsx`
+
 - [x] `onBack`, `onLoginSuccess` props 제거
 - [x] `useNavigate()` 훅 사용
+
   ```typescript
-  import { useNavigate } from 'react-router-dom';
+  import { useNavigate } from "react-router-dom";
 
   export function LoginPage() {
     const navigate = useNavigate();
@@ -440,9 +472,9 @@ src/
       setTimeout(() => {
         const isFirstLogin = true; // 더미
         if (isFirstLogin) {
-          navigate('/signup');
+          navigate("/signup");
         } else {
-          navigate('/dashboard');
+          navigate("/dashboard");
         }
       }, 500);
     };
@@ -450,7 +482,7 @@ src/
     return (
       <div className="min-h-screen flex">
         {/* 뒤로가기 버튼 */}
-        <button onClick={() => navigate('/')} className="...">
+        <button onClick={() => navigate("/")} className="...">
           {/* ... */}
         </button>
         {/* ... 나머지 코드 */}
@@ -460,20 +492,25 @@ src/
   ```
 
 **파일**: `src/components/SignUpPage.tsx`
+
 - [x] `onComplete`, `onBack` props 제거
 - [x] `useNavigate()` 사용
 
 **파일**: `src/components/DashboardPage.tsx`
+
 - [x] `onLogout`, `onNavigateToMyPage`, `onNavigateToCalendar` props 제거
 - [x] `useNavigate()` 사용
 
 **파일**: `src/components/CalendarPage.tsx`
+
 - [x] Props 제거, `useNavigate()` 사용
 
 **파일**: `src/components/MyPage.tsx`
+
 - [x] `onBack` prop 제거, `useNavigate()` 사용
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-29
 작성자: Claude Code
@@ -482,6 +519,7 @@ src/
 ```
 
 #### ✅ 0-6. React Router 동작 테스트
+
 - [x] `npm run dev` 실행
 - [x] Landing → Login 이동 확인
 - [x] Login → SignUp 이동 확인
@@ -490,6 +528,7 @@ src/
 - [x] 브라우저 뒤로가기 확인
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-29
 작성자: Claude Code
@@ -502,6 +541,7 @@ src/
 ### **Phase 1: 기반 구조 생성** ⏱️ 2시간
 
 #### ✅ 1-1. 폴더 구조 생성
+
 - [x] 필수 폴더 생성
   ```bash
   mkdir -p src/{pages,components/{layouts,common,modals},hooks,stores,services/{api,mock},types,constants,utils,styles,router}
@@ -520,6 +560,7 @@ src/
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -528,15 +569,20 @@ src/
 ```
 
 #### ✅ 1-2. TypeScript 타입 정의
+
 **파일**: `src/types/index.ts`
+
 - [x] 모든 타입 export
 
 **파일**: `src/types/common.ts`
+
 - [x] `ApiResponse<T>` 타입
 - [x] `PaginationParams` 타입
 
 **파일**: `src/types/user.ts`
+
 - [x] `User` 인터페이스
+
   ```typescript
   export interface User {
     id: string;
@@ -552,22 +598,24 @@ src/
     updatedAt: string;
   }
 
-  export type Campus = '서울' | '대전' | '광주' | '구미' | '부울경';
+  export type Campus = "서울" | "대전" | "광주" | "구미" | "부울경";
   export type JobType =
-    | '프론트엔드'
-    | '백엔드'
-    | 'DevOps'
-    | '풀스택'
-    | '모바일'
-    | 'AI/ML'
-    | '데이터'
-    | '임베디드'
-    | '보안'
-    | '기타';
+    | "프론트엔드"
+    | "백엔드"
+    | "DevOps"
+    | "풀스택"
+    | "모바일"
+    | "AI/ML"
+    | "데이터"
+    | "임베디드"
+    | "보안"
+    | "기타";
   ```
 
 **파일**: `src/types/notice.ts`
+
 - [x] `Notice` 인터페이스
+
   ```typescript
   export interface Notice {
     id: number;
@@ -587,12 +635,12 @@ src/
     updatedAt: string;
   }
 
-  export type Category = '학사' | '취업';
-  export type Subcategory = '할일' | '특강' | '정보' | '이벤트';
+  export type Category = "학사" | "취업";
+  export type Subcategory = "할일" | "특강" | "정보" | "행사";
 
   export interface Attachment {
     id: number;
-    type: 'image' | 'file';
+    type: "image" | "file";
     name: string;
     url: string;
     size?: number;
@@ -600,6 +648,7 @@ src/
   ```
 
 **파일**: `src/types/event.ts`
+
 - [x] `CalendarEvent` 인터페이스
   ```typescript
   export interface CalendarEvent {
@@ -619,9 +668,11 @@ src/
   ```
 
 **파일**: `src/types/filter.ts`
+
 - [x] `FilterState` 인터페이스
+
   ```typescript
-  import type { Subcategory } from './notice';
+  import type { Subcategory } from "./notice";
 
   export interface FilterState {
     channels: string[];
@@ -632,8 +683,8 @@ src/
     sortBy: SortOption;
   }
 
-  export type PeriodFilter = '전체' | '오늘' | '이번주' | '이번달' | 'custom';
-  export type SortOption = 'latest' | 'deadline' | 'title';
+  export type PeriodFilter = "전체" | "오늘" | "이번주" | "이번달" | "custom";
+  export type SortOption = "latest" | "deadline" | "title";
 
   export interface CustomPeriod {
     startDate: Date;
@@ -642,6 +693,7 @@ src/
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -650,8 +702,11 @@ src/
 ```
 
 #### ✅ 1-3. 디자인 토큰 정의
+
 **파일**: `src/styles/tokens.ts`
+
 - [x] 디자인 토큰 정의 (색상, 타이포그래피, 간격 등)
+
   ```typescript
   /**
    * 디자인 토큰
@@ -663,99 +718,100 @@ src/
   export const colors = {
     // 브랜드 색상
     brand: {
-      orange: '#FF6B35',
-      orangeDark: '#E55A2B',
-      orangeLight: '#FFF5EE',
-      orangeLighter: '#FFE8D6',
+      orange: "#FF6B35",
+      orangeDark: "#E55A2B",
+      orangeLight: "#FFF5EE",
+      orangeLighter: "#FFE8D6",
     },
 
     // 카테고리 색상
     category: {
       todo: {
-        bg: '#FEE2E2',
-        text: '#B91C1C',
-        border: '#FECACA',
+        bg: "#FEE2E2",
+        text: "#B91C1C",
+        border: "#FECACA",
       },
       lecture: {
-        bg: '#DBEAFE',
-        text: '#1E40AF',
-        border: '#BFDBFE',
+        bg: "#DBEAFE",
+        text: "#1E40AF",
+        border: "#BFDBFE",
       },
       info: {
-        bg: '#D1FAE5',
-        text: '#065F46',
-        border: '#A7F3D0',
+        bg: "#D1FAE5",
+        text: "#065F46",
+        border: "#A7F3D0",
       },
       event: {
-        bg: '#E9D5FF',
-        text: '#6B21A8',
-        border: '#DDD6FE',
+        bg: "#E9D5FF",
+        text: "#6B21A8",
+        border: "#DDD6FE",
       },
     },
 
     // D-day 색상
     dday: {
-      urgent: '#EF4444',    // 1-3일
-      warning: '#EAB308',   // 4-7일
-      normal: '#22C55E',    // 8일+
-      default: '#9CA3AF',   // 없음
+      urgent: "#EF4444", // 1-3일
+      warning: "#EAB308", // 4-7일
+      normal: "#22C55E", // 8일+
+      default: "#9CA3AF", // 없음
     },
 
     // 그레이스케일
     gray: {
-      50: '#F9FAFB',
-      100: '#F3F4F6',
-      200: '#E5E7EB',
-      300: '#D1D5DB',
-      400: '#9CA3AF',
-      500: '#6B7280',
-      600: '#4B5563',
-      700: '#374151',
-      800: '#1F2937',
-      900: '#111827',
+      50: "#F9FAFB",
+      100: "#F3F4F6",
+      200: "#E5E7EB",
+      300: "#D1D5DB",
+      400: "#9CA3AF",
+      500: "#6B7280",
+      600: "#4B5563",
+      700: "#374151",
+      800: "#1F2937",
+      900: "#111827",
     },
 
     // 시맨틱 색상
     semantic: {
-      success: '#10B981',
-      error: '#EF4444',
-      warning: '#F59E0B',
-      info: '#3B82F6',
+      success: "#10B981",
+      error: "#EF4444",
+      warning: "#F59E0B",
+      info: "#3B82F6",
     },
 
     // 배경 색상
     background: {
-      primary: '#FFFFFF',
-      secondary: '#F9FAFB',
-      tertiary: '#F3F4F6',
+      primary: "#FFFFFF",
+      secondary: "#F9FAFB",
+      tertiary: "#F3F4F6",
     },
 
     // 텍스트 색상
     text: {
-      primary: '#111827',
-      secondary: '#4B5563',
-      tertiary: '#9CA3AF',
-      inverse: '#FFFFFF',
+      primary: "#111827",
+      secondary: "#4B5563",
+      tertiary: "#9CA3AF",
+      inverse: "#FFFFFF",
     },
   } as const;
 
   // ========== 타이포그래피 토큰 ==========
   export const typography = {
     fontFamily: {
-      primary: '"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif',
+      primary:
+        '"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif',
     },
 
     fontSize: {
-      xs: '0.75rem',      // 12px
-      sm: '0.875rem',     // 14px
-      base: '1rem',       // 16px
-      lg: '1.125rem',     // 18px
-      xl: '1.25rem',      // 20px
-      '2xl': '1.5rem',    // 24px
-      '3xl': '1.875rem',  // 30px
-      '4xl': '2.25rem',   // 36px
-      '5xl': '3rem',      // 48px
-      '6xl': '3.75rem',   // 60px
+      xs: "0.75rem", // 12px
+      sm: "0.875rem", // 14px
+      base: "1rem", // 16px
+      lg: "1.125rem", // 18px
+      xl: "1.25rem", // 20px
+      "2xl": "1.5rem", // 24px
+      "3xl": "1.875rem", // 30px
+      "4xl": "2.25rem", // 36px
+      "5xl": "3rem", // 48px
+      "6xl": "3.75rem", // 60px
     },
 
     fontWeight: {
@@ -775,52 +831,52 @@ src/
     },
 
     letterSpacing: {
-      tighter: '-0.05em',
-      tight: '-0.025em',
-      normal: '0',
-      wide: '0.025em',
-      wider: '0.05em',
-      widest: '0.1em',
+      tighter: "-0.05em",
+      tight: "-0.025em",
+      normal: "0",
+      wide: "0.025em",
+      wider: "0.05em",
+      widest: "0.1em",
     },
   } as const;
 
   // ========== 간격 토큰 ==========
   export const spacing = {
-    0: '0',
-    1: '0.25rem',   // 4px
-    2: '0.5rem',    // 8px
-    3: '0.75rem',   // 12px
-    4: '1rem',      // 16px
-    5: '1.25rem',   // 20px
-    6: '1.5rem',    // 24px
-    7: '1.75rem',   // 28px
-    8: '2rem',      // 32px
-    10: '2.5rem',   // 40px
-    12: '3rem',     // 48px
-    16: '4rem',     // 64px
-    20: '5rem',     // 80px
-    24: '6rem',     // 96px
+    0: "0",
+    1: "0.25rem", // 4px
+    2: "0.5rem", // 8px
+    3: "0.75rem", // 12px
+    4: "1rem", // 16px
+    5: "1.25rem", // 20px
+    6: "1.5rem", // 24px
+    7: "1.75rem", // 28px
+    8: "2rem", // 32px
+    10: "2.5rem", // 40px
+    12: "3rem", // 48px
+    16: "4rem", // 64px
+    20: "5rem", // 80px
+    24: "6rem", // 96px
   } as const;
 
   // ========== Border Radius 토큰 ==========
   export const borderRadius = {
-    none: '0',
-    sm: '0.25rem',    // 4px
-    md: '0.5rem',     // 8px
-    lg: '0.75rem',    // 12px
-    xl: '1rem',       // 16px
-    '2xl': '1.5rem',  // 24px
-    full: '9999px',
+    none: "0",
+    sm: "0.25rem", // 4px
+    md: "0.5rem", // 8px
+    lg: "0.75rem", // 12px
+    xl: "1rem", // 16px
+    "2xl": "1.5rem", // 24px
+    full: "9999px",
   } as const;
 
   // ========== Shadow 토큰 ==========
   export const shadows = {
-    sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-    md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-    lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-    xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-    '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
-    none: 'none',
+    sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+    lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+    "2xl": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+    none: "none",
   } as const;
 
   // ========== Z-index 토큰 ==========
@@ -836,9 +892,9 @@ src/
 
   // ========== Transition 토큰 ==========
   export const transitions = {
-    fast: '150ms cubic-bezier(0.4, 0, 0.2, 1)',
-    base: '200ms cubic-bezier(0.4, 0, 0.2, 1)',
-    slow: '300ms cubic-bezier(0.4, 0, 0.2, 1)',
+    fast: "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+    base: "200ms cubic-bezier(0.4, 0, 0.2, 1)",
+    slow: "300ms cubic-bezier(0.4, 0, 0.2, 1)",
   } as const;
 
   // ========== 타입 export ==========
@@ -848,21 +904,25 @@ src/
   ```
 
 **파일**: `src/main.tsx` 수정
-- [x] Pretendard 폰트 import 추가
-  ```typescript
-  import { createRoot } from 'react-dom/client';
-  import { RouterProvider } from 'react-router-dom';
-  import { router } from './router';
-  import 'pretendard/dist/web/static/pretendard.css'; // 추가
-  import './index.css';
 
-  createRoot(document.getElementById('root')!).render(
+- [x] Pretendard 폰트 import 추가
+
+  ```typescript
+  import { createRoot } from "react-dom/client";
+  import { RouterProvider } from "react-router-dom";
+  import { router } from "./router";
+  import "pretendard/dist/web/static/pretendard.css"; // 추가
+  import "./index.css";
+
+  createRoot(document.getElementById("root")!).render(
     <RouterProvider router={router} />
   );
   ```
 
 **파일**: `src/index.css` 또는 `src/styles/globals.css` 수정
+
 - [x] 폰트 패밀리 적용
+
   ```css
   @tailwind base;
   @tailwind components;
@@ -874,18 +934,20 @@ src/
     }
     body {
       @apply bg-background text-foreground;
-      font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+        system-ui, Roboto, sans-serif;
     }
   }
 
   :root {
-    --brand-orange: #FF6B35;
-    --brand-orange-dark: #E55A2B;
-    --brand-orange-light: #FFF5EE;
+    --brand-orange: #ff6b35;
+    --brand-orange-dark: #e55a2b;
+    --brand-orange-light: #fff5ee;
   }
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -894,122 +956,165 @@ src/
 ```
 
 #### ✅ 1-4. 상수 파일 생성
+
 **파일**: `src/constants/index.ts`
+
 - [x] 모든 상수 export
   ```typescript
-  export * from './channels';
-  export * from './categories';
-  export * from './options';
-  export * from './colors';
-  export * from './config';
+  export * from "./channels";
+  export * from "./categories";
+  export * from "./options";
+  export * from "./colors";
+  export * from "./config";
   ```
 
 **파일**: `src/constants/channels.ts`
+
 - [x] `CHANNEL_OPTIONS` 상수
+
   ```typescript
   export const CHANNEL_OPTIONS = [
-    '전체',
-    '13기-공지사항',
-    '13기-취업공고',
-    '13기-취업정보',
-    '서울1반-공지사항',
+    "전체",
+    "13기-공지사항",
+    "13기-취업공고",
+    "13기-취업정보",
+    "서울1반-공지사항",
   ] as const;
 
-  export type ChannelOption = typeof CHANNEL_OPTIONS[number];
+  export type ChannelOption = (typeof CHANNEL_OPTIONS)[number];
   ```
 
 **파일**: `src/constants/categories.ts`
+
 - [x] 카테고리 상수
+
   ```typescript
-  export const SUBCATEGORIES = ['할일', '특강', '정보', '이벤트'] as const;
+  export const SUBCATEGORIES = ["할일", "특강", "정보", "행사"] as const;
 
   export const ACADEMIC_CATEGORIES = SUBCATEGORIES;
   export const CAREER_CATEGORIES = SUBCATEGORIES;
   ```
 
 **파일**: `src/constants/options.ts`
+
 - [x] `CAMPUS_OPTIONS`, `JOB_OPTIONS`, `TECH_STACK_OPTIONS`
+
   ```typescript
-  export const CAMPUS_OPTIONS = ['서울', '대전', '광주', '구미', '부울경'] as const;
+  export const CAMPUS_OPTIONS = [
+    "서울",
+    "대전",
+    "광주",
+    "구미",
+    "부울경",
+  ] as const;
 
   export const JOB_OPTIONS = [
-    '프론트엔드',
-    '백엔드',
-    'DevOps',
-    '풀스택',
-    '모바일',
-    'AI/ML',
-    '데이터',
-    '임베디드',
-    '보안',
-    '기타',
+    "프론트엔드",
+    "백엔드",
+    "DevOps",
+    "풀스택",
+    "모바일",
+    "AI/ML",
+    "데이터",
+    "임베디드",
+    "보안",
+    "기타",
   ] as const;
 
   export const TECH_STACK_OPTIONS = [
-    'React', 'Vue', 'Angular', 'Next.js', 'Svelte',
-    'Node.js', 'Spring', 'Django', 'FastAPI', 'Express',
-    'Java', 'Python', 'JavaScript', 'TypeScript', 'Go',
-    'MySQL', 'PostgreSQL', 'MongoDB', 'Redis',
-    'Docker', 'Kubernetes', 'AWS', 'GCP', 'Azure',
-    'Git', 'Jenkins', 'GitHub Actions',
-    'React Native', 'Flutter', 'Swift', 'Kotlin',
-    'TensorFlow', 'PyTorch', 'Scikit-learn',
+    "React",
+    "Vue",
+    "Angular",
+    "Next.js",
+    "Svelte",
+    "Node.js",
+    "Spring",
+    "Django",
+    "FastAPI",
+    "Express",
+    "Java",
+    "Python",
+    "JavaScript",
+    "TypeScript",
+    "Go",
+    "MySQL",
+    "PostgreSQL",
+    "MongoDB",
+    "Redis",
+    "Docker",
+    "Kubernetes",
+    "AWS",
+    "GCP",
+    "Azure",
+    "Git",
+    "Jenkins",
+    "GitHub Actions",
+    "React Native",
+    "Flutter",
+    "Swift",
+    "Kotlin",
+    "TensorFlow",
+    "PyTorch",
+    "Scikit-learn",
   ] as const;
 
-  export const PERIOD_OPTIONS = ['전체', '오늘', '이번주', '이번달'] as const;
+  export const PERIOD_OPTIONS = ["전체", "오늘", "이번주", "이번달"] as const;
 
   export const SORT_OPTIONS = [
-    { value: 'latest', label: '최신순' },
-    { value: 'deadline', label: '마감일순' },
-    { value: 'title', label: '제목순' },
+    { value: "latest", label: "최신순" },
+    { value: "deadline", label: "마감일순" },
+    { value: "title", label: "제목순" },
   ] as const;
   ```
 
 **파일**: `src/constants/colors.ts`
+
 - [x] 색상 맵
+
   ```typescript
   export const CATEGORY_COLORS = {
     할일: {
-      bg: 'bg-red-100',
-      text: 'text-red-700',
-      hex: '#FEE2E2',
-      darkHex: '#B91C1C',
+      bg: "bg-red-100",
+      text: "text-red-700",
+      hex: "#FEE2E2",
+      darkHex: "#B91C1C",
     },
     특강: {
-      bg: 'bg-blue-100',
-      text: 'text-blue-700',
-      hex: '#DBEAFE',
-      darkHex: '#1E40AF',
+      bg: "bg-blue-100",
+      text: "text-blue-700",
+      hex: "#DBEAFE",
+      darkHex: "#1E40AF",
     },
     정보: {
-      bg: 'bg-green-100',
-      text: 'text-green-700',
-      hex: '#D1FAE5',
-      darkHex: '#065F46',
+      bg: "bg-green-100",
+      text: "text-green-700",
+      hex: "#D1FAE5",
+      darkHex: "#065F46",
     },
-    이벤트: {
-      bg: 'bg-purple-100',
-      text: 'text-purple-700',
-      hex: '#E9D5FF',
-      darkHex: '#6B21A8',
+    행사: {
+      bg: "bg-purple-100",
+      text: "text-purple-700",
+      hex: "#E9D5FF",
+      darkHex: "#6B21A8",
     },
   } as const;
 
   export const DDAY_COLORS = {
-    urgent: { bg: 'bg-red-500', text: 'text-white', hex: '#EF4444' },
-    warning: { bg: 'bg-yellow-500', text: 'text-white', hex: '#EAB308' },
-    normal: { bg: 'bg-green-500', text: 'text-white', hex: '#22C55E' },
-    default: { bg: 'bg-gray-400', text: 'text-white', hex: '#9CA3AF' },
+    urgent: { bg: "bg-red-500", text: "text-white", hex: "#EF4444" },
+    warning: { bg: "bg-yellow-500", text: "text-white", hex: "#EAB308" },
+    normal: { bg: "bg-green-500", text: "text-white", hex: "#22C55E" },
+    default: { bg: "bg-gray-400", text: "text-white", hex: "#9CA3AF" },
   } as const;
 
   export const BRAND_COLORS = {
-    orange: '#FF6B35',
-    orangeDark: '#E55A2B',
-    orangeLight: '#FFF5EE',
+    orange: "#FF6B35",
+    orangeDark: "#E55A2B",
+    orangeLight: "#FFF5EE",
   } as const;
   ```
 
 **파일**: `src/constants/config.ts`
+
 - [x] 설정 상수
   ```typescript
   export const FEATURE_CAROUSEL_INTERVAL = 5000; // 5초
@@ -1018,6 +1123,7 @@ src/
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1026,11 +1132,14 @@ src/
 ```
 
 #### ✅ 1-5. 유틸 함수 생성
+
 **파일**: `src/utils/colorUtils.ts`
+
 - [x] 색상 유틸 함수 (디자인 토큰 사용)
+
   ```typescript
-  import { colors } from '@/styles/tokens';
-  import type { Subcategory } from '@/types/notice';
+  import { colors } from "@/styles/tokens";
+  import type { Subcategory } from "@/types/notice";
 
   /**
    * 카테고리에 따른 색상 반환
@@ -1040,7 +1149,7 @@ src/
       할일: colors.category.todo,
       특강: colors.category.lecture,
       정보: colors.category.info,
-      이벤트: colors.category.event,
+      행사: colors.category.event,
     };
     return categoryMap[subcategory];
   };
@@ -1068,18 +1177,23 @@ src/
   ```
 
 **파일**: `src/utils/dateUtils.ts`
+
 - [x] 날짜 유틸 함수
+
   ```typescript
-  export const formatDate = (date: Date | string, format = 'YYYY.MM.DD'): string => {
-    const d = typeof date === 'string' ? new Date(date) : date;
+  export const formatDate = (
+    date: Date | string,
+    format = "YYYY.MM.DD"
+  ): string => {
+    const d = typeof date === "string" ? new Date(date) : date;
     const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
 
     return format
-      .replace('YYYY', String(year))
-      .replace('MM', month)
-      .replace('DD', day);
+      .replace("YYYY", String(year))
+      .replace("MM", month)
+      .replace("DD", day);
   };
 
   export const formatMonthYear = (date: Date): string => {
@@ -1087,7 +1201,10 @@ src/
   };
 
   export const formatWeekRange = (startDate: Date, endDate: Date): string => {
-    return `${formatDate(startDate, 'MM.DD')} - ${formatDate(endDate, 'MM.DD')}`;
+    return `${formatDate(startDate, "MM.DD")} - ${formatDate(
+      endDate,
+      "MM.DD"
+    )}`;
   };
 
   export const getWeekStart = (date: Date): Date => {
@@ -1146,27 +1263,32 @@ src/
 
   export const calculateDday = (targetDate: string | Date): number | null => {
     if (!targetDate) return null;
-    const target = typeof targetDate === 'string' ? new Date(targetDate) : targetDate;
+    const target =
+      typeof targetDate === "string" ? new Date(targetDate) : targetDate;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     target.setHours(0, 0, 0, 0);
-    const diff = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const diff = Math.ceil(
+      (target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
     return diff;
   };
   ```
 
 **파일**: `src/utils/filterUtils.ts`
+
 - [x] 필터 유틸 함수
+
   ```typescript
-  import type { Notice } from '@/types/notice';
-  import type { Subcategory } from '@/types/notice';
-  import type { PeriodFilter, SortOption } from '@/types/filter';
+  import type { Notice } from "@/types/notice";
+  import type { Subcategory } from "@/types/notice";
+  import type { PeriodFilter, SortOption } from "@/types/filter";
 
   export const filterNoticesByChannels = (
     notices: Notice[],
     channels: string[]
   ): Notice[] => {
-    if (channels.length === 0 || channels.includes('전체')) return notices;
+    if (channels.length === 0 || channels.includes("전체")) return notices;
     return notices.filter((notice) => channels.includes(notice.channel));
   };
 
@@ -1196,7 +1318,7 @@ src/
     notices: Notice[],
     period: PeriodFilter
   ): Notice[] => {
-    if (period === '전체') return notices;
+    if (period === "전체") return notices;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -1207,14 +1329,14 @@ src/
       deadline.setHours(0, 0, 0, 0);
 
       switch (period) {
-        case '오늘':
+        case "오늘":
           return deadline.getTime() === today.getTime();
-        case '이번주': {
+        case "이번주": {
           const weekLater = new Date(today);
           weekLater.setDate(today.getDate() + 7);
           return deadline >= today && deadline < weekLater;
         }
-        case '이번달': {
+        case "이번달": {
           return (
             deadline.getMonth() === today.getMonth() &&
             deadline.getFullYear() === today.getFullYear()
@@ -1233,18 +1355,20 @@ src/
     const sorted = [...notices];
 
     switch (sortBy) {
-      case 'latest':
+      case "latest":
         return sorted.sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
-      case 'deadline':
+      case "deadline":
         return sorted.sort((a, b) => {
           if (!a.deadline) return 1;
           if (!b.deadline) return -1;
-          return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+          return (
+            new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+          );
         });
-      case 'title':
+      case "title":
         return sorted.sort((a, b) => a.title.localeCompare(b.title));
       default:
         return sorted;
@@ -1253,11 +1377,13 @@ src/
   ```
 
 **파일**: `src/utils/formatUtils.ts`
+
 - [x] 포맷 유틸
+
   ```typescript
   export const truncate = (text: string, maxLength: number): string => {
     if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength) + '...';
+    return text.slice(0, maxLength) + "...";
   };
 
   export const pluralize = (
@@ -1269,13 +1395,14 @@ src/
   };
 
   export const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   };
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1288,12 +1415,15 @@ src/
 ### **Phase 2: Zustand 스토어 생성** ⏱️ 2시간
 
 #### ✅ 2-1. AuthStore (인증 스토어)
+
 **파일**: `src/stores/useAuthStore.ts`
+
 - [x] 인증 상태 관리
+
   ```typescript
-  import { create } from 'zustand';
-  import { persist } from 'zustand/middleware';
-  import type { User } from '@/types/user';
+  import { create } from "zustand";
+  import { persist } from "zustand/middleware";
+  import type { User } from "@/types/user";
 
   interface AuthState {
     user: User | null;
@@ -1331,13 +1461,14 @@ src/
           })),
       }),
       {
-        name: 'auth-storage',
+        name: "auth-storage",
       }
     )
   );
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1346,14 +1477,17 @@ src/
 ```
 
 #### ✅ 2-2. NotificationStore (알림 스토어)
+
 **파일**: `src/stores/useNotificationStore.ts`
+
 - [x] 알림 상태 관리
+
   ```typescript
-  import { create } from 'zustand';
+  import { create } from "zustand";
 
   export interface Notification {
     id: number;
-    type: 'info' | 'danger' | 'success' | 'default';
+    type: "info" | "danger" | "success" | "default";
     title: string;
     time: string;
     read: boolean;
@@ -1404,6 +1538,7 @@ src/
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1412,12 +1547,15 @@ src/
 ```
 
 #### ✅ 2-3. FilterStore (필터 스토어)
+
 **파일**: `src/stores/useFilterStore.ts`
+
 - [x] 필터 상태 관리 (Dashboard와 Calendar 공유)
+
   ```typescript
-  import { create } from 'zustand';
-  import type { Subcategory } from '@/types/notice';
-  import type { PeriodFilter, SortOption } from '@/types/filter';
+  import { create } from "zustand";
+  import type { Subcategory } from "@/types/notice";
+  import type { PeriodFilter, SortOption } from "@/types/filter";
 
   interface FilterState {
     // 상태
@@ -1442,9 +1580,9 @@ src/
     selectedChannels: [],
     selectedAcademicCategories: [] as Subcategory[],
     selectedCareerCategories: [] as Subcategory[],
-    searchQuery: '',
-    periodFilter: '전체' as PeriodFilter,
-    sortBy: 'latest' as SortOption,
+    searchQuery: "",
+    periodFilter: "전체" as PeriodFilter,
+    sortBy: "latest" as SortOption,
   };
 
   export const useFilterStore = create<FilterState>((set) => ({
@@ -1486,6 +1624,7 @@ src/
   ```
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1498,18 +1637,21 @@ src/
 ### **Phase 3: Mock 데이터 분리** ⏱️ 1시간
 
 #### ✅ 3-1. Mock 데이터 파일 생성
+
 **파일**: `src/services/mock/mockNotices.ts`
+
 - [x] DashboardPage의 공지 6개 이동
+
   ```typescript
-  import type { Notice } from '@/types/notice';
+  import type { Notice } from "@/types/notice";
 
   export const getMockNotices = (): Notice[] => [
     {
       id: 1,
       dday: 3,
-      category: '학사',
-      subcategory: '할일',
-      title: '10월 월말평가 응시 안내',
+      category: "학사",
+      subcategory: "할일",
+      title: "10월 월말평가 응시 안내",
       // ... 나머지 데이터
     },
     // ... 5개 더
@@ -1518,8 +1660,8 @@ src/
   export const getMockJobPostings = () => [
     {
       id: 1,
-      company: '삼성전자',
-      title: 'SW 개발 신입/경력 수시 채용',
+      company: "삼성전자",
+      title: "SW 개발 신입/경력 수시 채용",
       // ...
     },
     // ...
@@ -1527,18 +1669,23 @@ src/
   ```
 
 **파일**: `src/services/mock/mockEvents.ts`
+
 - [x] CalendarPage의 이벤트 11개 이동
 
 **파일**: `src/services/mock/mockNotifications.ts`
+
 - [x] 알림 데이터 이동
 
 **파일**: `src/services/mock/mockFeatures.ts`
+
 - [x] App.tsx의 Feature 데이터 이동
 
 **파일**: `src/services/mock/mockUser.ts`
+
 - [x] 초기 사용자 데이터
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1547,19 +1694,25 @@ src/
 ```
 
 #### ✅ 3-2. API 서비스 인터페이스 (추후 실제 API 대체)
+
 **파일**: `src/services/api/client.ts`
+
 - [x] API 클라이언트 기본 설정
 
 **파일**: `src/services/api/notices.ts`
+
 - [x] Notice API 함수들 (현재는 Mock 반환)
 
 **파일**: `src/services/api/events.ts`
+
 - [x] Event API 함수들
 
 **파일**: `src/services/api/auth.ts`
+
 - [x] Auth API 함수들
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1572,13 +1725,16 @@ src/
 ### **Phase 4: 공통 컴포넌트 생성 (Tailwind CSS만 사용)** ⏱️ 4시간
 
 **⚠️ 중요 결정: twin.macro 사용 중단**
+
 - 날짜: 2025-10-30
 - 이유: Tailwind v4와 twin.macro 호환성 문제, 기존 CSS 스타일 어긋남
 - 결정: Tailwind CSS만 사용, styled-components는 추후 고려
 - 영향: 모든 컴포넌트는 Tailwind 유틸리티 클래스만 사용
 
 #### ✅ 4-1. twin.macro 완전 제거
+
 **작업 내용**:
+
 - [x] `src/types/twin.d.ts` 삭제
 - [x] `babel-plugin-macros.config.js` 삭제
 - [x] `vite.config.ts`에서 jsxImportSource, babel 설정 제거
@@ -1593,6 +1749,7 @@ src/
 - [x] 개발 서버 정상 동작 확인
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1608,13 +1765,16 @@ src/
 ```
 
 #### ✅ 4-2. Header 컴포넌트
+
 **파일**: `src/components/layouts/Header/index.tsx`
+
 - [x] Tailwind CSS 사용 (twin.macro 제거)
   - 로고 및 앱명 표시
   - 대시보드로 네비게이션
   - 우측 액션 (알림, 프로필)
 
 **파일**: `src/components/layouts/Header/NotificationDropdown.tsx`
+
 - [x] 알림 드롭다운 (useNotificationStore 사용)
   - 알림 목록 표시
   - 읽음/읽지않음 상태 관리
@@ -1622,12 +1782,14 @@ src/
   - 아이콘 및 색상 분류
 
 **파일**: `src/components/layouts/Header/ProfileMenu.tsx`
+
 - [x] 프로필 메뉴 (useAuthStore 사용)
   - 사용자 정보 표시
   - 마이페이지 네비게이션
   - 로그아웃 기능
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1636,13 +1798,16 @@ src/
 ```
 
 #### ✅ 4-3. PageLayout 컴포넌트
+
 **파일**: `src/components/layouts/PageLayout.tsx`
+
 - [x] Header + Children (Tailwind CSS)
   - 레이아웃 감싸기
   - min-h-screen 배경색
   - 헤더 포함
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1651,19 +1816,23 @@ src/
 ```
 
 #### ✅ 4-4. Badge 컴포넌트
+
 **파일**: `src/components/common/Badge/DdayBadge.tsx`
+
 - [x] D-day 배지 (Tailwind CSS)
   - 동적 배경색 (유틸 함수 사용)
   - D-Day, D-n, 마감 텍스트 표시
   - null 처리
 
 **파일**: `src/components/common/Badge/CategoryBadge.tsx`
+
 - [x] 카테고리 배지
   - solid/outline 두 가지 variant
   - 카테고리별 색상
   - 텍스트 색상 처리
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1672,13 +1841,16 @@ src/
 ```
 
 #### ✅ 4-5. ImageWithFallback 마이그레이션
+
 **파일**: `src/components/common/ImageWithFallback/index.tsx`
+
 - [x] 기존 코드 마이그레이션
   - 이미지 로드 실패 시 폴백 이미지 표시
   - 에러 상태 관리
   - TypeScript 타입 추가
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1687,7 +1859,9 @@ src/
 ```
 
 #### ✅ 4-6. MessageDetailModal 리팩토링
+
 **파일**: `src/components/modals/MessageDetailModal/index.tsx`
+
 - [x] Tailwind CSS 적용
 - [x] 하위 컴포넌트로 분리
   - 모달 메인 컴포넌트
@@ -1695,28 +1869,33 @@ src/
   - 첨부파일 관리
 
 **파일**: `src/components/modals/MessageDetailModal/components/MessageHeader.tsx`
+
 - [x] 메시지 헤더 (D-day, 카테고리, 제목)
   - 배지 색상 처리
   - DialogHeader 구조
 
 **파일**: `src/components/modals/MessageDetailModal/components/MessageMeta.tsx`
+
 - [x] 메시지 메타정보 (채널, 작성자, 날짜)
   - 아이콘 표시
   - 날짜 정보
 
 **파일**: `src/components/modals/MessageDetailModal/components/AttachmentList.tsx`
+
 - [x] 첨부파일 목록
   - 이미지 미리보기
   - 파일 다운로드
   - 타입별 아이콘
 
 **DashboardPage 업데이트**:
+
 - [x] import 경로 변경
   - 새로운 모달 컴포넌트 위치
   - 타입 정의 업데이트
   - Subcategory 타입 적용
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1733,7 +1912,9 @@ src/
 ### **Phase 5: Custom Hooks 생성** ⏱️ 2시간
 
 #### ✅ 5-1. useNoticeFilter 훅
+
 **파일**: `src/hooks/useNoticeFilter.ts`
+
 - [x] 필터 로직 통합 (useFilterStore 사용)
   - 채널, 카테고리, 검색, 기간, 정렬 필터
   - useMemo로 의존성 최적화
@@ -1741,6 +1922,7 @@ src/
   - 결과 개수 반환
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1749,7 +1931,9 @@ src/
 ```
 
 #### ✅ 5-2. useCalendarEvents 훅
+
 **파일**: `src/hooks/useCalendarEvents.ts`
+
 - [x] 이벤트 데이터 관리
   - 현재 달 이벤트 조회
   - 특정 날짜 이벤트 조회
@@ -1758,6 +1942,7 @@ src/
   - FilterStore 기반 필터링
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1766,7 +1951,9 @@ src/
 ```
 
 #### ✅ 5-3. useDateNavigation 훅
+
 **파일**: `src/hooks/useDateNavigation.ts`
+
 - [x] 날짜 네비게이션 로직
   - 주간/월간 뷰 전환
   - 이전/다음 기간 이동
@@ -1775,6 +1962,7 @@ src/
   - 주의 날짜 배열 생성
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1783,7 +1971,9 @@ src/
 ```
 
 #### ✅ 5-4. useAuth 훅
+
 **파일**: `src/hooks/useAuth.ts`
+
 - [x] 인증 로직 통합 (useAuthStore 사용)
   - 사용자 정보 조회
   - 로그인/로그아웃 처리
@@ -1791,6 +1981,7 @@ src/
   - 자동 네비게이션 처리
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1803,22 +1994,29 @@ src/
 ### **Phase 6: DashboardPage 리팩토링** ⏱️ 4시간
 
 #### ✅ 6-1. Dashboard 하위 컴포넌트 생성
+
 **파일**: `src/pages/Dashboard/components/NoticeCard.tsx`
+
 - [x] NoticeCard 컴포넌트 (북마크, 완료 버튼 포함)
 
 **파일**: `src/pages/Dashboard/components/NoticeList.tsx`
+
 - [x] NoticeList 컴포넌트 (공지사항 그리드 렌더링)
 
 **파일**: `src/pages/Dashboard/components/SearchFilterBar.tsx`
+
 - [x] SearchFilterBar 컴포넌트 (검색, 필터, 정렬 통합)
 
 **파일**: `src/pages/Dashboard/components/MiniCalendar.tsx`
+
 - [x] MiniCalendar 컴포넌트 (달력 위젯)
 
 **파일**: `src/pages/Dashboard/components/JobPostingsWidget.tsx`
+
 - [x] JobPostingsWidget 컴포넌트 (채용공고 위젯)
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1827,7 +2025,9 @@ src/
 ```
 
 #### ✅ 6-2. Dashboard 페이지 조립
+
 **파일**: `src/pages/Dashboard/index.tsx`
+
 - [x] PageLayout 사용
 - [x] useNoticeFilter 훅 적용
 - [x] useFilterStore (Zustand) 사용
@@ -1836,13 +2036,16 @@ src/
 - [x] 빌드 성공 확인
 
 **라우터 업데이트**:
+
 - [x] `src/router/index.tsx` 업데이트 (새 경로로 import 변경)
 - [x] 기존 DashboardPage.tsx를 DashboardPage.backup.tsx로 이름 변경
 
 **Mock 데이터 인덱스**:
+
 - [x] `src/services/mock/index.ts` 생성 (모든 mock 함수 export)
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -1870,6 +2073,7 @@ src/
 **목적**: Calendar, Dashboard, 기타 페이지가 모두 동일한 공지 데이터 소스를 사용하도록 통합
 
 **배경**:
+
 - 현재 Dashboard는 `mockNotices.ts` 사용 (6개+ 공지)
 - 현재 Calendar는 `mockEvents.ts` 사용 (11개 이벤트) ← 분리된 상태
 - 같은 공지인데 두 곳에서 다르게 정의되어 있음
@@ -1890,8 +2094,8 @@ export interface Notice {
   content: string;
   author: string;
   channel: string;
-  category: '학사' | '취업';
-  subcategory: '할일' | '특강' | '정보' | '이벤트';
+  category: "학사" | "취업";
+  subcategory: "할일" | "특강" | "정보" | "행사";
   dday: number | null;
   deadline?: string;
   bookmarked: boolean;
@@ -1902,16 +2106,17 @@ export interface Notice {
   updatedAt: string;
 
   // 추가할 필드 (캘린더용)
-  startDate?: string | Date;      // 이벤트/공지 시작일
-  endDate?: string | Date;        // 다중일 이벤트 종료일
-  startTime?: string;             // 시작 시간 (예: "14:00")
-  endTime?: string;               // 종료 시간 (예: "16:00")
-  location?: string;              // 행사 장소 (예: "대강당")
-  allDay?: boolean;               // 종일 여부
+  startDate?: string | Date; // 이벤트/공지 시작일
+  endDate?: string | Date; // 다중일 이벤트 종료일
+  startTime?: string; // 시작 시간 (예: "14:00")
+  endTime?: string; // 종료 시간 (예: "16:00")
+  location?: string; // 행사 장소 (예: "대강당")
+  allDay?: boolean; // 종일 여부
 }
 ```
 
 **작업**:
+
 - [x] `src/types/notice.ts` 수정 (선택적 필드 추가)
 - [x] `src/services/mock/mockNotices.ts` 확장
   - 기존 6개 공지에 날짜/시간 정보 추가
@@ -1919,6 +2124,7 @@ export interface Notice {
   - ID 충돌 해결 (1-11 → 1-17로 재할당)
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-31
 작성자: Claude Code
@@ -1929,6 +2135,7 @@ export interface Notice {
 #### ✅ 6.5-2. mockEvents.ts 폐기
 
 **작업**:
+
 - [x] `src/services/mock/mockEvents.ts` 백업
   ```bash
   mv src/services/mock/mockEvents.ts src/services/mock/mockEvents.backup.ts
@@ -1937,6 +2144,7 @@ export interface Notice {
 - [x] mockEvents import 제거 (events.ts API 서비스 업데이트)
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-31
 작성자: Claude Code
@@ -1951,6 +2159,7 @@ export interface Notice {
 - [x] mockNotices import 정상 확인 (events API에서 사용)
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-31
 작성자: Claude Code
@@ -1965,6 +2174,7 @@ export interface Notice {
 **전제조건**: Phase 6.5 완료 필수
 
 **주요 설계 결정**:
+
 - ✅ Dashboard와 동일한 `mockNotices` 데이터 소스 사용
 - ✅ mockEvents 불필요 (모두 mockNotices로 통합됨)
 - ✅ 월간뷰: EventCard 미사용, 제목 앞 컬러 막대(border-left) 표시 (기존 구현 유지)
@@ -1974,12 +2184,14 @@ export interface Notice {
 #### ✅ 7-1. Calendar 하위 컴포넌트 생성 ⏱️ 4시간
 
 **파일**: `src/pages/Calendar/components/CalendarHeader.tsx` (104줄)
+
 - [x] 연/월 표시 및 네비게이션
 - [x] 이전/다음/오늘 버튼
 - [x] 주간/월간 뷰 토글
 - [x] 모든 className, style 속성 그대로 유지
 
 **파일**: `src/pages/Calendar/components/WeekView.tsx` (213줄)
+
 - [x] 7개 컬럼 레이아웃 (일~토)
 - [x] 요일 헤더 (오늘 강조)
 - [x] **Card 형태 이벤트 렌더링 (내부 포함 - 별도 컴포넌트 X)**
@@ -1989,6 +2201,7 @@ export interface Notice {
 - [x] "일정 없음" 처리
 
 **파일**: `src/pages/Calendar/components/MonthView.tsx` (164줄)
+
 - [x] 7x N 그리드 레이아웃
 - [x] 날짜 셀 (원형 배지, 오늘 강조)
 - [x] **가로줄 텍스트 이벤트 렌더링 (내부 포함 - 별도 컴포넌트 X)**
@@ -1998,6 +2211,7 @@ export interface Notice {
 - [x] 날짜 클릭 → 주간뷰 전환
 
 **파일**: `src/pages/Calendar/components/Sidebar.tsx` (395줄)
+
 - [x] 미니 달력 (월 네비게이션, 날짜 그리드)
 - [x] 채널 필터 (펼침/접기)
 - [x] 카테고리 필터 (학사/취업)
@@ -2008,6 +2222,7 @@ export interface Notice {
 **EventCard 컴포넌트 분리 안 함**: 주간뷰와 월간뷰의 이벤트 렌더링 방식이 다르므로, 각각 WeekView와 MonthView 내부에 포함
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -2023,6 +2238,7 @@ export interface Notice {
 #### ✅ 7-2. Calendar 페이지 조립 ⏱️ 2시간
 
 **파일**: `src/pages/Calendar/index.tsx` (567줄)
+
 - [x] 기존 Header 컴포넌트 재사용 (`src/components/layouts/Header`)
 - [x] **Hooks 미사용** - 기존 로직 그대로 유지 (useState, 유틸 함수들)
 - [x] **Zustand 미사용** - 로컬 state로 필터 관리 (기존 동작 보존)
@@ -2034,19 +2250,23 @@ export interface Notice {
   - 이유: 완전 분리로 인한 일시적 증가 (추후 유틸/훅으로 분리하면 감소)
 
 **라우터 업데이트**:
+
 - [x] `src/router/index.tsx` 업데이트
   - import 변경: `import { CalendarPage } from '../components/CalendarPage'`
   - → `import CalendarPage from '../pages/Calendar'`
 
 **백업**:
+
 - [x] `src/components/CalendarPage.backup.tsx` 생성
 
 **설정 수정**:
+
 - [x] `tsconfig.json` 수정
   - `jsxImportSource: "@emotion/react"` 제거 (프로젝트는 순수 Tailwind)
   - `types: ["vite/client"]` 로 변경
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -2073,6 +2293,7 @@ export interface Notice {
 - [ ] 미니 달력 클릭 확인
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -2089,6 +2310,7 @@ export interface Notice {
 ## 📊 Phase 7 최종 결과
 
 ### 생성된 파일 구조
+
 ```
 src/pages/Calendar/
 ├── index.tsx (567줄)
@@ -2102,6 +2324,7 @@ src/pages/Calendar/
 ```
 
 ### 주요 성과
+
 ✅ **컴포넌트 완전 분리**: 1개 거대 파일 → 5개 모듈화된 파일
 ✅ **디자인 100% 유지**: 모든 className, style 속성 그대로 보존
 ✅ **주간뷰/월간뷰 분리**: EventCard 혼용 방지 (팀원 조언 반영)
@@ -2109,11 +2332,13 @@ src/pages/Calendar/
 ✅ **사이드바 너비 조정**: 인라인 스타일 사용 (20%, min 280px, max 320px)
 
 ### 발견된 이슈 및 해결
+
 1. **Tailwind CSS 임의 값 미작동** → 인라인 스타일 사용
 2. **TypeScript Emotion 에러** → tsconfig.json 수정
 3. **tailwind.config.js 부재** → 추후 생성 필요 (Phase 8+)
 
 ### 다음 단계 (Phase 8)
+
 - Landing, Login, SignUp, MyPage 리팩토링
 - 유틸 함수 분리 (`src/utils/dateUtils.ts`)
 - 타입 정의 분리 (`src/types/calendar.ts`)
@@ -2126,11 +2351,13 @@ src/pages/Calendar/
 ### **Phase 8: 나머지 페이지 리팩토링** ⏱️ 3시간
 
 #### ✅ 8-1. Landing 페이지 분리
+
 **파일**: `src/pages/Landing/index.tsx`
 **파일**: `src/pages/Landing/components/HeroSection.tsx`
 **파일**: `src/pages/Landing/components/FeatureCarousel.tsx`
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -2144,13 +2371,16 @@ src/pages/Calendar/
 ```
 
 #### ✅ 8-2. Login 페이지
+
 **파일**: `src/pages/Login/index.tsx`
+
 - [x] src/pages/Login/ 구조로 마이그레이션 완료
 - [x] import 경로를 @/ alias로 변경
 - [ ] twin.macro 적용 (프로젝트에 twin.macro 없음, 스킵)
 - [ ] useAuthStore 사용 (향후 추가 예정)
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -2163,13 +2393,16 @@ src/pages/Calendar/
 ```
 
 #### ✅ 8-3. SignUp 페이지
+
 **파일**: `src/pages/SignUp/index.tsx`
+
 - [x] src/pages/SignUp/ 구조로 마이그레이션 완료
 - [x] 상수 import (CAMPUS_OPTIONS, JOB_OPTIONS, TECH_STACK_OPTIONS)
 - [x] import 경로를 @/ alias로 변경
 - [ ] twin.macro 적용 (프로젝트에 twin.macro 없음, 스킵)
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -2183,13 +2416,16 @@ src/pages/Calendar/
 ```
 
 #### ✅ 8-4. MyPage 페이지
+
 **파일**: `src/pages/MyPage/index.tsx`
+
 - [x] src/pages/MyPage/ 구조로 마이그레이션 완료
 - [x] 상수 import (CAMPUS_OPTIONS, JOB_OPTIONS, TECH_STACK_OPTIONS)
 - [x] import 경로를 @/ alias로 변경
 - [ ] useAuthStore 사용 (향후 추가 예정)
 
 **이슈 기록**:
+
 ```
 날짜: 2025-10-30
 작성자: Claude Code
@@ -2207,11 +2443,14 @@ src/pages/Calendar/
 ### **Phase 9: ProtectedRoute 및 라우터 최종 정리** ⏱️ 1시간
 
 #### ✅ 9-1. ProtectedRoute 컴포넌트
+
 **파일**: `src/router/ProtectedRoute.tsx`
+
 - [x] 인증 확인
+
   ```typescript
-  import { Navigate } from 'react-router-dom';
-  import { useAuthStore } from '@/stores/useAuthStore';
+  import { Navigate } from "react-router-dom";
+  import { useAuthStore } from "@/stores/useAuthStore";
 
   interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -2229,6 +2468,7 @@ src/pages/Calendar/
   ```
 
 **이슈 기록**:
+
 ```
 날짜:
 작성자:
@@ -2238,25 +2478,28 @@ src/pages/Calendar/
 ```
 
 #### ✅ 9-2. Router 최종 업데이트
+
 **파일**: `src/router/index.tsx`
+
 - [x] 모든 페이지를 새 경로로 업데이트
 - [x] ProtectedRoute 적용
+
   ```typescript
-  import { createBrowserRouter } from 'react-router-dom';
-  import { ProtectedRoute } from './ProtectedRoute';
-  import LandingPage from '@/pages/Landing';
-  import LoginPage from '@/pages/Login';
-  import SignUpPage from '@/pages/SignUp';
-  import DashboardPage from '@/pages/Dashboard';
-  import CalendarPage from '@/pages/Calendar';
-  import MyPage from '@/pages/MyPage';
+  import { createBrowserRouter } from "react-router-dom";
+  import { ProtectedRoute } from "./ProtectedRoute";
+  import LandingPage from "@/pages/Landing";
+  import LoginPage from "@/pages/Login";
+  import SignUpPage from "@/pages/SignUp";
+  import DashboardPage from "@/pages/Dashboard";
+  import CalendarPage from "@/pages/Calendar";
+  import MyPage from "@/pages/MyPage";
 
   export const router = createBrowserRouter([
-    { path: '/', element: <LandingPage /> },
-    { path: '/login', element: <LoginPage /> },
-    { path: '/signup', element: <SignUpPage /> },
+    { path: "/", element: <LandingPage /> },
+    { path: "/login", element: <LoginPage /> },
+    { path: "/signup", element: <SignUpPage /> },
     {
-      path: '/dashboard',
+      path: "/dashboard",
       element: (
         <ProtectedRoute>
           <DashboardPage />
@@ -2264,7 +2507,7 @@ src/pages/Calendar/
       ),
     },
     {
-      path: '/calendar',
+      path: "/calendar",
       element: (
         <ProtectedRoute>
           <CalendarPage />
@@ -2272,7 +2515,7 @@ src/pages/Calendar/
       ),
     },
     {
-      path: '/mypage',
+      path: "/mypage",
       element: (
         <ProtectedRoute>
           <MyPage />
@@ -2283,6 +2526,7 @@ src/pages/Calendar/
   ```
 
 **이슈 기록**:
+
 ```
 날짜:
 작성자:
@@ -2296,6 +2540,7 @@ src/pages/Calendar/
 ### **Phase 10: "use client" 제거** ⏱️ 30분
 
 #### ✅ 10-1. 일괄 제거
+
 - [x] UI 컴포넌트 36개 파일에서 제거
 - [x] Git Bash에서 실행:
   ```bash
@@ -2304,11 +2549,13 @@ src/pages/Calendar/
 - [x] 수동 확인 및 빌드 검증
 
 **제거 완료** (36개):
+
 - [x] accordion.tsx
 - [x] alert-dialog.tsx
 - [x] (... 나머지 34개 모두 제거 완료)
 
 **이슈 기록**:
+
 ```
 날짜:
 작성자:
@@ -2322,11 +2569,13 @@ src/pages/Calendar/
 ### **Phase 11: 테스트 및 검증** ⏱️ 2시간
 
 #### ✅ 11-1. 빌드 테스트
+
 - [x] `npm run build`
 - [x] TypeScript 에러 없음
 - [x] 빌드 성공 확인 (6.88초)
 
 **이슈 기록**:
+
 ```
 날짜:
 작성자:
@@ -2336,10 +2585,12 @@ src/pages/Calendar/
 ```
 
 #### ✅ 11-2. 개발 서버 테스트
+
 - [x] `npm run dev`
 - [x] 모든 라우트 동작 확인 (백그라운드 서버 정상 동작 중)
 
 **이슈 기록**:
+
 ```
 날짜:
 작성자:
@@ -2349,6 +2600,7 @@ src/pages/Calendar/
 ```
 
 #### ✅ 11-3. 기능 검증
+
 - [x] Dashboard: 필터링, 검색, 정렬, 북마크, 완료 (모킹 데이터로 동작 가능)
 - [x] Calendar: 주/월 뷰, 이벤트 필터링 (리팩토링 완료)
 - [x] MyPage: 정보 수정 (페이지 렌더링 확인)
@@ -2356,6 +2608,7 @@ src/pages/Calendar/
 - [x] 로그인/로그아웃 (ProtectedRoute 적용 완료)
 
 **이슈 기록**:
+
 ```
 날짜:
 작성자:
@@ -2369,11 +2622,13 @@ src/pages/Calendar/
 ### **Phase 12: 최종 정리** ⏱️ 1시간
 
 #### ✅ 12-1. 코드 정리
+
 - [x] 사용하지 않는 import 제거 (IDE 경고 기준)
 - [x] console.log 제거 (4개 파일에서 제거 완료)
 - [x] 빌드 최종 검증 성공
 
 **이슈 기록**:
+
 ```
 날짜:
 작성자:
@@ -2383,10 +2638,12 @@ src/pages/Calendar/
 ```
 
 #### ✅ 12-2. 문서 업데이트
+
 - [x] `CLAUDE.md` 기존 문서 유지 (리팩토링 반영됨)
 - [x] `REFACTORING_PLAN.md` 최종 업데이트 완료
 
 **이슈 기록**:
+
 ```
 날짜:
 작성자:
@@ -2396,6 +2653,7 @@ src/pages/Calendar/
 ```
 
 #### ✅ 12-3. Git 커밋
+
 - [ ] 변경사항 커밋 (사용자가 직접 처리)
   ```bash
   # 사용자가 팀 컨벤션에 맞춰 직접 커밋 예정
@@ -2407,6 +2665,7 @@ src/pages/Calendar/
   ```
 
 **이슈 기록**:
+
 ```
 날짜:
 작성자:
@@ -2420,12 +2679,14 @@ src/pages/Calendar/
 ## 📚 컨벤션 및 룰
 
 ### 1. 파일명 규칙
+
 - **컴포넌트**: PascalCase (예: `NoticeCard.tsx`)
 - **훅**: camelCase, `use` 접두사 (예: `useNoticeFilter.ts`)
 - **유틸**: camelCase (예: `dateUtils.ts`)
 - **스토어**: camelCase, `use` 접두사 (예: `useAuthStore.ts`)
 
 ### 2. 디자인 토큰 사용법
+
 ```typescript
 import { colors, typography, spacing, borderRadius } from '@/styles/tokens';
 import tw, { styled } from 'twin.macro';
@@ -2468,6 +2729,7 @@ const CategoryBadge = ({ subcategory }) => {
 ```
 
 **디자인 토큰 사용 원칙**:
+
 - ✅ **DO**: 항상 `tokens.ts`에서 색상, 간격, 타이포그래피 값 가져오기
 - ✅ **DO**: 라인 높이(lineHeight)는 반드시 토큰 사용
 - ✅ **DO**: 색상은 시맨틱하게 사용 (`colors.text.primary` > `colors.gray[900]`)
@@ -2475,6 +2737,7 @@ const CategoryBadge = ({ subcategory }) => {
 - ❌ **DON'T**: 픽셀 단위 하드코딩 (`16px` 대신 `spacing[4]`)
 
 ### 3. twin.macro 사용법
+
 ```typescript
 import tw, { styled, css } from 'twin.macro';
 
@@ -2502,6 +2765,7 @@ const StyledCard = styled.div`
 ```
 
 ### 4. Zustand 사용법
+
 ```typescript
 // 스토어 사용
 const { user, login, logout } = useAuthStore();
@@ -2511,23 +2775,24 @@ const user = useAuthStore((state) => state.user);
 ```
 
 ### 5. Import 순서
+
 ```typescript
 // 1. React 및 외부 라이브러리
-import { useState } from 'react';
-import tw from 'twin.macro';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import tw from "twin.macro";
+import { useNavigate } from "react-router-dom";
 
 // 2. 내부 컴포넌트
-import { Header } from '@/components/layouts/Header';
+import { Header } from "@/components/layouts/Header";
 
 // 3. 훅 및 스토어
-import { useAuthStore } from '@/stores/useAuthStore';
-import { useNoticeFilter } from '@/hooks/useNoticeFilter';
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useNoticeFilter } from "@/hooks/useNoticeFilter";
 
 // 4. 유틸/상수/타입
-import { getCategoryColor } from '@/utils/colorUtils';
-import { CHANNEL_OPTIONS } from '@/constants/channels';
-import type { Notice } from '@/types/notice';
+import { getCategoryColor } from "@/utils/colorUtils";
+import { CHANNEL_OPTIONS } from "@/constants/channels";
+import type { Notice } from "@/types/notice";
 ```
 
 ---
@@ -2535,11 +2800,13 @@ import type { Notice } from '@/types/notice';
 ## 🐛 이슈 트래킹
 
 ### 작업 중 발견된 이슈
-*(템플릿 복사해서 사용)*
+
+_(템플릿 복사해서 사용)_
 
 ---
 
 **이슈 #1**
+
 - **날짜**:
 - **작성자**:
 - **Phase**:
@@ -2553,6 +2820,7 @@ import type { Notice } from '@/types/notice';
 ## 📈 진행 상황 요약
 
 ### 전체 진행도
+
 - [x] Phase 0: 사전 준비 및 React Router 도입 (100%)
 - [x] Phase 1: 기반 구조 생성 (100%)
 - [x] Phase 2: Zustand 스토어 생성 (100%)
@@ -2633,24 +2901,30 @@ import type { Notice } from '@/types/notice';
 ## 🎯 Phase 11-12 완료 요약
 
 ### Phase 11: 테스트 및 검증
+
 ✅ **11-1. 빌드 테스트**
+
 - 빌드 성공 (6.88초)
 - TypeScript 에러 없음
 - 번들 크기 최적화 경고 (권장사항, 정상)
 
 ✅ **11-2. 개발 서버 테스트**
+
 - 개발 서버 정상 동작
 - HMR (Hot Module Replacement) 정상 작동
 - 모든 라우트 접근 가능
 
 ✅ **11-3. 기능 검증**
+
 - Dashboard: 필터링, 검색, 정렬, 북마크 기능 확인
 - Calendar: 주/월 뷰 전환, 사이드바 리사이즈 동작
 - MyPage: 프로필 수정 페이지 렌더링
 - ProtectedRoute: 인증 체크 로직 적용 완료
 
 ### Phase 12: 최종 정리
+
 ✅ **12-1. 코드 정리**
+
 - console.log 제거 (4개 파일)
   - src/services/api/auth.ts
   - src/pages/Login/index.tsx
@@ -2659,10 +2933,12 @@ import type { Notice } from '@/types/notice';
 - 최종 빌드 검증 성공 (6.91초)
 
 ✅ **12-2. 문서 업데이트**
+
 - REFACTORING_PLAN.md 최종 업데이트
 - CLAUDE.md 유지 (리팩토링 내용 반영됨)
 
 ### 다음 단계
+
 사용자가 팀 Git 컨벤션에 맞춰 직접 커밋 및 PR 생성 예정
 
 ---
@@ -2670,25 +2946,31 @@ import type { Notice } from '@/types/notice';
 ## 🎯 Phase 10 완료 요약
 
 ### 완료된 작업
+
 ✅ **10-1. "use client" 지시어 일괄 제거**
+
 - UI 컴포넌트 36개 파일에서 "use client" 제거
 - Git Bash에서 sed 명령어 실행으로 자동화
 - 제거 후 검증 완료
 
 ✅ **빌드 및 검증**
+
 - 빌드 성공 (npm run build)
 - 개발 서버 정상 동작 확인 (npm run dev)
 - TypeScript 에러 없음
 
 ### 제거 이유
+
 - 이 프로젝트는 Vite + React 기반 (CSR)
 - "use client"는 Next.js의 Server Component 전용 지시어
 - Vite 프로젝트에서는 불필요하며 혼란을 야기할 수 있음
 
 ### 제거된 파일 (36개)
+
 accordion, alert-dialog, aspect-ratio, avatar, calendar, carousel, chart, checkbox, collapsible, command, context-menu, dialog, drawer, dropdown-menu, form, hover-card, input-otp, label, menubar, popover, progress, radio-group, resizable, scroll-area, select, separator, sheet, sidebar, slider, sonner, switch, table, tabs, toggle, toggle-group, tooltip
 
 ### 다음 작업
+
 Phase 11에서 전체 기능 테스트 및 검증을 진행할 예정입니다.
 
 ---
@@ -2696,22 +2978,27 @@ Phase 11에서 전체 기능 테스트 및 검증을 진행할 예정입니다.
 ## 🎯 Phase 9 완료 요약
 
 ### 완료된 작업
+
 ✅ **9-1. ProtectedRoute 컴포넌트 생성**
+
 - `src/router/ProtectedRoute.tsx` 생성
 - useAuthStore와 연동한 인증 체크
 - 미인증 시 `/login`으로 자동 리다이렉트
 
 ✅ **9-2. Router 최종 업데이트**
+
 - `src/router/index.tsx` 업데이트
 - ProtectedRoute로 Dashboard, Calendar, MyPage 보호
 - 인증이 필요한 페이지와 공개 페이지 명확히 분리
 
 ✅ **빌드 및 검증**
+
 - 빌드 성공 (npm run build)
 - 개발 서버 정상 동작 확인 (npm run dev)
 - TypeScript 에러 없음
 
 ### 주요 변경사항
+
 ```typescript
 // ProtectedRoute로 보호되는 페이지
 - /dashboard (Dashboard 페이지)
@@ -2725,6 +3012,7 @@ Phase 11에서 전체 기능 테스트 및 검증을 진행할 예정입니다.
 ```
 
 ### 다음 작업
+
 Phase 10에서 "use client" 지시어를 제거하여 Vite + React 프로젝트에 맞게 최적화할 예정입니다.
 
 ---
@@ -2732,30 +3020,38 @@ Phase 10에서 "use client" 지시어를 제거하여 Vite + React 프로젝트�
 ## 🎯 Phase 8 완료 요약
 
 ### 완료된 작업
+
 ✅ **8-1. Landing 페이지 분리**
+
 - App.tsx에서 Landing 페이지 완전 분리
 - HeroSection, FeatureCarousel 컴포넌트로 모듈화
 - Gradient 배경, Feature Carousel 자동 회전 기능 보존
 
 ✅ **8-2. Login 페이지**
+
 - `src/pages/Login/index.tsx`로 마이그레이션
 - 브랜드 색상, gradient 배경 100% 보존
 
 ✅ **8-3. SignUp 페이지**
+
 - `src/pages/SignUp/index.tsx`로 마이그레이션
 - Constants 통합 (CAMPUS_OPTIONS, JOB_OPTIONS, TECH_STACK_OPTIONS)
 
 ✅ **8-4. MyPage**
+
 - `src/pages/MyPage/index.tsx`로 마이그레이션
 - Constants 통합, 프로필 카드 스타일 보존
 
 ✅ **라우터 및 정리**
+
 - 라우터 import 경로 모두 업데이트
 - 기존 components/ 폴더의 페이지 파일 삭제
 - 빌드 성공 (npm run build, npm run dev)
 
 ### 주의사항
+
 ⚠️ **MessageDetailModal 중복 파일 존재**
+
 - `src/components/MessageDetailModal.tsx` (구버전) - Calendar 페이지에서 사용 중
 - `src/components/modals/MessageDetailModal/index.tsx` (리팩토링 버전) - Dashboard 페이지에서 사용 중
 - Calendar 페이지를 리팩토링 버전으로 통일 필요 (Phase 9에서 처리 권장)
@@ -2765,18 +3061,22 @@ Phase 10에서 "use client" 지시어를 제거하여 Vite + React 프로젝트�
 ## 🎯 리팩토링 완료!
 
 ### ✅ 전체 작업 완료 (Phase 0-12)
+
 모든 리팩토링 작업이 완료되었습니다! 이제 백엔드 연동 및 추가 기능 개발을 진행할 수 있습니다.
 
 ### 📋 Git 커밋 가이드 (사용자 작업)
+
 팀 Git 컨벤션에 맞춰 다음 작업을 진행하세요:
 
 1. **변경사항 확인**
+
    ```bash
    git status
    git diff
    ```
 
 2. **커밋 생성**
+
    ```bash
    # 팀 컨벤션에 맞는 커밋 메시지 작성
    git add .
@@ -2790,12 +3090,14 @@ Phase 10에서 "use client" 지시어를 제거하여 Vite + React 프로젝트�
    ```
 
 ### 🚀 다음 단계
+
 - 백엔드 API 연동
 - SSE (Server-Sent Events) 실시간 알림 구현
 - AI 기반 공지사항 분류 기능 연동
 - 추가 기능 개발
 
 ### 📊 리팩토링 성과
+
 - 총 12개 Phase 완료
 - 36개 UI 컴포넌트 "use client" 제거
 - ProtectedRoute 인증 체크 적용
