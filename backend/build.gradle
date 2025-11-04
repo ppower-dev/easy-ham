@@ -13,9 +13,7 @@ java {
 		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
-test {
-	enabled = false
-}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -25,7 +23,9 @@ configurations {
 repositories {
 	mavenCentral()
 }
-
+tasks.withType(Test) {
+	enabled = false
+}
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api'
@@ -41,11 +41,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.springframework.session:spring-session-data-redis'
 	implementation 'org.springframework.session:spring-session-jdbc'
-//	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
-	implementation 'com.meilisearch.sdk:meilisearch-java:0.12.0'
 	compileOnly 'org.projectlombok:lombok'
 //	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'

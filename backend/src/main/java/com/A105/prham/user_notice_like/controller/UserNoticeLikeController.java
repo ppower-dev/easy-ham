@@ -15,14 +15,18 @@ public class UserNoticeLikeController {
 
     private final UserNoticeLikeService userNoticeLikeService;
 
-    @PostMapping("/{noticeId}")
-    public ApiResponseDto addBookmark(@UserId(required = true) Long userId, @PathVariable Long noticeId) {
-        return ApiResponseDto.success(SuccessCode.BOOKMARK_SAVE_SUCCESS, userNoticeLikeService.saveBookmarks(userId, noticeId));
+    @PostMapping("/{userNoticeId}")
+    public ApiResponseDto addBookmark(@UserId(required = true) Long userId, @PathVariable Long userNoticeId) {
+        return ApiResponseDto.success(SuccessCode.BOOKMARK_SAVE_SUCCESS, userNoticeLikeService.saveBookmarks(userId, userNoticeId));
     }
 
-    @DeleteMapping("/{noticeId}")
-    public ApiResponseDto deleteBookmark(@UserId(required = true) Long userId, @PathVariable Long noticeId) {
-        userNoticeLikeService.deleteBookmarks(userId, noticeId);
-        return ApiResponseDto.success(SuccessCode.BOOKMARK_DELETE_SUCCESS);
+    @DeleteMapping("/{userNoticeId}")
+    public ApiResponseDto deleteBookmark(@UserId(required = true) Long userId, @PathVariable Long userNoticeId) {
+        return ApiResponseDto.success(SuccessCode.BOOKMARK_DELETE_SUCCESS, userNoticeLikeService.deleteBookmarks(userId, userNoticeId));
+    }
+
+    @GetMapping
+    public ApiResponseDto getBookmarks(@UserId(required = true) Long userId) {
+        return ApiResponseDto.success(SuccessCode.BOOKMARK_GET_SUCCESS, userNoticeLikeService.getBookmarks(userId));
     }
 }
