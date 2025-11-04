@@ -2,19 +2,21 @@ package com.A105.prham.user_notice_like.service;
 
 import com.A105.prham.common.exception.CustomException;
 import com.A105.prham.common.response.ErrorCode;
-import com.A105.prham.notice.entity.Notice;
-import com.A105.prham.notice.repository.NoticeRepository;
 import com.A105.prham.user.entity.User;
 import com.A105.prham.user.repository.UserRepository;
 import com.A105.prham.user_notice.entity.UserNotice;
 import com.A105.prham.user_notice.repository.UserNoticeRepository;
+import com.A105.prham.user_notice_like.dto.response.UserNoticeLikeDto;
+import com.A105.prham.user_notice_like.dto.response.UserNoticeLikeGetResponse;
 import com.A105.prham.user_notice_like.entity.UserNoticeLike;
-import com.A105.prham.user_notice_like.dto.UserNoticeLikeCreateResponse;
-import com.A105.prham.user_notice_like.dto.UserNoticeLikeDeleteResponse;
+import com.A105.prham.user_notice_like.dto.response.UserNoticeLikeCreateResponse;
+import com.A105.prham.user_notice_like.dto.response.UserNoticeLikeDeleteResponse;
 import com.A105.prham.user_notice_like.repository.UserNoticeLikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,8 +48,6 @@ public class UserNoticeLikeService {
                 .user(user)
                 .notice(userNotice.getNotice())
                 .team(userNotice.getTeam())
-                .subcode(userNotice.getSubcode())
-                .maincode(userNotice.getMaincode())
                 .channel(userNotice.getChannel())
                 .post(userNotice.getPost())
                 .userNotice(userNotice)
@@ -85,6 +85,33 @@ public class UserNoticeLikeService {
 
         return UserNoticeLikeDeleteResponse.builder()
                 .isLiked(false)
+                .build();
+    }
+
+    public UserNoticeLikeGetResponse getBookmarks(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        List<UserNoticeLike> userNoticeLikes = userNoticeLikeRepository.findByUser(user);
+
+        List<UserNoticeLikeDto> userNoticeLikeDtoList = userNoticeLikes.stream()
+                .map(userNoticeLike -> UserNoticeLikeDto.builder()
+                        .noticeId(userNoticeLike.getUserNotice().getId()) //확인 필요
+                        .title(userNoticeLike.getNotice().getTitle())
+                        .contentPreview(userNoticeLike.getNotice().getContent())
+                        .mainCategory(userNoticeLike.getNotice().getMaincode().getMainCodeName())
+                        .subCategory(userNoticeLike.getNotice().getSubcode().getSubcodeName())
+                        .authorId(userNoticeLike.getNotice().getAuthorId())
+                        .authorName(userNoticeLike.getNotice().getPost().getUserName())
+                        .channelName(userNoticeLike.getNotice().getChannel().getChannelName())
+                        .createdAt(userNoticeLike.getUserNotice().getCreatedAt().toString())
+                        .deadline(userNoticeLike.getNotice().getDeadline())
+                        .isLiked(userNoticeLike.getIsLiked())
+                        .isCompleted(userNoticeLike.getUserNotice().getIsCompleted())
+                        .build()).toList();
+
+        return UserNoticeLikeGetResponse.builder()
+                .notices(userNoticeLikeDtoList)
                 .build();
     }
 }
