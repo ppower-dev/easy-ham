@@ -11,13 +11,28 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u FROM User u " +
-            "LEFT JOIN FETCH u.userSkills us " +
-            "LEFT JOIN FETCH us.skill " +
-            "LEFT JOIN FETCH u.userPositions up " +
-            "LEFT JOIN FETCH up.position " +
-            "WHERE u.email = :email")
+    @Query("""
+                SELECT u FROM User u
+                LEFT JOIN FETCH u.campus
+                LEFT JOIN FETCH u.userSkills us
+                LEFT JOIN FETCH us.skill
+                LEFT JOIN FETCH u.userPositions up
+                LEFT JOIN FETCH up.position
+                WHERE u.email = :email
+            """)
     Optional<User> findByEmail(@Param("email") String email);
+
+
+    @Query("""
+                SELECT u FROM User u
+                LEFT JOIN FETCH u.campus
+                LEFT JOIN FETCH u.userSkills us
+                LEFT JOIN FETCH us.skill
+                LEFT JOIN FETCH u.userPositions up
+                LEFT JOIN FETCH up.position
+                WHERE u.ssoSubId = :ssoSubId
+            """)
+    Optional<User> findBySsoSubId(String ssoSubId);
 
     boolean existsByEmail(String email);
 }

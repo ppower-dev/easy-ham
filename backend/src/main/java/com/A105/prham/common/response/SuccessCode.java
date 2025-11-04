@@ -19,7 +19,7 @@ public enum SuccessCode {
     BOOKMARK_GET_SUCCESS(200, HttpStatus.OK, "북마크 목록 조회 성공"),
     KEYWORD_ADD_SUCCESS(200, HttpStatus.OK, "키워드 구독 성공"),
     SUCCESS(200,HttpStatus.OK, "요청 성공"),
-
+    NOT_REGISTERED(403, HttpStatus.FORBIDDEN,"회원가입 후 이용해 주세요"),
     //201 CREATED
     POST_CREATED(201, HttpStatus.CREATED, "메시지가 저장되었습니다.");
 
