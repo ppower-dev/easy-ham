@@ -21,7 +21,7 @@ public class MattermostWebhookController {
 
     private final MessageProcessorService messagePreprocessor;
     private final MessageService messageService;
-//    private final   ElasticsearchService elasticsearchService;
+
     @PostMapping("/mattermost")
     public ResponseEntity<String> receiveMattermostMessage(
             @RequestBody MattermostWebhookDTO payload) {
