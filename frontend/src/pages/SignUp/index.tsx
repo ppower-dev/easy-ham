@@ -1,15 +1,28 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { X, ArrowLeft } from 'lucide-react';
-import { getCampuses, getSkills, getPositions, type Campus, type Position, type Skill } from '@/services/api/codes';
-import { signup, type SignupRequest } from '@/services/api/auth';
-import { useAuthStore } from '@/stores/useAuthStore';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { X, ArrowLeft } from "lucide-react";
+import {
+  getCampuses,
+  getSkills,
+  getPositions,
+  type Campus,
+  type Position,
+  type Skill,
+} from "@/services/api/codes";
+import { signup, type SignupRequest } from "@/services/api/auth";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { toast } from "sonner";
 
 export function SignUpPage() {
   const navigate = useNavigate();
@@ -20,11 +33,11 @@ export function SignUpPage() {
   const [isLoadingCodes, setIsLoadingCodes] = useState(true);
 
   // 폼 데이터
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [generation, setGeneration] = useState('');
-  const [campusId, setCampusId] = useState('');
-  const [classroom, setClassroom] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [generation, setGeneration] = useState("");
+  const [campusId, setCampusId] = useState("");
+  const [classroom, setClassroom] = useState("");
   const [selectedPositionIds, setSelectedPositionIds] = useState<number[]>([]);
   const [selectedSkillIds, setSelectedSkillIds] = useState<number[]>([]);
 
@@ -39,17 +52,19 @@ export function SignUpPage() {
         ]);
 
         if (campusRes.status === 200) {
+          // console.log("캠퍼스 데이터:", campusRes.data.campuses);
           setCampuses(campusRes.data.campuses);
         }
         if (skillRes.status === 200) {
+          // console.log("기술 스택 데이터:", skillRes.data.skills);
           setSkills(skillRes.data.skills);
         }
         if (positionRes.status === 200) {
+          // console.log("포지션 데이터:", positionRes.data.positions);
           setPositions(positionRes.data.positions);
         }
       } catch (error) {
-        console.error('코드 조회 실패:', error);
-        toast.error('코드 조회에 실패했습니다');
+        // console.error("코드 조회 실패:", error);
       } finally {
         setIsLoadingCodes(false);
       }
@@ -60,7 +75,9 @@ export function SignUpPage() {
 
   const handleTogglePosition = (positionId: number) => {
     if (selectedPositionIds.includes(positionId)) {
-      setSelectedPositionIds(selectedPositionIds.filter((id) => id !== positionId));
+      setSelectedPositionIds(
+        selectedPositionIds.filter((id) => id !== positionId)
+      );
     } else {
       setSelectedPositionIds([...selectedPositionIds, positionId]);
     }
@@ -75,7 +92,9 @@ export function SignUpPage() {
   };
 
   const handleRemovePosition = (positionId: number) => {
-    setSelectedPositionIds(selectedPositionIds.filter((id) => id !== positionId));
+    setSelectedPositionIds(
+      selectedPositionIds.filter((id) => id !== positionId)
+    );
   };
 
   const handleRemoveSkill = (skillId: number) => {
@@ -85,8 +104,15 @@ export function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !email || !generation || !campusId || !classroom || selectedPositionIds.length === 0) {
-      toast.error('필수 항목을 모두 입력해주세요');
+    if (
+      !name ||
+      !email ||
+      !generation ||
+      !campusId ||
+      !classroom ||
+      selectedPositionIds.length === 0
+    ) {
+      toast.error("필수 항목을 모두 입력해주세요");
       return;
     }
 
@@ -105,17 +131,17 @@ export function SignUpPage() {
       const response = await signup(signupData);
 
       if (response.status === 200) {
-        toast.success('회원가입 성공! 로그인 페이지로 이동합니다');
+        toast.success("회원가입 성공! 로그인 페이지로 이동합니다");
         // 회원가입 성공 후 로그인 페이지로 이동
         setTimeout(() => {
-          navigate('/login');
+          navigate("/login");
         }, 1000);
       } else {
-        toast.error('회원가입에 실패했습니다');
+        toast.error("회원가입에 실패했습니다");
       }
     } catch (error) {
-      console.error('회원가입 실패:', error);
-      toast.error('회원가입 중 오류가 발생했습니다');
+      console.error("회원가입 실패:", error);
+      toast.error("회원가입 중 오류가 발생했습니다");
     } finally {
       setIsLoading(false);
     }
@@ -139,7 +165,7 @@ export function SignUpPage() {
           <Button
             type="button"
             variant="ghost"
-            onClick={() => navigate('/login')}
+            onClick={() => navigate("/login")}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 -ml-2"
             style={{ fontWeight: 500 }}
           >
@@ -154,7 +180,9 @@ export function SignUpPage() {
             <div className="w-12 h-12 rounded-xl bg-[var(--brand-orange)] flex items-center justify-center">
               <span className="text-2xl">🐹</span>
             </div>
-            <span className="text-3xl" style={{ fontWeight: 700 }}>편리햄!</span>
+            <span className="text-3xl" style={{ fontWeight: 700 }}>
+              편리햄!
+            </span>
           </div>
           <h1 className="text-3xl" style={{ fontWeight: 700 }}>
             회원가입
@@ -290,8 +318,8 @@ export function SignUpPage() {
                     disabled={selectedPositionIds.includes(position.id)}
                     className={`px-4 py-3 text-sm rounded-lg border transition-colors ${
                       selectedPositionIds.includes(position.id)
-                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                        : 'bg-white hover:bg-[var(--brand-orange-light)] hover:border-[var(--brand-orange)] border-gray-300'
+                        ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                        : "bg-white hover:bg-[var(--brand-orange-light)] hover:border-[var(--brand-orange)] border-gray-300"
                     }`}
                     style={{ fontWeight: 500 }}
                   >
@@ -305,7 +333,13 @@ export function SignUpPage() {
           {/* 기술 스택 */}
           <div className="space-y-3">
             <Label>
-              보유 기술 스택 <span className="text-gray-500 text-sm" style={{ fontWeight: 400 }}>(선택)</span>
+              보유 기술 스택{" "}
+              <span
+                className="text-gray-500 text-sm"
+                style={{ fontWeight: 400 }}
+              >
+                (선택)
+              </span>
             </Label>
 
             {/* 선택된 기술 스택 */}
@@ -347,8 +381,8 @@ export function SignUpPage() {
                     disabled={selectedSkillIds.includes(skill.id)}
                     className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
                       selectedSkillIds.includes(skill.id)
-                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                        : 'bg-white hover:bg-[var(--brand-orange-light)] hover:border-[var(--brand-orange)] border-gray-300'
+                        ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                        : "bg-white hover:bg-[var(--brand-orange-light)] hover:border-[var(--brand-orange)] border-gray-300"
                     }`}
                     style={{ fontWeight: 500 }}
                   >
@@ -363,11 +397,21 @@ export function SignUpPage() {
           <div className="pt-4">
             <Button
               type="submit"
-              disabled={isLoading || !name || !email || !generation || !campusId || !classroom || selectedPositionIds.length === 0}
+              disabled={
+                isLoading ||
+                !name ||
+                !email ||
+                !generation ||
+                !campusId ||
+                !classroom ||
+                selectedPositionIds.length === 0
+              }
               className="w-full bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white py-6 disabled:bg-gray-300 disabled:cursor-not-allowed"
               style={{ fontWeight: 600 }}
             >
-              <span className="text-lg">{isLoading ? '가입 중...' : '회원가입 완료'}</span>
+              <span className="text-lg">
+                {isLoading ? "가입 중..." : "회원가입 완료"}
+              </span>
             </Button>
           </div>
         </form>
