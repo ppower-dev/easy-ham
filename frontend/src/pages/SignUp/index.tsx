@@ -131,10 +131,10 @@ export function SignUpPage() {
       const response = await signup(signupData);
 
       if (response.status === 200) {
-        toast.success("회원가입 성공! 로그인 페이지로 이동합니다");
-        // 회원가입 성공 후 로그인 페이지로 이동
+        toast.success("회원가입 성공했습니다!");
+        // 회원가입 성공 후 대시보드로 이동 (이미 로그인된 상태)
         setTimeout(() => {
-          navigate("/login");
+          navigate("/dashboard");
         }, 1000);
       } else {
         toast.error("회원가입에 실패했습니다");
