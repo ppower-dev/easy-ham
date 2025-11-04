@@ -22,6 +22,6 @@ public class NotificationController {
     @PostMapping("/keywords")
     public ApiResponseDto addKeyword(@AuthenticationPrincipal User user, @RequestBody KeywordCreateRequest keywordCreateRequest) {
         notificationService.addKeyword(user, keywordCreateRequest);
-        return ApiResponseDto.success(SuccessCode.SUCCESS);
+        return ApiResponseDto.success(SuccessCode.KEYWORD_ADD_SUCCESS);
     }
 }
