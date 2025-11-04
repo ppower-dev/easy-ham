@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from './client';
+import { API_ENDPOINTS } from '@/constants/api';
 import type { ApiResponse } from '@/types/common';
 
 // ===== 타입 정의 =====
@@ -35,7 +36,7 @@ export interface SignupRequest {
  * @returns SSAFY SSO 로그인 페이지 URL
  */
 export const getSsoLoginUrl = async (): Promise<ApiResponse<string>> => {
-  return apiClient.get<string>('/auth/sso/login-url');
+  return apiClient.get<string>(API_ENDPOINTS.auth.getSsoLoginUrl);
 };
 
 /**
@@ -44,7 +45,7 @@ export const getSsoLoginUrl = async (): Promise<ApiResponse<string>> => {
  * @returns 성공 메시지
  */
 export const signup = async (data: SignupRequest): Promise<ApiResponse<void>> => {
-  return apiClient.post<void>('/auth/signup', data);
+  return apiClient.post<void>(API_ENDPOINTS.auth.signup, data);
 };
 
 /**
@@ -52,5 +53,5 @@ export const signup = async (data: SignupRequest): Promise<ApiResponse<void>> =>
  * @returns 성공 메시지
  */
 export const logout = async (): Promise<ApiResponse<void>> => {
-  return apiClient.post<void>('/auth/logout', {});
+  return apiClient.post<void>(API_ENDPOINTS.auth.logout, {});
 };

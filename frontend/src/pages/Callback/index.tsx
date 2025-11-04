@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { apiClient } from '@/services/api/client';
+import { API_ENDPOINTS } from '@/constants/api';
 import { toast } from 'sonner';
-import type { ApiResponse } from '@/types/common';
 import type { User } from '@/types/user';
 
 interface SsoCallbackResponse {
@@ -41,8 +41,7 @@ export function CallbackPage() {
         }
 
         // 2. 백엔드 호출: code를 token으로 교환
-        const callbackUrl = import.meta.env.VITE_SSO_CALLBACK_URL || '/auth/sso/callback';
-        const response = await apiClient.get<SsoCallbackResponse>(`${callbackUrl}?code=${code}`);
+        const response = await apiClient.get<SsoCallbackResponse>(`${API_ENDPOINTS.auth.ssoCallback}?code=${code}`);
 
         if (!response || response.status === undefined) {
           throw new Error('유효하지 않은 응답');
@@ -57,14 +56,9 @@ export function CallbackPage() {
 
         // 4. Zustand store에 토큰 저장
         const user: User = {
-          id: data.userId,
+          id: data.userId?.toString() || '',
           name: data.name,
           email: data.email,
-          campusId: undefined,
-          generation: undefined,
-          classroom: undefined,
-          positionIds: [],
-          skillIds: [],
         };
 
         login(user, data.token.access_token, data.token.refresh_token);

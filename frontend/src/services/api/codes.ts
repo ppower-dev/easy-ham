@@ -4,6 +4,7 @@
  */
 
 import { apiClient } from './client';
+import { API_ENDPOINTS } from '@/constants/api';
 import type { ApiResponse } from '@/types/common';
 
 // ===== 타입 정의 =====
@@ -42,7 +43,7 @@ interface PositionsResponse {
  * @returns 캠퍼스 리스트 (5개)
  */
 export const getCampuses = async (): Promise<ApiResponse<CampusesResponse>> => {
-  return apiClient.get<CampusesResponse>('/campus');
+  return apiClient.get<CampusesResponse>(API_ENDPOINTS.codes.campuses);
 };
 
 /**
@@ -50,7 +51,7 @@ export const getCampuses = async (): Promise<ApiResponse<CampusesResponse>> => {
  * @returns 기술 스택 리스트 (101개)
  */
 export const getSkills = async (): Promise<ApiResponse<SkillsResponse>> => {
-  return apiClient.get<SkillsResponse>('/skill');
+  return apiClient.get<SkillsResponse>(API_ENDPOINTS.codes.skills);
 };
 
 /**
@@ -58,5 +59,5 @@ export const getSkills = async (): Promise<ApiResponse<SkillsResponse>> => {
  * @returns 포지션 리스트 (11개)
  */
 export const getPositions = async (): Promise<ApiResponse<PositionsResponse>> => {
-  return apiClient.get<PositionsResponse>('/position');
+  return apiClient.get<PositionsResponse>(API_ENDPOINTS.codes.positions);
 };
