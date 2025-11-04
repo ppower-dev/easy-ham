@@ -21,6 +21,7 @@ public class NotificationService {
                 .word(keywordCreateRequest.word())
                 .user(user)
                 .build();
+        log.info("Adding keyword: " + user);
         keywordRepository.save(keyword);
     }
 }

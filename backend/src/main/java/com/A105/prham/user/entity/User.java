@@ -6,6 +6,7 @@ import com.A105.prham.common.domain.BaseTimeEntity;
 import com.A105.prham.keyword.Keyword;
 import com.A105.prham.user_notice.entity.UserNotice;
 import com.A105.prham.user_notice_like.entity.UserNoticeLike;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,7 @@ import java.util.Set;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = {"campus", "userSkills", "userPositions", "userNotices", "userNoticeLikes"})
+@ToString(exclude = {"campus", "userSkills", "userPositions", "userNotices", "userNoticeLikes", "keywords"})
 @Table(name = "users")
 public class User extends BaseTimeEntity {
 
@@ -67,7 +68,8 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserNoticeLike> userNoticeLikes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Keyword> keywords = new ArrayList<>();
 
     @Builder

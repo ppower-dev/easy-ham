@@ -2,6 +2,7 @@ package com.A105.prham.keyword;
 
 import com.A105.prham.common.domain.BaseTimeEntity;
 import com.A105.prham.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,7 +22,7 @@ public class Keyword extends BaseTimeEntity {
     @Column(name = "word", nullable = false)
     private String word;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
