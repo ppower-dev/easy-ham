@@ -1,27 +1,46 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Lightbulb } from 'lucide-react';
+import { getSsoLoginUrl } from '@/services/api/auth';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { toast } from 'sonner';
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuthStore();
 
-  const handleSSAFYLogin = () => {
-    // TODO: SSAFY SSO 연동
-    // 1. SSO 팝업 열림
-    // 2. 백엔드가 토큰 받아서 유저 확인
-    // 3. 백엔드 응답에 따라 분기
+  const handleSSAFYLogin = async () => {
+    setIsLoading(true);
+    try {
+      // 1. SSO 로그인 URL 받기
+      const response = await getSsoLoginUrl();
 
-    // 와이어프레임용: 항상 최초 로그인으로 간주
-    const isFirstLogin = true;
-
-    // 실제로는 백엔드 응답을 기다린 후:
-    setTimeout(() => {
-      if (isFirstLogin) {
-        navigate('/signup');
-      } else {
-        navigate('/dashboard');
+      if (response.status !== 200) {
+        toast.error('SSO URL 조회 실패');
+        setIsLoading(false);
+        return;
       }
-    }, 500);
+
+      const ssoBaseUrl = response.data;
+
+      // 2. 쿼리 파라미터 추가
+      const params = new URLSearchParams({
+        client_id: import.meta.env.VITE_SSO_CLIENT_ID || '1292a035-be8b-4e8d-919c-0898c6b957c5',
+        redirect_uri: import.meta.env.VITE_SSO_REDIRECT_URI || 'https://k13a105.p.ssafy.io/api/v1/auth/sso/callback',
+        response_type: 'code',
+      });
+
+      const loginUrl = `${ssoBaseUrl}?${params.toString()}`;
+
+      // 3. SSAFY SSO 페이지로 리다이렉트
+      window.location.href = loginUrl;
+    } catch (error) {
+      console.error('SSO 로그인 실패:', error);
+      toast.error('로그인 중 오류가 발생했습니다');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -119,10 +138,13 @@ export function LoginPage() {
           <div className="space-y-8">
             <Button
               onClick={handleSSAFYLogin}
-              className="w-full bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white py-7"
+              disabled={isLoading}
+              className="w-full bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white py-7 disabled:bg-gray-400 disabled:cursor-not-allowed"
               style={{ fontWeight: 600 }}
             >
-              <span className="text-lg">SSAFY SSO로 로그인</span>
+              <span className="text-lg">
+                {isLoading ? 'SSAFY SSO로 이동 중...' : 'SSAFY SSO로 로그인'}
+              </span>
             </Button>
 
             <div className="text-center space-y-3">
