@@ -38,10 +38,4 @@ public class Subcode {
 
     @Column(name = "is_used")
     private Boolean isUsed;
-
-    @OneToMany(mappedBy = "subcode", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserNoticeLike> userNoticeLikes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "subcode", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserNotice> userNotices = new ArrayList<>();
 }

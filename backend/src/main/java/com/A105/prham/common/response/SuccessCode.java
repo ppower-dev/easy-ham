@@ -16,6 +16,7 @@ public enum SuccessCode {
     SIGNUP_SUCCESSED(200,HttpStatus.OK ,"회원가입 성공" ),
     BOOKMARK_SAVE_SUCCESS(200, HttpStatus.OK, "북마크 저장 성공"),
     BOOKMARK_DELETE_SUCCESS(200, HttpStatus.OK, "북마크 해제 성공"),
+    BOOKMARK_GET_SUCCESS(200, HttpStatus.OK, "북마크 목록 조회 성공"),
     SUCCESS(200,HttpStatus.OK, "요청 성공"),
 
     //201 CREATED
