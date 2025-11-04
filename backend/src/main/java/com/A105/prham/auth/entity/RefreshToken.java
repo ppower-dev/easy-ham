@@ -1,7 +1,7 @@
 package com.A105.prham.auth.entity;
 
 import com.A105.prham.common.domain.BaseTimeEntity;
-import com.A105.prham.user.domain.User;
+import com.A105.prham.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

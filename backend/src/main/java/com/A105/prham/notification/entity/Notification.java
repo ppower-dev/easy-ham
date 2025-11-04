@@ -1,4 +1,4 @@
-package com.A105.prham.notification.domain;
+package com.A105.prham.notification.entity;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;

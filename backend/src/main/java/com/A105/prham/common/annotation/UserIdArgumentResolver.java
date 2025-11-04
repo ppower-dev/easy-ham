@@ -2,10 +2,9 @@ package com.A105.prham.common.annotation;
 
 import com.A105.prham.auth.dto.response.UserInfoResponse;
 import com.A105.prham.auth.service.SsoAuthService;
-import com.A105.prham.auth.util.JwtUtils;
 import com.A105.prham.common.exception.CustomException;
 import com.A105.prham.common.response.ErrorCode;
-import com.A105.prham.user.domain.User;
+import com.A105.prham.user.entity.User;
 import com.A105.prham.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
