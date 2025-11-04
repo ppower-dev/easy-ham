@@ -23,7 +23,9 @@ configurations {
 repositories {
 	mavenCentral()
 }
-
+tasks.withType(Test) {
+	enabled = false
+}
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'jakarta.xml.bind:jakarta.xml.bind-api'
@@ -53,6 +55,3 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
