@@ -2,8 +2,6 @@ package com.A105.prham.user_notice.entity;
 
 import com.A105.prham.channel.entity.Channel;
 import com.A105.prham.common.domain.BaseTimeEntity;
-import com.A105.prham.common.domain.Maincode;
-import com.A105.prham.common.domain.Subcode;
 import com.A105.prham.notice.entity.Notice;
 import com.A105.prham.team.entity.Team;
 import com.A105.prham.user.entity.User;
@@ -38,14 +36,6 @@ public class UserNotice extends BaseTimeEntity {
     private Notice notice;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "code_id")
-    private Subcode subcode;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "upper_code_id")
-    private Maincode maincode;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
     private Channel channel;
 
@@ -64,11 +54,9 @@ public class UserNotice extends BaseTimeEntity {
     private List<UserNoticeLike> userNoticeLikes = new ArrayList<>();
 
     @Builder
-    public UserNotice(User user, Notice notice, Subcode subcode, Maincode maincode, Channel channel, Team team, Post post, Boolean isCompleted) {
+    public UserNotice(User user, Notice notice, Channel channel, Team team, Post post, Boolean isCompleted) {
         this.user = user;
         this.notice = notice;
-        this.subcode = subcode;
-        this.maincode = maincode;
         this.channel = channel;
         this.team = team;
         this.post = post;

@@ -33,10 +33,4 @@ public class Maincode {
 
     @Column(name = "is_used", nullable = false)
     private Boolean isUsed;
-
-    @OneToMany(mappedBy = "maincode", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserNoticeLike> userNoticeLikes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "maincode", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserNotice> userNotices = new ArrayList<>();
 }
