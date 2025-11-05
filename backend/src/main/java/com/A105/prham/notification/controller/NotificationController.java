@@ -7,10 +7,7 @@ import com.A105.prham.notification.service.NotificationService;
 import com.A105.prham.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +20,11 @@ public class NotificationController {
     public ApiResponseDto addKeyword(@AuthenticationPrincipal User user, @RequestBody KeywordCreateRequest keywordCreateRequest) {
         notificationService.addKeyword(user, keywordCreateRequest);
         return ApiResponseDto.success(SuccessCode.KEYWORD_ADD_SUCCESS);
+    }
+
+    @DeleteMapping("/keywords/{keywordId}")
+    public ApiResponseDto removeKeyword(@AuthenticationPrincipal User user, @PathVariable long keywordId) {
+        notificationService.deleteKeyword(user, keywordId);
+        return ApiResponseDto.success(SuccessCode.KEYWORD_DELETE_SUCCESS);
     }
 }
