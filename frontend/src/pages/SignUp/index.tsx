@@ -26,7 +26,8 @@ import { toast } from "sonner";
 
 export function SignUpPage() {
   const navigate = useNavigate();
-  const [campuses, setCampuses] = useState<Campus[]>([]);
+  const { ssoData, clearSsoData } = useAuthStore();
+  const [campusMap, setCampusMap] = useState<Record<string, number>>({});
   const [skills, setSkills] = useState<Skill[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,9 +52,26 @@ export function SignUpPage() {
           getPositions(),
         ]);
 
-        if (campusRes.status === 200) {
+        if (campusRes.status === 200 && campusRes.data.campuses) {
           // console.log("캠퍼스 데이터:", campusRes.data.campuses);
-          setCampuses(campusRes.data.campuses);
+          // campuses 배열을 campusMap으로 변환
+          const map = campusRes.data.campuses.reduce(
+            (acc: Record<string, number>, campus: Campus) => {
+              acc[campus.name] = campus.id;
+              return acc;
+            },
+            {}
+          );
+          setCampusMap(map);
+
+          // SSO 데이터에서 entRegn이 있으면 자동으로 캠퍼스 설정
+          if (ssoData?.entRegn) {
+            const campusName = ssoData.entRegn + "캠퍼스";
+            if (map[campusName]) {
+              const campusIdValue = String(map[campusName]);
+              setCampusId(campusIdValue);
+            }
+          }
         }
         if (skillRes.status === 200) {
           // console.log("기술 스택 데이터:", skillRes.data.skills);
@@ -64,14 +82,23 @@ export function SignUpPage() {
           setPositions(positionRes.data.positions);
         }
       } catch (error) {
-        // console.error("코드 조회 실패:", error);
+        console.error("코드 조회 실패:", error);
+        toast.error("코드 데이터를 불러오는데 실패했습니다");
       } finally {
         setIsLoadingCodes(false);
       }
     };
 
     loadCodes();
-  }, []);
+  }, [ssoData]);
+
+  // SSO 데이터로 name/email 초기화
+  useEffect(() => {
+    if (ssoData) {
+      setName(ssoData.name);
+      setEmail(ssoData.email);
+    }
+  }, [ssoData]);
 
   const handleTogglePosition = (positionId: number) => {
     if (selectedPositionIds.includes(positionId)) {
@@ -129,9 +156,11 @@ export function SignUpPage() {
       };
 
       const response = await signup(signupData);
+      console.log("회원가입 응답:", response);
 
       if (response.status === 200) {
         toast.success("회원가입 성공했습니다!");
+        clearSsoData(); // SSO 데이터 제거
         // 회원가입 성공 후 대시보드로 이동 (이미 로그인된 상태)
         setTimeout(() => {
           navigate("/dashboard");
@@ -178,7 +207,11 @@ export function SignUpPage() {
         <div className="text-center space-y-3 mb-8">
           <div className="flex items-center gap-2 justify-center mb-4">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center">
-              <img src="/images/logo/logo.png" alt="logo" className="w-full h-full object-contain" />
+              <img
+                src="/images/logo/logo.png"
+                alt="logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <span className="text-3xl" style={{ fontWeight: 700 }}>
               편리햄!
@@ -205,6 +238,7 @@ export function SignUpPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="홍길동"
               className="h-12"
+              disabled={!!ssoData}
               required
             />
           </div>
@@ -221,8 +255,36 @@ export function SignUpPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="example@ssafy.com"
               className="h-12"
+              disabled={!!ssoData}
               required
             />
+          </div>
+
+          {/* 캠퍼스 */}
+          <div>
+            <Label htmlFor="campus">
+              캠퍼스 <span className="text-[var(--brand-orange)]">*</span>
+            </Label>
+            {ssoData ? (
+              // SSO 데이터 있음: 읽기 전용 표시
+              <div className="h-12 flex items-center px-3 border border-gray-300 rounded-md bg-gray-50 text-gray-700">
+                {ssoData.entRegn} 캠퍼스
+              </div>
+            ) : (
+              // SSO 데이터 없음: Select 드롭다운
+              <Select value={campusId} onValueChange={setCampusId} required>
+                <SelectTrigger className="h-12">
+                  <SelectValue placeholder="캠퍼스 선택" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(campusMap).map(([name, id]) => (
+                    <SelectItem key={id} value={String(id)}>
+                      {name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           {/* 기수 및 반 */}
@@ -255,25 +317,6 @@ export function SignUpPage() {
                 />
               </div>
             </div>
-          </div>
-
-          {/* 캠퍼스 */}
-          <div>
-            <Label htmlFor="campus">
-              캠퍼스 <span className="text-[var(--brand-orange)]">*</span>
-            </Label>
-            <Select value={campusId} onValueChange={setCampusId} required>
-              <SelectTrigger className="h-12">
-                <SelectValue placeholder="캠퍼스 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                {campuses.map((campus) => (
-                  <SelectItem key={campus.id} value={String(campus.id)}>
-                    {campus.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           {/* 포지션 */}

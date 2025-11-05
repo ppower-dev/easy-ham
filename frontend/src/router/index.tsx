@@ -28,25 +28,25 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      // <ProtectedRoute>
-      <DashboardPage />
-      // </ProtectedRoute>
+      <ProtectedRoute>
+        <DashboardPage />
+      </ProtectedRoute>
     ),
   },
   {
     path: "/calendar",
     element: (
-      // <ProtectedRoute>
-      <CalendarPage />
-      // </ProtectedRoute>
+      <ProtectedRoute>
+        <CalendarPage />
+      </ProtectedRoute>
     ),
   },
   {
     path: "/mypage",
     element: (
-      // <ProtectedRoute>
-      <MyPage />
-      // </ProtectedRoute>
+      <ProtectedRoute>
+        <MyPage />
+      </ProtectedRoute>
     ),
   },
 ]);

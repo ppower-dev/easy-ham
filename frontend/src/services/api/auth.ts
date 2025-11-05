@@ -45,7 +45,7 @@ export const getSsoLoginUrl = async (): Promise<ApiResponse<string>> => {
  * @returns 성공 메시지
  */
 export const signup = async (data: SignupRequest): Promise<ApiResponse<void>> => {
-  return apiClient.post<void>(API_ENDPOINTS.auth.signup, data);
+  return apiClient.post<void>(API_ENDPOINTS.users.signup, data);
 };
 
 /**
