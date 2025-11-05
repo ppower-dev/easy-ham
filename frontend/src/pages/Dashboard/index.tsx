@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { PageLayout } from '@/components/layouts/PageLayout';
 import { NoticeList } from './components/NoticeList';
 import { SearchFilterBar } from './components/SearchFilterBar';
@@ -18,6 +19,7 @@ import {
 import { useFilterStore } from '@/stores/useFilterStore';
 import { useNoticeFilter } from '@/hooks/useNoticeFilter';
 import { getMockNotices, getMockJobPostings } from '@/services/mock';
+import { bookmarksApi } from '@/services/api/bookmarks';
 import type { Notice } from '@/types';
 
 export default function DashboardPage() {
@@ -31,12 +33,14 @@ export default function DashboardPage() {
     searchQuery,
     periodFilter,
     sortBy,
+    showBookmarkedOnly,
     toggleChannel,
     toggleAcademicCategory,
     toggleCareerCategory,
     setSearchQuery,
     setPeriodFilter,
     setSortBy,
+    toggleBookmarkFilter,
     resetFilters,
   } = useFilterStore();
 
@@ -49,12 +53,39 @@ export default function DashboardPage() {
   const { filteredNotices } = useNoticeFilter(notices);
 
   // 북마크/완료 토글
-  const toggleBookmark = (id: number) => {
+  const toggleBookmark = async (id: number) => {
+    const notice = notices.find((n) => n.id === id);
+    if (!notice) return;
+
+    const wasBookmarked = notice.bookmarked;
+
+    // 1. 즉시 UI 업데이트 (낙관적 업데이트)
     setNotices((prev) =>
-      prev.map((notice) =>
-        notice.id === id ? { ...notice, bookmarked: !notice.bookmarked } : notice
+      prev.map((n) =>
+        n.id === id ? { ...n, bookmarked: !n.bookmarked } : n
       )
     );
+
+    console.log(`[북마크 토글] ID: ${id}, ${wasBookmarked ? '해제' : '추가'}`);
+
+    try {
+      // 2. API 호출
+      await bookmarksApi.toggle(id, wasBookmarked);
+      console.log(`[북마크 API] ${wasBookmarked ? '해제' : '추가'} 성공`);
+
+      toast.success(
+        wasBookmarked ? '북마크가 해제되었습니다.' : '북마크에 추가되었습니다.'
+      );
+    } catch (error) {
+      // 3. 실패 시 롤백
+      console.error('[북마크 API] 호출 실패:', error);
+      setNotices((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, bookmarked: !n.bookmarked } : n
+        )
+      );
+      toast.error('북마크 처리에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const toggleComplete = (id: number) => {
@@ -130,6 +161,8 @@ export default function DashboardPage() {
             onCareerCategoryToggle={toggleCareerCategory}
             periodFilter={periodFilter}
             onPeriodChange={setPeriodFilter}
+            showBookmarkedOnly={showBookmarkedOnly}
+            onBookmarkFilterToggle={toggleBookmarkFilter}
             onReset={resetFilters}
           />
 
