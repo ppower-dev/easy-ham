@@ -41,13 +41,14 @@ export function CallbackPage() {
         }
 
         // 2. 백엔드 호출: code를 token으로 교환
-        const response = await apiClient.get<SsoCallbackResponse>(`${API_ENDPOINTS.auth.ssoCallback}?code=${code}`);
+        // SSO 콜백은 인증 토큰이 필요 없으므로 getPublic 사용
+        const response = await apiClient.getPublic<SsoCallbackResponse>(`${API_ENDPOINTS.auth.ssoCallback}?code=${code}`);
 
         if (!response || response.status === undefined) {
           throw new Error('유효하지 않은 응답');
         }
 
-        const { status, data } = response;
+        const { data } = response;
 
         // 3. 응답 데이터 검증
         if (!data?.token?.access_token || !data?.token?.refresh_token) {
@@ -63,18 +64,15 @@ export function CallbackPage() {
 
         login(user, data.token.access_token, data.token.refresh_token);
 
-        // 5. 라우팅 분기: userId 기반
-        if (status === 403 && data.userId === null) {
-          // 신규 회원: 회원가입 페이지로
+        // 5. 라우팅 분기: 신규 회원(userId === null) vs 기존 회원
+        if (data.userId === null) {
+          // 신규 회원: 회원가입 페이지로 (응답 상태 200 또는 403일 수 있음)
           toast.success('추가 정보를 입력해주세요');
           navigate('/signup');
-        } else if (status === 200 && data.userId !== null) {
+        } else {
           // 기존 회원: 대시보드로
           toast.success('로그인 성공했습니다');
           navigate('/dashboard');
-        } else {
-          // 예상 밖의 상태
-          throw new Error(`예상하지 못한 응답 상태: ${status}`);
         }
       } catch (error) {
         console.error('SSO 콜백 처리 실패:', error);

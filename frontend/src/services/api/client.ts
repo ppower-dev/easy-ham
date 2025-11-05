@@ -3,18 +3,18 @@
  * Authorization 헤더 자동 추가 및 토큰 자동 갱신 처리
  */
 
-import type { ApiResponse } from '@/types/common';
+import type { ApiResponse } from "@/types/common";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 /**
  * Authorization 헤더 자동 추가
  */
 const getAuthHeaders = (): Record<string, string> => {
-  const accessToken = localStorage.getItem('access_token');
+  const accessToken = localStorage.getItem("access_token");
   if (accessToken) {
     return {
-      'Authorization': `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     };
   }
   return {};
@@ -24,12 +24,12 @@ const getAuthHeaders = (): Record<string, string> => {
  * 401 응답 헤더에서 새 토큰 추출 및 저장
  */
 const handleTokenRefresh = (headers: Headers): void => {
-  const newAccessToken = headers.get('New-Access-Token');
-  const newRefreshToken = headers.get('New-Refresh-Token');
+  const newAccessToken = headers.get("New-Access-Token");
+  const newRefreshToken = headers.get("New-Refresh-Token");
 
   if (newAccessToken && newRefreshToken) {
-    localStorage.setItem('access_token', newAccessToken);
-    localStorage.setItem('refresh_token', newRefreshToken);
+    localStorage.setItem("access_token", newAccessToken);
+    localStorage.setItem("refresh_token", newRefreshToken);
   }
 };
 
@@ -37,14 +37,14 @@ const handleTokenRefresh = (headers: Headers): void => {
  * 401 응답 분석 후 처리
  */
 const handle401Response = (headers: Headers): void => {
-  const refreshExpired = headers.get('Refresh-Token-Expired');
-  const loginRequired = headers.get('Login-Required');
+  const refreshExpired = headers.get("Refresh-Token-Expired");
+  const loginRequired = headers.get("Login-Required");
 
-  if (refreshExpired === 'true' && loginRequired === 'true') {
+  if (refreshExpired === "true" && loginRequired === "true") {
     // Refresh Token 만료 - 로그인 필요
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    window.location.href = '/login';
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    window.location.href = "/login";
   } else {
     // Access Token 만료 - 새 토큰이 헤더에 있음
     handleTokenRefresh(headers);
@@ -52,6 +52,26 @@ const handle401Response = (headers: Headers): void => {
 };
 
 export const apiClient = {
+  /**
+   * 인증 필요 없는 GET 요청 (SSO 콜백 등)
+   * HTTP 상태 코드를 그대로 반환하며, 응답 본문을 파싱합니다
+   */
+  getPublic: async <T>(endpoint: string): Promise<ApiResponse<T>> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`);
+      const data = await response.json();
+
+      // 상태 코드를 명시적으로 추가
+      return {
+        status: response.status,
+        ...data,
+      };
+    } catch (error) {
+      console.error("API GET (public) error:", error);
+      throw error;
+    }
+  },
+
   get: async <T>(endpoint: string): Promise<ApiResponse<T>> => {
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -80,7 +100,7 @@ export const apiClient = {
       }
       return await response.json();
     } catch (error) {
-      console.error('API GET error:', error);
+      console.error("API GET error:", error);
       throw error;
     }
   },
@@ -88,9 +108,9 @@ export const apiClient = {
   post: async <T>(endpoint: string, data: unknown): Promise<ApiResponse<T>> => {
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...getAuthHeaders(),
         },
         body: JSON.stringify(data),
@@ -101,9 +121,9 @@ export const apiClient = {
         handle401Response(response.headers);
         // 새 토큰으로 재시도
         const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             ...getAuthHeaders(),
           },
           body: JSON.stringify(data),
@@ -119,7 +139,7 @@ export const apiClient = {
       }
       return await response.json();
     } catch (error) {
-      console.error('API POST error:', error);
+      console.error("API POST error:", error);
       throw error;
     }
   },
@@ -127,9 +147,9 @@ export const apiClient = {
   put: async <T>(endpoint: string, data: unknown): Promise<ApiResponse<T>> => {
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           ...getAuthHeaders(),
         },
         body: JSON.stringify(data),
@@ -140,9 +160,9 @@ export const apiClient = {
         handle401Response(response.headers);
         // 새 토큰으로 재시도
         const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, {
-          method: 'PUT',
+          method: "PUT",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             ...getAuthHeaders(),
           },
           body: JSON.stringify(data),
@@ -158,7 +178,7 @@ export const apiClient = {
       }
       return await response.json();
     } catch (error) {
-      console.error('API PUT error:', error);
+      console.error("API PUT error:", error);
       throw error;
     }
   },
@@ -166,7 +186,7 @@ export const apiClient = {
   delete: async <T>(endpoint: string): Promise<ApiResponse<T>> => {
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
           ...getAuthHeaders(),
         },
@@ -177,7 +197,7 @@ export const apiClient = {
         handle401Response(response.headers);
         // 새 토큰으로 재시도
         const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, {
-          method: 'DELETE',
+          method: "DELETE",
           headers: {
             ...getAuthHeaders(),
           },
@@ -193,7 +213,7 @@ export const apiClient = {
       }
       return await response.json();
     } catch (error) {
-      console.error('API DELETE error:', error);
+      console.error("API DELETE error:", error);
       throw error;
     }
   },
