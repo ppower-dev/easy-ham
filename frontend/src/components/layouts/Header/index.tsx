@@ -20,8 +20,8 @@ export const Header = ({ showBackButton, onBack }: HeaderProps) => {
           onClick={() => navigate('/dashboard')}
           className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
         >
-          <div className="w-10 h-10 rounded-xl bg-[var(--brand-orange)] flex items-center justify-center">
-            <span className="text-xl">🐹</span>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+            <img src="/images/logo/logo.png" alt="logo" className="w-full h-full object-contain" />
           </div>
           <span className="text-xl font-bold">편리햄!</span>
         </button>
