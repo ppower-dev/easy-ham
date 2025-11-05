@@ -98,8 +98,8 @@ export function CallbackPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#FFF5EE] to-[#FFE8D6]">
         <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <div className="w-12 h-12 rounded-full bg-[var(--brand-orange)] flex items-center justify-center animate-spin">
-              <span className="text-xl">🐹</span>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center animate-spin">
+              <img src="/images/logo/logo.png" alt="logo" className="w-full h-full object-contain" />
             </div>
           </div>
           <div>

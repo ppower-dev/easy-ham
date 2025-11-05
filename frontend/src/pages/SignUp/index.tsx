@@ -177,8 +177,8 @@ export function SignUpPage() {
         {/* Header */}
         <div className="text-center space-y-3 mb-8">
           <div className="flex items-center gap-2 justify-center mb-4">
-            <div className="w-12 h-12 rounded-xl bg-[var(--brand-orange)] flex items-center justify-center">
-              <span className="text-2xl">🐹</span>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center">
+              <img src="/images/logo/logo.png" alt="logo" className="w-full h-full object-contain" />
             </div>
             <span className="text-3xl" style={{ fontWeight: 700 }}>
               편리햄!
