@@ -3,6 +3,7 @@ package com.A105.prham.notification.controller;
 import com.A105.prham.common.response.ApiResponseDto;
 import com.A105.prham.common.response.SuccessCode;
 import com.A105.prham.notification.dto.request.KeywordCreateRequest;
+import com.A105.prham.notification.dto.response.KeywordListGetResponse;
 import com.A105.prham.notification.service.NotificationService;
 import com.A105.prham.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,13 @@ public class NotificationController {
     }
 
     @DeleteMapping("/keywords/{keywordId}")
-    public ApiResponseDto removeKeyword(@AuthenticationPrincipal User user, @PathVariable long keywordId) {
+    public ApiResponseDto removeKeyword(@AuthenticationPrincipal User user, @PathVariable Long keywordId) {
         notificationService.deleteKeyword(user, keywordId);
         return ApiResponseDto.success(SuccessCode.KEYWORD_DELETE_SUCCESS);
+    }
+
+    @GetMapping("/keywords")
+    public ApiResponseDto<KeywordListGetResponse> getKeywords(@AuthenticationPrincipal User user) {
+        return ApiResponseDto.success(SuccessCode.KEYWORD_LIST_GET_SUCCESS, notificationService.getKeywordList(user));
     }
 }

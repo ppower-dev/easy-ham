@@ -5,12 +5,16 @@ import com.A105.prham.common.response.ErrorCode;
 import com.A105.prham.keyword.Keyword;
 import com.A105.prham.keyword.repository.KeywordRepository;
 import com.A105.prham.notification.dto.request.KeywordCreateRequest;
+import com.A105.prham.notification.dto.response.KeywordDto;
+import com.A105.prham.notification.dto.response.KeywordListGetResponse;
 import com.A105.prham.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +25,7 @@ public class NotificationService {
     private final KeywordRepository keywordRepository;
 
     @Transactional
-    public void addKeyword(@AuthenticationPrincipal User user, KeywordCreateRequest keywordCreateRequest) {
+    public void addKeyword(User user, KeywordCreateRequest keywordCreateRequest) {
         Keyword keyword = Keyword.builder()
                 .word(keywordCreateRequest.word())
                 .user(user)
@@ -30,9 +34,20 @@ public class NotificationService {
     }
 
     @Transactional
-    public void deleteKeyword(@AuthenticationPrincipal User user, Long keywordId) {
+    public void deleteKeyword(User user, Long keywordId) {
         Keyword keyword = keywordRepository.findById(keywordId)
                 .orElseThrow(() -> new CustomException(ErrorCode.KEYWORD_NOT_FOUND));
         keywordRepository.delete(keyword);
+    }
+
+    public KeywordListGetResponse getKeywordList(User user) {
+        List<Keyword> keywordList = keywordRepository.findByUser(user);
+        List<KeywordDto> keywordDtoList = keywordList.stream()
+                .map(keyword -> KeywordDto.builder()
+                        .keyword(keyword.getWord())
+                        .build()).toList();
+        return KeywordListGetResponse.builder()
+                .keywordList(keywordDtoList)
+                .build();
     }
 }
