@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping("/api/test/search")
 @RequiredArgsConstructor
 public class TestDataController {
 
@@ -145,23 +145,27 @@ public class TestDataController {
     }
 
     /**
-     * 모든 테스트 데이터 삭제 (주의: DB의 모든 Post 삭제)
+     * 모든 테스트 데이터 삭제 (주의: DB의 모든 Post + Meilisearch 인덱스 삭제)
      */
     @DeleteMapping("/posts/all")
     public ResponseEntity<Map<String, Object>> deleteAllTestPosts() {
         try {
-            log.warn("Deleting ALL posts from DB");
+            log.warn("Deleting ALL posts from DB and Meilisearch");
 
             long count = postRepository.count();
-            postRepository.deleteAll();
 
-            // Meilisearch 인덱스도 재생성
-            log.info("Triggering reindex to clear Meilisearch");
+            // 1. DB에서 모든 Post 삭제
+            postRepository.deleteAll();
+            log.info("✅ Deleted {} posts from DB", count);
+
+            // 2. Meilisearch에서 모든 문서 삭제
+            searchService.deleteAllDocuments();
+            log.info("✅ Deleted all documents from Meilisearch");
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("deletedCount", count);
-            response.put("message", "All test posts deleted. Run /api/admin/search/reindex to clear Meilisearch index.");
+            response.put("message", String.format("Successfully deleted %d posts from both DB and Meilisearch", count));
 
             return ResponseEntity.ok(response);
 

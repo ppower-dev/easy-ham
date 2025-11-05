@@ -8,8 +8,8 @@ import lombok.Setter;
 public class PostSearchRequest {
     private String keyword;
     private String channelId;
-    private String mainCategory;
-    private String subCategory;
+    private Long mainCategory;
+    private Long subCategory;
     private Long startDate;
     private Long endDate;
     private String sort = "mmCreatedAt:desc"; // 기본값

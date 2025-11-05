@@ -1,6 +1,9 @@
 package com.A105.prham.search.service;
 
 import com.A105.prham.search.dto.request.PostSearchRequest;
+import com.A105.prham.search.dto.response.PostSearchItem;
+import com.A105.prham.search.dto.response.PostSearchResponse;
+import com.A105.prham.search.dto.response.SearchMetadata;
 import com.A105.prham.webhook.entity.Post;
 import com.meilisearch.sdk.Client;
 import com.meilisearch.sdk.Index;
@@ -33,7 +36,7 @@ public class SearchService {
 
             String json = objectMapper.writeValueAsString(List.of(document));
             index.addDocuments(json);
-            log.info("📝 JSON to send: {}", json);
+            log.info("📄 JSON to send: {}", json);
             log.info("✅ Indexed post: {}", post.getId());
         } catch (Exception e) {
             log.error("❌ Failed to index post: {}", post.getId(), e);
@@ -59,7 +62,7 @@ public class SearchService {
         }
     }
 
-    public SearchResult searchPosts(PostSearchRequest request) {
+    public PostSearchResponse searchPosts(PostSearchRequest request) {
         try {
             Index index = meilisearchClient.index(INDEX_NAME);
 
@@ -78,7 +81,7 @@ public class SearchService {
                     .offset(request.getOffset())
                     .sort(sort)
                     .attributesToHighlight(new String[]{"content", "userName"})
-                    .showMatchesPosition(true);  // 매칭 위치 표시 (디버깅용)
+                    .showMatchesPosition(false);  // 매칭 위치는 프론트에서 불필요
 
             if (!filter.isEmpty()) {
                 builder.filter(new String[]{filter});
@@ -87,15 +90,19 @@ public class SearchService {
             SearchRequest searchRequest = builder.build();
 
             // 디버깅 로그
+            log.info("🔍 Searching posts:");
             log.info("   - Keyword: '{}'", request.getKeyword());
             log.info("   - Filter: {}", filter.isEmpty() ? "(none)" : filter);
             log.info("   - Limit: {}, Offset: {}", request.getSize(), request.getOffset());
 
-            SearchResult result = (SearchResult) index.search(searchRequest);
+            SearchResult meilisearchResult = (SearchResult) index.search(searchRequest);
 
-            log.info("✅ Search completed: {} results found", result.getHits().size());
+            log.info("✅ Search completed: {} results found in {}ms",
+                    meilisearchResult.getHits().size(),
+                    meilisearchResult.getProcessingTimeMs());
 
-            return result;
+            // Meilisearch 결과를 커스텀 DTO로 변환
+            return convertToResponse(meilisearchResult, request);
 
         } catch (Exception e) {
             log.error("❌ Failed to search posts with keyword: '{}'", request.getKeyword(), e);
@@ -124,6 +131,97 @@ public class SearchService {
         }
     }
 
+    public void deleteAllDocuments() {
+        try {
+            Index index = meilisearchClient.index(INDEX_NAME);
+            index.deleteAllDocuments();
+            log.info("✅ Deleted all documents from Meilisearch");
+        } catch (Exception e) {
+            log.error("❌ Failed to delete all documents", e);
+            throw new RuntimeException("Failed to delete all documents", e);
+        }
+    }
+
+    /**
+     * Meilisearch SearchResult를 커스텀 DTO로 변환
+     */
+    private PostSearchResponse convertToResponse(SearchResult meilisearchResult, PostSearchRequest request) {
+        // 검색 결과 아이템 변환
+        List<PostSearchItem> items = meilisearchResult.getHits().stream()
+                .map(this::convertToSearchItem)
+                .collect(Collectors.toList());
+
+        // 메타데이터 생성
+        int totalHits = meilisearchResult.getEstimatedTotalHits();
+        int totalPages = (int) Math.ceil((double) totalHits / request.getSize());
+
+        SearchMetadata metadata = SearchMetadata.builder()
+                .query(request.getKeyword() != null ? request.getKeyword() : "")
+                .totalHits(totalHits)
+                .page(request.getPage())
+                .size(request.getSize())
+                .totalPages(totalPages)
+                .processingTimeMs(meilisearchResult.getProcessingTimeMs())
+                .build();
+
+        return PostSearchResponse.builder()
+                .items(items)
+                .metadata(metadata)
+                .build();
+    }
+
+    /**
+     * Meilisearch Hit를 PostSearchItem으로 변환
+     */
+    private PostSearchItem convertToSearchItem(Object hit) {
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> hitMap = (Map<String, Object>) hit;
+
+            // _formatted에서 하이라이트된 content 추출
+            @SuppressWarnings("unchecked")
+            Map<String, Object> formatted = (Map<String, Object>) hitMap.get("_formatted");
+            String highlightedContent = formatted != null ?
+                    (String) formatted.get("content") :
+                    (String) hitMap.get("content");
+
+            return PostSearchItem.builder()
+                    .id(getLongValue(hitMap.get("id")))
+                    .mmMessageId((String) hitMap.get("mmMessageId"))
+                    .mmChannelId((String) hitMap.get("mmChannelId"))
+                    .userName((String) hitMap.get("userName"))
+                    .content((String) hitMap.get("content"))
+                    .highlightedContent(highlightedContent)
+                    .mmCreatedAt(getLongValue(hitMap.get("mmCreatedAt")))
+                    .mainCategory(getLongValue(hitMap.get("mainCategory")))
+                    .subCategory(getLongValue(hitMap.get("subCategory")))
+                    .build();
+        } catch (Exception e) {
+            log.error("Failed to convert search item", e);
+            throw new RuntimeException("Failed to convert search item", e);
+        }
+    }
+
+    /**
+     * Object를 Long으로 안전하게 변환
+     */
+    private Long getLongValue(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        if (value instanceof String) {
+            try {
+                return Long.parseLong((String) value);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     private String buildFilter(PostSearchRequest request) {
         List<String> filters = new ArrayList<>();
 
@@ -131,12 +229,8 @@ public class SearchService {
             filters.add("mmChannelId = '" + escapeFilterValue(request.getChannelId()) + "'");
         }
 
-        if (request.getMainCategory() != null && !request.getMainCategory().isBlank()) {
-            filters.add("mainCategory = '" + escapeFilterValue(request.getMainCategory()) + "'");
-        }
-
-        if (request.getSubCategory() != null && !request.getSubCategory().isBlank()) {
-            filters.add("subCategory = '" + escapeFilterValue(request.getSubCategory()) + "'");
+        if (request.getSubCategory() != null) {
+            filters.add("subCategory = '" + request.getSubCategory() + "'");
         }
 
         if (request.getStartDate() != null && request.getEndDate() != null) {

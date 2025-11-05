@@ -19,7 +19,6 @@ public class CreateTestPostRequest {
     private String mmUserId;        // 기본값: "test_user"
     private Long mmCreatedAt;       // 기본값: 현재 시간
 
-    // Notice 관련 필드 (추후 사용)
-    private String mainCategory;
-    private String subCategory;
+    private Long mainCategory;
+    private Long subCategory;
 }
