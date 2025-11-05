@@ -33,4 +33,10 @@ public class NotificationController {
     public ApiResponseDto<KeywordListGetResponse> getKeywords(@AuthenticationPrincipal User user) {
         return ApiResponseDto.success(SuccessCode.KEYWORD_LIST_GET_SUCCESS, notificationService.getKeywordList(user));
     }
+
+    @PostMapping("/settings")
+    public ApiResponseDto createNotificationSetting(@AuthenticationPrincipal User user) {
+        notificationService.createNotificationSetting(user);
+        return ApiResponseDto.success(SuccessCode.NOTIFICATION_SETTING_CREATE_SUCCESS);
+    }
 }
