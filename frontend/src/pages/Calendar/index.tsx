@@ -21,7 +21,7 @@ interface CalendarEvent {
   location?: string;
   channel: string;
   category: string; // '학사' or '취업'
-  subcategory: string; // '할일', '특강', '정보', '이벤트'
+  subcategory: string; // '할일', '특강', '정보', '행사'
 }
 
 export default function CalendarPage() {
@@ -29,36 +29,31 @@ export default function CalendarPage() {
   const [channelExpanded, setChannelExpanded] = useState(true);
 
   // 모달 상태
-  const [selectedMessage, setSelectedMessage] =
-    useState<MessageDetail | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<MessageDetail | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 뷰 상태
-  const [viewMode, setViewMode] = useState<"week" | "month">(
-    "week",
-  );
+  const [viewMode, setViewMode] = useState<"week" | "month">("week");
 
   // 날짜 상태
   const [currentDate, setCurrentDate] = useState(new Date());
 
   // 필터 상태
-  const [selectedChannels, setSelectedChannels] = useState<
-    string[]
-  >([
+  const [selectedChannels, setSelectedChannels] = useState<string[]>([
     "전체",
     "13기-공지사항",
     "13기-취업공지",
     "13기-취업정보",
     "서울1반-공지사항",
   ]);
-  const [
-    selectedAcademicCategories,
-    setSelectedAcademicCategories,
-  ] = useState<string[]>(["할일", "특강", "정보", "이벤트"]);
-  const [
-    selectedCareerCategories,
-    setSelectedCareerCategories,
-  ] = useState<string[]>(["할일", "특강", "정보", "이벤트"]);
+  const [selectedAcademicCategories, setSelectedAcademicCategories] = useState<
+    string[]
+  >(["할일", "특강", "정보", "행사"]);
+  const [selectedCareerCategories, setSelectedCareerCategories] = useState<
+    string[]
+  >(["할일", "특강", "정보", "행사"]);
 
   // 예제 이벤트 데이터
   const events: CalendarEvent[] = [
@@ -97,7 +92,7 @@ export default function CalendarPage() {
       description: "DS부문 신입 채용",
       channel: "13기-취업정보",
       category: "취업",
-      subcategory: "이벤트",
+      subcategory: "행사",
     },
     {
       id: 11,
@@ -134,7 +129,7 @@ export default function CalendarPage() {
       description: "선배 개발자와의 만남",
       channel: "서울1반-공지사항",
       category: "학사",
-      subcategory: "이벤트",
+      subcategory: "행사",
     },
     // 10월 28일 이벤트 (3개)
     {
@@ -266,10 +261,7 @@ export default function CalendarPage() {
     return isSameDay(date, new Date());
   };
 
-  const isCurrentMonth = (
-    date: Date,
-    currentDate: Date,
-  ): boolean => {
+  const isCurrentMonth = (date: Date, currentDate: Date): boolean => {
     return (
       date.getFullYear() === currentDate.getFullYear() &&
       date.getMonth() === currentDate.getMonth()
@@ -319,16 +311,12 @@ export default function CalendarPage() {
       let newChannels: string[];
       if (selectedChannels.includes(channel)) {
         newChannels = selectedChannels.filter(
-          (c) => c !== channel && c !== "전체",
+          (c) => c !== channel && c !== "전체"
         );
       } else {
         newChannels = [...selectedChannels, channel];
-        const allOtherChannels = channelOptions.filter(
-          (c) => c !== "전체",
-        );
-        if (
-          allOtherChannels.every((c) => newChannels.includes(c))
-        ) {
+        const allOtherChannels = channelOptions.filter((c) => c !== "전체");
+        if (allOtherChannels.every((c) => newChannels.includes(c))) {
           newChannels = ["전체", ...newChannels];
         }
       }
@@ -336,16 +324,11 @@ export default function CalendarPage() {
     }
   };
 
-  const toggleCategory = (
-    category: string,
-    isAcademic: boolean,
-  ) => {
+  const toggleCategory = (category: string, isAcademic: boolean) => {
     if (isAcademic) {
       if (selectedAcademicCategories.includes(category)) {
         setSelectedAcademicCategories(
-          selectedAcademicCategories.filter(
-            (c) => c !== category,
-          ),
+          selectedAcademicCategories.filter((c) => c !== category)
         );
       } else {
         setSelectedAcademicCategories([
@@ -356,13 +339,10 @@ export default function CalendarPage() {
     } else {
       if (selectedCareerCategories.includes(category)) {
         setSelectedCareerCategories(
-          selectedCareerCategories.filter((c) => c !== category),
+          selectedCareerCategories.filter((c) => c !== category)
         );
       } else {
-        setSelectedCareerCategories([
-          ...selectedCareerCategories,
-          category,
-        ]);
+        setSelectedCareerCategories([...selectedCareerCategories, category]);
       }
     }
   };
@@ -375,18 +355,8 @@ export default function CalendarPage() {
       "13기-취업정보",
       "서울1반-공지사항",
     ]);
-    setSelectedAcademicCategories([
-      "할일",
-      "특강",
-      "정보",
-      "이벤트",
-    ]);
-    setSelectedCareerCategories([
-      "할일",
-      "특강",
-      "정보",
-      "이벤트",
-    ]);
+    setSelectedAcademicCategories(["할일", "특강", "정보", "행사"]);
+    setSelectedCareerCategories(["할일", "특강", "정보", "행사"]);
   };
 
   const goToPrevious = () => {
@@ -422,7 +392,7 @@ export default function CalendarPage() {
   };
 
   const [selectedWeek, setSelectedWeek] = useState<Date[]>(
-    getWeekDays(new Date()),
+    getWeekDays(new Date())
   );
 
   const handleMiniCalendarWeekClick = (week: Date[]) => {
@@ -450,17 +420,16 @@ export default function CalendarPage() {
       attachments: [],
       deadline: event.startDate.toISOString(),
       location: event.location,
-      time: event.startTime && event.endTime
-        ? `${event.startTime}~${event.endTime}`
-        : undefined,
+      time:
+        event.startTime && event.endTime
+          ? `${event.startTime}~${event.endTime}`
+          : undefined,
     });
     setIsModalOpen(true);
   };
 
-  const weekDays =
-    viewMode === "week" ? getWeekDays(currentDate) : [];
-  const monthWeeks =
-    viewMode === "month" ? getMonthDays(currentDate) : [];
+  const weekDays = viewMode === "week" ? getWeekDays(currentDate) : [];
+  const monthWeeks = viewMode === "month" ? getMonthDays(currentDate) : [];
 
   const formatDate = (date: Date): string => {
     return `${date.getMonth() + 1}/${date.getDate()}`;
@@ -474,7 +443,11 @@ export default function CalendarPage() {
     if (days.length === 0) return "";
     const start = days[0];
     const end = days[6];
-    return `${formatDate(start)} ${["일", "월", "화", "수", "목", "금", "토"][start.getDay()]} ~ ${formatDate(end)} ${["일", "월", "화", "수", "목", "금", "토"][end.getDay()]}`;
+    return `${formatDate(start)} ${
+      ["일", "월", "화", "수", "목", "금", "토"][start.getDay()]
+    } ~ ${formatDate(end)} ${
+      ["일", "월", "화", "수", "목", "금", "토"][end.getDay()]
+    }`;
   };
 
   return (
@@ -500,9 +473,7 @@ export default function CalendarPage() {
           isSameDay={isSameDay}
           isToday={isToday}
           isCurrentMonth={isCurrentMonth}
-          onChannelExpandToggle={() =>
-            setChannelExpanded(!channelExpanded)
-          }
+          onChannelExpandToggle={() => setChannelExpanded(!channelExpanded)}
           onToggleChannel={toggleChannel}
           onToggleCategory={toggleCategory}
           onResetFilters={resetFilters}

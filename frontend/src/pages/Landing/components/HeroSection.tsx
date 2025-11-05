@@ -7,9 +7,9 @@ interface HeroSectionProps {
 
 export function HeroSection({ onLoginClick, onScrollToFeatures }: HeroSectionProps) {
   return (
-    <section className="h-screen flex flex-col bg-gradient-to-br from-white via-[#FFF5EE] to-[#FFE8D6]">
+    <section className="min-h-screen flex flex-col bg-gradient-to-br from-white via-[#FFF5EE] to-[#FFE8D6] py-4">
       {/* Header */}
-      <header className="flex items-center px-8 py-6">
+      <header className="flex items-center px-4 sm:px-6 md:px-8 py-6">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-xl bg-[var(--brand-orange)] flex items-center justify-center">
             <span className="text-xl">🐹</span>
@@ -19,7 +19,7 @@ export function HeroSection({ onLoginClick, onScrollToFeatures }: HeroSectionPro
       </header>
 
       {/* Hero Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 text-center -mt-20">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 text-center">
         <div className="max-w-4xl mx-auto space-y-8">
           <h1
             className="text-6xl tracking-tight"

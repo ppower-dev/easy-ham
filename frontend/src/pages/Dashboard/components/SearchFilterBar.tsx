@@ -7,19 +7,19 @@ import {
   GraduationCap,
   Briefcase,
   Check,
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { CHANNEL_OPTIONS, PERIOD_OPTIONS } from '@/constants';
-import type { Subcategory, PeriodFilter } from '@/types';
+} from "@/components/ui/select";
+import { CHANNEL_OPTIONS, PERIOD_OPTIONS } from "@/constants";
+import type { Subcategory, PeriodFilter } from "@/types";
 
 interface SearchFilterBarProps {
   searchQuery: string;
@@ -35,17 +35,17 @@ interface SearchFilterBarProps {
   onReset: () => void;
 }
 
-const SUBCATEGORIES: Subcategory[] = ['할일', '특강', '정보', '이벤트'];
+const SUBCATEGORIES: Subcategory[] = ["할일", "특강", "정보", "행사"];
 
 // 카테고리별 색상 (기존 디자인 유지)
 const getCategoryColor = (subcategory: string): string => {
   const colors: Record<string, string> = {
-    '할일': 'bg-red-100 text-red-700 border-red-300',
-    '특강': 'bg-blue-100 text-blue-700 border-blue-300',
-    '정보': 'bg-green-100 text-green-700 border-green-300',
-    '이벤트': 'bg-purple-100 text-purple-700 border-purple-300',
+    할일: "bg-red-100 text-red-700 border-red-300",
+    특강: "bg-blue-100 text-blue-700 border-blue-300",
+    정보: "bg-green-100 text-green-700 border-green-300",
+    행사: "bg-purple-100 text-purple-700 border-purple-300",
   };
-  return colors[subcategory] || 'bg-gray-100 text-gray-700 border-gray-300';
+  return colors[subcategory] || "bg-gray-100 text-gray-700 border-gray-300";
 };
 
 export function SearchFilterBar({
@@ -93,13 +93,13 @@ export function SearchFilterBar({
           {PERIOD_OPTIONS.map((period) => (
             <Button
               key={period}
-              variant={periodFilter === period ? 'default' : 'outline'}
+              variant={periodFilter === period ? "default" : "outline"}
               size="sm"
               onClick={() => onPeriodChange(period as PeriodFilter)}
               className={`h-8 px-4 rounded-md ${
                 periodFilter === period
-                  ? 'bg-[var(--brand-orange)] text-white hover:bg-[var(--brand-orange-dark)]'
-                  : 'bg-white hover:bg-gray-50'
+                  ? "bg-[var(--brand-orange)] text-white hover:bg-[var(--brand-orange-dark)]"
+                  : "bg-white hover:bg-gray-50"
               }`}
               style={{ fontWeight: 500 }}
             >
@@ -129,7 +129,7 @@ export function SearchFilterBar({
         <div className="flex gap-2 flex-wrap">
           {CHANNEL_OPTIONS.map((channel) => {
             const isSelected =
-              channel === '전체'
+              channel === "전체"
                 ? selectedChannels.length === CHANNEL_OPTIONS.length - 1
                 : selectedChannels.includes(channel);
             return (
@@ -140,8 +140,8 @@ export function SearchFilterBar({
                 onClick={() => onChannelToggle(channel)}
                 className={`h-8 px-4 rounded-md ${
                   isSelected
-                    ? 'bg-[var(--brand-orange)] text-white border-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)]'
-                    : 'bg-white hover:bg-gray-50'
+                    ? "bg-[var(--brand-orange)] text-white border-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)]"
+                    : "bg-white hover:bg-gray-50"
                 }`}
                 style={{ fontWeight: 500 }}
               >
@@ -183,7 +183,7 @@ export function SearchFilterBar({
                   className={`h-8 px-3 rounded-md border ${
                     isSelected
                       ? getCategoryColor(cat)
-                      : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-600'
+                      : "bg-white hover:bg-gray-50 border-gray-200 text-gray-600"
                   }`}
                   style={{ fontWeight: 500 }}
                 >
@@ -217,7 +217,7 @@ export function SearchFilterBar({
                   className={`h-8 px-3 rounded-md border ${
                     isSelected
                       ? getCategoryColor(cat)
-                      : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-600'
+                      : "bg-white hover:bg-gray-50 border-gray-200 text-gray-600"
                   }`}
                   style={{ fontWeight: 500 }}
                 >

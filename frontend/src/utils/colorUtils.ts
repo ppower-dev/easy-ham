@@ -2,8 +2,8 @@
  * 색상 유틸 함수
  */
 
-import { colors } from '@/styles/tokens';
-import type { Subcategory } from '@/types/notice';
+import { colors } from "@/styles/tokens";
+import type { Subcategory } from "@/types/notice";
 
 /**
  * 카테고리에 따른 색상 반환
@@ -13,7 +13,7 @@ export const getCategoryColor = (subcategory: Subcategory) => {
     할일: colors.category.todo,
     특강: colors.category.lecture,
     정보: colors.category.info,
-    이벤트: colors.category.event,
+    행사: colors.category.event,
   };
   return categoryMap[subcategory];
 };
