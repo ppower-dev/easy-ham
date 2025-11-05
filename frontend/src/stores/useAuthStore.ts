@@ -7,18 +7,31 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User } from '@/types/user';
 
+interface SsoData {
+  token: {
+    access_token: string;
+    refresh_token: string;
+  };
+  name: string;
+  email: string;
+  entRegn: string;
+}
+
 interface AuthState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  ssoData: SsoData | null;
 
   // 액션
   login: (user: User, accessToken: string, refreshToken: string) => void;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
+  setSsoData: (data: SsoData) => void;
+  clearSsoData: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -29,6 +42,7 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       isAuthenticated: false,
       isLoading: false,
+      ssoData: null,
 
       login: (user, accessToken, refreshToken) => {
         // localStorage에도 저장 (API 클라이언트에서 사용)
@@ -55,6 +69,7 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: null,
           isAuthenticated: false,
           isLoading: false,
+          ssoData: null,
         });
       },
 
@@ -68,6 +83,14 @@ export const useAuthStore = create<AuthState>()(
         localStorage.setItem('refresh_token', refreshToken);
 
         set({ accessToken, refreshToken });
+      },
+
+      setSsoData: (data: SsoData) => {
+        set({ ssoData: data });
+      },
+
+      clearSsoData: () => {
+        set({ ssoData: null });
       },
     }),
     {
