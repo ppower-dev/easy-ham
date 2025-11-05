@@ -107,6 +107,7 @@ export const apiClient = {
 
   post: async <T>(endpoint: string, data: unknown): Promise<ApiResponse<T>> => {
     try {
+      // console.log(`[API POST] ${API_BASE_URL}${endpoint}`, data);
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
         headers: {
