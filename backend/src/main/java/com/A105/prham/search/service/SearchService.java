@@ -1,10 +1,10 @@
 package com.A105.prham.search.service;
 
+import com.A105.prham.messages.dto.ProcessedMessage;
 import com.A105.prham.search.dto.request.PostSearchRequest;
 import com.A105.prham.search.dto.response.PostSearchItem;
 import com.A105.prham.search.dto.response.PostSearchResponse;
 import com.A105.prham.search.dto.response.SearchMetadata;
-import com.A105.prham.webhook.entity.Post;
 import com.meilisearch.sdk.Client;
 import com.meilisearch.sdk.Index;
 import com.meilisearch.sdk.SearchRequest;
@@ -102,7 +102,7 @@ public class SearchService {
                 .limit(request.getSize())
                 .offset(request.getOffset())
                 .sort(sort)
-                .attributesToHighlight(new String[]{"content", "userName"})
+                .attributesToHighlight(new String[]{"cleanedText", "userId"})
                 .showMatchesPosition(false);
 
         if (!filter.isEmpty()) {
@@ -136,7 +136,7 @@ public class SearchService {
         // 1. 채널 필터 (OR)
         if (request.getChannelIds() != null && !request.getChannelIds().isEmpty()) {
             String channelFilter = request.getChannelIds().stream()
-                    .map(id -> "mmChannelId = '" + escapeFilterValue(id) + "'")
+                    .map(id -> "channelId = '" + escapeFilterValue(id) + "'")
                     .collect(Collectors.joining(" OR "));
             filterParts.add("(" + channelFilter + ")");
         }
@@ -149,14 +149,14 @@ public class SearchService {
             filterParts.add("(" + categoryFilter + ")");
         }
 
-        // 3. 날짜 범위 필터 (AND)
+        // 3. 날짜 범위 필터 (AND) - timestamp는 이제 Long이므로 숫자 비교
         if (request.getStartDate() != null && request.getEndDate() != null) {
-            filterParts.add("(mmCreatedAt >= " + request.getStartDate() +
-                    " AND mmCreatedAt <= " + request.getEndDate() + ")");
+            filterParts.add("(timestamp >= " + request.getStartDate() +
+                    " AND timestamp <= " + request.getEndDate() + ")");
         } else if (request.getStartDate() != null) {
-            filterParts.add("mmCreatedAt >= " + request.getStartDate());
+            filterParts.add("timestamp >= " + request.getStartDate());
         } else if (request.getEndDate() != null) {
-            filterParts.add("mmCreatedAt <= " + request.getEndDate());
+            filterParts.add("timestamp <= " + request.getEndDate());
         }
 
         // 최종 필터: 모든 조건을 AND로 결합
@@ -171,13 +171,14 @@ public class SearchService {
     private String determineSortOrder(SearchMode mode, String userSort) {
         // 사용자가 명시적으로 지정한 정렬이 있으면 우선
         if (userSort != null && !userSort.equals("mmCreatedAt:desc")) {
-            return userSort;
+            // mmCreatedAt -> timestamp 변환
+            return userSort.replace("mmCreatedAt", "timestamp");
         }
 
         // 모드별 기본 정렬
         // Meilisearch는 키워드가 있으면 자동으로 관련성 우선 정렬
         // 키워드가 없으면 sort 파라미터대로 정렬
-        return "mmCreatedAt:desc";
+        return "timestamp:desc";
     }
 
     /**
@@ -264,17 +265,17 @@ public class SearchService {
             @SuppressWarnings("unchecked")
             Map<String, Object> formatted = (Map<String, Object>) hitMap.get("_formatted");
             String highlightedContent = formatted != null ?
-                    (String) formatted.get("content") :
-                    (String) hitMap.get("content");
+                    (String) formatted.get("cleanedText") :
+                    (String) hitMap.get("cleanedText");
 
             return PostSearchItem.builder()
-                    .id(getLongValue(hitMap.get("id")))
-                    .mmMessageId((String) hitMap.get("mmMessageId"))
-                    .mmChannelId((String) hitMap.get("mmChannelId"))
-                    .userName((String) hitMap.get("userName"))
-                    .content((String) hitMap.get("content"))
+                    .id(getLongValue(hitMap.get("postId")))  // postId를 id로 사용
+                    .mmMessageId((String) hitMap.get("postId"))  // postId를 mmMessageId로 매핑
+                    .mmChannelId((String) hitMap.get("channelId"))  // channelId를 mmChannelId로 매핑
+                    .userName((String) hitMap.get("userId"))  // userId를 userName으로 사용
+                    .content((String) hitMap.get("cleanedText"))
                     .highlightedContent(highlightedContent)
-                    .mmCreatedAt(getLongValue(hitMap.get("mmCreatedAt")))
+                    .mmCreatedAt(getLongValue(hitMap.get("timestamp")))  // timestamp를 mmCreatedAt로 매핑 (이미 Long)
                     .mainCategory(getLongValue(hitMap.get("mainCategory")))
                     .subCategory(getLongValue(hitMap.get("subCategory")))
                     .build();
@@ -314,49 +315,49 @@ public class SearchService {
         return str.replace("'", "\\'");
     }
 
-    // ========== 기존 메서드들 (변경 없음) ==========
+    // ========== ProcessedMessage 인덱싱 메서드 ==========
 
-    public void indexPost(Post post) {
+    public void indexMessage(ProcessedMessage message) {
         try {
             Index index = meilisearchClient.index(INDEX_NAME);
-            Map<String, Object> document = postToDocument(post);
+            Map<String, Object> document = messageToDocument(message);
 
             String json = objectMapper.writeValueAsString(List.of(document));
             index.addDocuments(json);
             log.info("📄 JSON to send: {}", json);
-            log.info("✅ Indexed post: {}", post.getId());
+            log.info("✅ Indexed message: {}", message.getPostId());
         } catch (Exception e) {
-            log.error("❌ Failed to index post: {}", post.getId(), e);
-            throw new RuntimeException("Failed to index post", e);
+            log.error("❌ Failed to index message: {}", message.getPostId(), e);
+            throw new RuntimeException("Failed to index message", e);
         }
     }
 
-    public void indexPosts(List<Post> posts) {
+    public void indexMessages(List<ProcessedMessage> messages) {
         try {
             Index index = meilisearchClient.index(INDEX_NAME);
 
-            List<Map<String, Object>> documents = posts.stream()
-                    .map(this::postToDocument)
+            List<Map<String, Object>> documents = messages.stream()
+                    .map(this::messageToDocument)
                     .collect(Collectors.toList());
 
             String json = objectMapper.writeValueAsString(documents);
             index.addDocuments(json);
 
-            log.info("✅ Indexed {} posts", posts.size());
+            log.info("✅ Indexed {} messages", messages.size());
         } catch (Exception e) {
-            log.error("❌ Failed to index posts", e);
-            throw new RuntimeException("Failed to index posts", e);
+            log.error("❌ Failed to index messages", e);
+            throw new RuntimeException("Failed to index messages", e);
         }
     }
 
-    public void deletePost(Long postId) {
+    public void deleteMessage(String postId) {
         try {
             Index index = meilisearchClient.index(INDEX_NAME);
-            index.deleteDocument(String.valueOf(postId));
-            log.info("✅ Deleted post: {}", postId);
+            index.deleteDocument(postId);
+            log.info("✅ Deleted message: {}", postId);
         } catch (Exception e) {
-            log.error("❌ Failed to delete post: {}", postId, e);
-            throw new RuntimeException("Failed to delete post", e);
+            log.error("❌ Failed to delete message: {}", postId, e);
+            throw new RuntimeException("Failed to delete message", e);
         }
     }
 
@@ -382,53 +383,20 @@ public class SearchService {
     }
 
     /**
-     * 카테고리 정보를 포함해서 인덱싱 (테스트용)
+     * ProcessedMessage를 Meilisearch Document로 변환
+     * timestamp는 Long 타입으로 저장됨
      */
-    public void indexPostWithCategories(Post post, Long mainCategory, Long subCategory) {
-        try {
-            Index index = meilisearchClient.index(INDEX_NAME);
-            Map<String, Object> document = postToDocumentWithCategories(post, mainCategory, subCategory);
-            String json = objectMapper.writeValueAsString(List.of(document));
-            index.addDocuments(json);
-            log.info("✅ Indexed post with categories: {} (main={}, sub={})",
-                    post.getId(), mainCategory, subCategory);
-        } catch (Exception e) {
-            log.error("❌ Failed to index post: {}", post.getId(), e);
-            throw new RuntimeException("Failed to index post", e);
-        }
-    }
-
-    private Map<String, Object> postToDocumentWithCategories(
-            Post post, Long mainCategory, Long subCategory) {
+    private Map<String, Object> messageToDocument(ProcessedMessage message) {
         Map<String, Object> document = new HashMap<>();
-        document.put("id", post.getId());
-        document.put("mmMessageId", post.getMmMessageId());
-        document.put("mmChannelId", post.getMmChannelId());
-        document.put("userName", post.getUserName());
-        document.put("content", post.getContent());
-        document.put("mmCreatedAt", post.getMmCreatedAt());
-        document.put("mainCategory", mainCategory);
-        document.put("subCategory", subCategory);
-        return document;
-    }
-
-    private Map<String, Object> postToDocument(Post post) {
-        Map<String, Object> document = new HashMap<>();
-        document.put("id", post.getId());
-        document.put("mmMessageId", post.getMmMessageId());
-        document.put("mmChannelId", post.getMmChannelId());
-        document.put("userName", post.getUserName());
-        document.put("content", post.getContent());
-        document.put("mmCreatedAt", post.getMmCreatedAt());
-
-        if (post.getNotice() != null) {
-            document.put("mainCategory", post.getNotice().getMaincode());
-            document.put("subCategory", post.getNotice().getSubcode());
-        } else {
-            document.put("mainCategory", null);
-            document.put("subCategory", null);
-        }
-
+        document.put("postId", message.getPostId());
+        document.put("channelId", message.getChannelId());
+        document.put("userId", message.getUserId());
+        document.put("cleanedText", message.getCleanedText());
+        document.put("timestamp", message.getTimestamp());  // Long 타입 그대로 저장
+        document.put("mainCategory", message.getMainCategory());
+        document.put("subCategory", message.getSubCategory());
+        document.put("deadline", message.getDeadline());
+        document.put("processedAt", message.getProcessedAt());
         return document;
     }
 }
