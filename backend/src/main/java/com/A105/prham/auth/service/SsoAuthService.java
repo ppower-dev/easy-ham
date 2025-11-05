@@ -1,9 +1,6 @@
 package com.A105.prham.auth.service;
 
-import com.A105.prham.auth.dto.response.AccessTokenResponse;
-import com.A105.prham.auth.dto.response.DetailUserInfoResponse;
-import com.A105.prham.auth.dto.response.RefreshTokenResponse;
-import com.A105.prham.auth.dto.response.UserInfoResponse;
+import com.A105.prham.auth.dto.response.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.w3c.dom.*;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -88,37 +87,35 @@ public class SsoAuthService {
         return s == null ? "null" : (s.length() > max ? s.substring(0, max) + "..." : s);
     }
 
+
     public DetailUserInfoResponse getDetailUserInfo(String accessToken, String userId) {
         try {
-            // HTTP 헤더 설정
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(accessToken);
-            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)); // JSON 우선
 
             HttpEntity<?> request = new HttpEntity<>(headers);
 
-            // URL 템플릿 구성
             String url = String.format("%s/%s?apiKey=%s", userDetailUrl, userId, ssafyOpenAPIKey);
+            log.info("요청 URL: {}", url);
 
-            // GET 요청 전송
             ResponseEntity<Map> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    request,
-                    Map.class
-            );
+                    url, HttpMethod.GET, request, Map.class);
 
             Map<String, Object> body = response.getBody();
             if (body == null) {
                 throw new IllegalStateException("응답 본문이 비어 있습니다.");
             }
 
-            // 응답 매핑
+            log.info("응답 본문: {}", body);
+
             return DetailUserInfoResponse.builder()
-                    .edu((String) body.get("edu"))
-                    .email((String) body.get("email"))
                     .name((String) body.get("name"))
-                    .entRegn((String) body.get("entRedgn"))
+                    .email((String) body.get("email"))
+                    .edu((String) body.get("edu"))
+                    .entRegn((String) body.get("entRegn"))
+                    .retireYn((String) body.get("retireYn"))
+                    .clss((String) body.get("clss"))
                     .build();
 
         } catch (Exception e) {
@@ -126,6 +123,38 @@ public class SsoAuthService {
             throw new RuntimeException("SSAFY 사용자 상세 정보 조회 실패", e);
         }
     }
+
+    private String getTagValue(Document doc, String tag) {
+        NodeList list = doc.getElementsByTagName(tag);
+        if (list.getLength() > 0) {
+            return list.item(0).getTextContent();
+        }
+        return "";
+    }
+
+    public DetailUserInfoResponse getFullUserInfo(String accessToken) {
+        try {
+            // 1. 기본 유저 정보 조회 (userId, email, name 등)
+            UserInfoResponse basic = getUserInfo(accessToken);
+
+            // 2. 상세 정보 조회 (edu, entRegn 등)
+            DetailUserInfoResponse detail = getDetailUserInfo(accessToken, basic.getUserId());
+            log.info(detail.getEdu(),detail.getEntRegn());
+            // 3. 두 응답을 병합해서 반환
+            return DetailUserInfoResponse.builder()
+                    .userId(basic.getUserId())
+                    .email(basic.getEmail())
+                    .name(basic.getName())
+                    .edu(detail.getEdu())
+                    .entRegn(detail.getEntRegn())
+                    .build();
+
+        } catch (Exception e) {
+            log.error("전체 사용자 정보 조회 실패: {}", e.getMessage(), e);
+            throw new RuntimeException("SSAFY 전체 사용자 정보 조회 실패", e);
+        }
+    }
+
 
 
     public UserInfoResponse getUserInfo(String accessToken) {

@@ -8,8 +8,11 @@ import lombok.ToString;
 @Builder
 @ToString
 public class DetailUserInfoResponse {
+    private String userId;
     private String email;
     private String name;
     private String edu;
     private String entRegn;
+    private String clss;
+    private String retireYn;
 }
