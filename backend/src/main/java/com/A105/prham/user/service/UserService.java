@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,17 +30,59 @@ public class UserService {
     private final SkillRepository skillRepository;
     private final PositionRepository positionRepository;
 
+    @Transactional
     public User createUser(UserSignupRequest request, String ssoSubId) {
 
         Campus campus = campusRepository.findById(request.getCampusId())
                 .orElseThrow(() -> new EntityNotFoundException("캠퍼스 정보를 찾을 수 없습니다."));
 
-        if (ssoSubId == null) throw new IllegalStateException("헤더가 없습니다.");
-        userRepository.findBySsoSubId(ssoSubId)
-                .ifPresent(u -> {
-                    throw new IllegalStateException("이미 등록된 사용자입니다.");
-                });
+        if (ssoSubId == null) {
+            throw new IllegalStateException("헤더가 없습니다.");
+        }
 
+        // 1. 기존 사용자 조회
+        Optional<User> existingOpt = userRepository.findBySsoSubId(ssoSubId);
+
+        if (existingOpt.isPresent()) {
+            User existing = existingOpt.get();
+
+            // 2️⃣ 이미 활성화된 사용자면 예외
+            if (!existing.getExited()) {
+                throw new IllegalStateException("이미 등록된 사용자입니다.");
+            }
+
+            // 3️⃣ 비활성화된 사용자면 정보 업데이트 후 재활성화
+            existing.setName(request.getName());
+            existing.setClassroom(request.getClassroom());
+            existing.setCampus(campus);
+            existing.setGeneration(request.getGeneration());
+            existing.setExited(false);
+
+            // 스킬 및 포지션 초기화 후 다시 매핑
+            existing.getUserSkills().clear();
+            if (request.getSkillIds() != null && !request.getSkillIds().isEmpty()) {
+                List<Skill> skills = skillRepository.findAllById(request.getSkillIds());
+                for (Skill skill : skills) {
+                    existing.getUserSkills().add(
+                            UserSkill.builder().user(existing).skill(skill).build()
+                    );
+                }
+            }
+
+            existing.getUserPositions().clear();
+            if (request.getPositionIds() != null && !request.getPositionIds().isEmpty()) {
+                List<Position> positions = positionRepository.findAllById(request.getPositionIds());
+                for (Position position : positions) {
+                    existing.getUserPositions().add(
+                            UserPosition.builder().user(existing).position(position).build()
+                    );
+                }
+            }
+
+            return userRepository.save(existing);
+        }
+
+        // 4️⃣ 신규 사용자 생성
         User user = User.builder()
                 .name(request.getName())
                 .classroom(request.getClassroom())
@@ -47,6 +90,7 @@ public class UserService {
                 .campus(campus)
                 .generation(request.getGeneration())
                 .ssoSubId(ssoSubId)
+                .exited(false)
                 .build();
 
         if (request.getSkillIds() != null && !request.getSkillIds().isEmpty()) {
@@ -65,6 +109,9 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+
+
 
     @Transactional(readOnly = true)
     public User findByEmail(String email) {
@@ -114,5 +161,14 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUser(String ssoSubId) {
+        try{
+            userRepository.setUserUnable(ssoSubId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
