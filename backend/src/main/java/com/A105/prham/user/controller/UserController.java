@@ -49,6 +49,17 @@ public class UserController {
         }
     }
 
+    @PostMapping("/delete")
+    public ApiResponseDto<User> signOut(@AuthenticationPrincipal User user) {
+        try {
+            userService.deleteUser(user.getSsoSubId());
+            return ApiResponseDto.success(SuccessCode.SUCCESS);
+        } catch (Exception e) {
+            log.error("회원 탈퇴 실패: {}", e.getMessage());
+            return ApiResponseDto.fail(ErrorCode.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/me")
     public ApiResponseDto<MyInfoResponse> getMyInfomation(@AuthenticationPrincipal User user){
         try{

@@ -46,6 +46,9 @@ public class User extends BaseTimeEntity {
     @Column(nullable = true)
     private String profileImage;
 
+    @Column(nullable = false)
+    private Boolean exited;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campus_id")
     private Campus campus;
@@ -73,15 +76,16 @@ public class User extends BaseTimeEntity {
     private List<Keyword> keywords = new ArrayList<>();
 
     @Builder
-    public User(String ssoSubId, String name, Integer generation, Integer classroom, String email, Campus campus) {
+    public User(String ssoSubId, String name, Integer generation, Boolean exited ,Integer classroom, String email, Campus campus) {
         this.ssoSubId = ssoSubId;
         this.name = name;
         this.generation = generation;
         this.classroom = classroom;
         this.email = email;
         this.campus = campus;
+        this.exited = exited;
     }
-
+    public void setExited(Boolean exited) {this.exited= exited;}
     public void setName(String name) { this.name = name; }
     public void setClassroom(Integer classroom) { this.classroom = classroom; }
     public void setGeneration(Integer generation) { this.generation = generation; }
