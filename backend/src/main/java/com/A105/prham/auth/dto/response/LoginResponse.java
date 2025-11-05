@@ -14,4 +14,6 @@ public class LoginResponse {
     private String name;
     private String email;
     private Long userId;
+    private String edu; //몇기
+    private String entRegn; //어느지역
 }
