@@ -1,11 +1,11 @@
 package com.A105.prham.webhook.service;
 
-// ✨ 임포트가 대대적으로 수정되어야 합니다.
-import com.A105.prham.webhook.entity.Post; // Message -> Post
-import com.A105.prham.webhook.entity.PostStatus; // MessageStatus -> PostStatus
-import com.A105.prham.webhook.event.PostReceivedEvent; // MessageReceivedEvent -> PostReceivedEvent
-import com.A105.prham.webhook.repository.PostRepository; // MessageRepository -> PostRepository
-
+// ✨ 필요한 임포트 추가
+import com.A105.prham.webhook.entity.File;
+import com.A105.prham.webhook.entity.Post;
+import com.A105.prham.webhook.entity.PostStatus;
+import com.A105.prham.webhook.event.PostReceivedEvent;
+import com.A105.prham.webhook.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,50 +15,66 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.util.StringUtils; // ✨ StringUtils 임포트
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.Arrays; // ✨ Arrays 임포트
 import java.util.List;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class AsyncPostProcessor { // ✨ 클래스명 오타 수정 (Proceesor -> Processor)
+public class AsyncPostProcessor {
 
-	private final PostRepository postRepository; // ✨ 수정
-	private final EmojiRemoveService emojiRemoveService;
-	private final DeadlineParserService dateParserService;
+	private final PostRepository postRepository;
+	private final EmojiRemoveService emojiRemovalService;
+	private final DeadlineParserService dateParserService; // (이름을 변경하셨다면 수정 필요)
 
-	// --- 주입 ---
-	// private final MattermostFileService fileService;
+	private final MattermostFileService fileService;
 	// private final LLMClassificationService llmService;
 
 	@Async
 	@TransactionalEventListener
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void handleMessageReceived(PostReceivedEvent event) { // ✨ 수정
-		Long postId = event.getMessageId(); // ✨ 변수명 (messageId -> postId)
+	public void handleMessageReceived(PostReceivedEvent event) {
+		Long postId = event.getMessageId();
 		log.info("[Async] Processing post ID: {}", postId);
 
-		// ✨ Post 엔티티로 조회 (ID로 조회 시에는 files가 LAZY 로딩됨)
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new RuntimeException("Post not found: " + postId));
 
 		try {
 			// 1. 상태 변경: PROCESSING
-			post.setStatus(PostStatus.PROCESSING); // ✨ 수정
-			postRepository.save(post);
+			post.setStatus(PostStatus.PROCESSING);
+			// ✨ 이 시점의 save는 PROCESSING 상태만 업데이트 (선택 사항)
+			// postRepository.save(post);
 
-			// 2. 파일 처리 (STUB)
-			// (참고: Post.java 수정으로 fileService 로직이 변경되어야 함)
-			// String fileIdsString = post.getFiles().stream().map(File::getMmFileId).collect(Collectors.joining(","));
-			// List<String> s3Urls = fileService.downloadAndStoreFiles(fileIdsString);
-			// String extractedFileText = fileService.extractTextFromFiles(s3Urls);
-			List<String> s3Urls = Collections.emptyList();
-			String extractedFileText = "";
+			// ✨ 2. 파일 처리 (실제 로직으로 대체)
+			String extractedFileText = ""; // (Tika 등으로 텍스트 추출 시 여기에 저장)
+
+			String fileIdsString = post.getFileIds(); // "id1,id2,id3"
+
+			if (StringUtils.hasText(fileIdsString)) {
+				log.info("[Async] Found files to process: {}", fileIdsString);
+				List<String> fileIdList = Arrays.asList(fileIdsString.split(","));
+
+				for (String fileId : fileIdList) {
+					if (StringUtils.hasText(fileId)) {
+						// MattermostFileService를 호출하여 파일 다운로드 및 File 엔티티 생성
+						File fileEntity = fileService.downloadAndSaveFile(fileId.trim()); // 공백 제거
+
+						if (fileEntity != null) {
+							// Post.java의 addFile 메서드를 사용하여 연관관계 설정
+							post.addFile(fileEntity);
+							log.info("File entity created for mmFileId: {}", fileId);
+						}
+					}
+				}
+				log.info("[Async] Finished processing {} files.", fileIdList.size());
+			}
 
 			// 3. 텍스트 전처리
-			String cleanedText = emojiRemoveService.removeEmojis(post.getOriginalText());
+			String cleanedText = emojiRemovalService.removeEmojis(post.getOriginalText());
 			LocalDateTime deadlineDt = dateParserService.parseDeadline(cleanedText);
 			String deadline = (deadlineDt != null) ? deadlineDt.toString() : null;
 
@@ -70,18 +86,17 @@ public class AsyncPostProcessor { // ✨ 클래스명 오타 수정 (Proceesor -
 			post.setCleanedText(cleanedText);
 			post.setDeadline(deadline);
 			post.setCategory(category);
-			post.setStorageFileUrls(String.join(",", s3Urls));
-			post.setStatus(PostStatus.PROCESSED); // ✨ 수정
+			// post.setStorageFileUrls(...); // ✨ 이 줄은 File 엔티티를 사용하므로 불필요
+			post.setStatus(PostStatus.PROCESSED);
 			post.setProcessedAt(LocalDateTime.now().toString());
 
+			// ✨ 마지막 save 한 번으로 Post 업데이트와 File 신규 저장이 동시에 일어남 (Cascade)
 			postRepository.save(post);
 			log.info("[Async] Successfully processed post ID: {}", postId);
 
-			// 6. (Optional) Elasticsearch 저장
-
 		} catch (Exception e) {
 			log.error("[Async] Failed to process post ID: {}", postId, e);
-			post.setStatus(PostStatus.FAILED); // ✨ 수정
+			post.setStatus(PostStatus.FAILED);
 			postRepository.save(post);
 		}
 	}
