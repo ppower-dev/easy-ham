@@ -52,8 +52,6 @@ public class UserController {
     @GetMapping("/me")
     public ApiResponseDto<MyInfoResponse> getMyInfomation(@AuthenticationPrincipal User user){
         try{
-//            log.info("User info:{}", user);
-
             MyInfoResponse response = MyInfoResponse.builder()
                     .userId(user.getId())
                     .email(user.getEmail())
@@ -88,6 +86,7 @@ public class UserController {
             @AuthenticationPrincipal User user,
             @RequestBody UserUpdateRequest request) {
         try {
+            log.info(String.valueOf(user));
             User updated = userService.updateUserInfo(user.getSsoSubId(), request);
 
             MyInfoResponse response = MyInfoResponse.builder()

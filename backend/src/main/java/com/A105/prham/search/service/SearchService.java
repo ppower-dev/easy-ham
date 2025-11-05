@@ -1,12 +1,12 @@
 package com.A105.prham.search.service;
 
-
 import com.A105.prham.search.dto.request.PostSearchRequest;
 import com.A105.prham.webhook.entity.Post;
 import com.meilisearch.sdk.Client;
 import com.meilisearch.sdk.Index;
 import com.meilisearch.sdk.SearchRequest;
 import com.meilisearch.sdk.model.SearchResult;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,83 +24,96 @@ public class SearchService {
 
     private final Client meilisearchClient;
     private static final String INDEX_NAME = "posts";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // 단일 Post 색인
     public void indexPost(Post post) {
         try {
             Index index = meilisearchClient.index(INDEX_NAME);
             Map<String, Object> document = postToDocument(post);
-            index.addDocuments("[" + toJson(document) + "]");
-            log.debug("Indexed post: {}", post.getId());
+
+            String json = objectMapper.writeValueAsString(List.of(document));
+            index.addDocuments(json);
+            log.info("📝 JSON to send: {}", json);
+            log.info("✅ Indexed post: {}", post.getId());
         } catch (Exception e) {
-            log.error("Failed to index post: {}", post.getId(), e);
+            log.error("❌ Failed to index post: {}", post.getId(), e);
             throw new RuntimeException("Failed to index post", e);
         }
     }
 
-    // 여러 Post 일괄 색인
     public void indexPosts(List<Post> posts) {
         try {
             Index index = meilisearchClient.index(INDEX_NAME);
+
             List<Map<String, Object>> documents = posts.stream()
                     .map(this::postToDocument)
                     .collect(Collectors.toList());
 
-            String json = documents.stream()
-                    .map(this::toJson)
-                    .collect(Collectors.joining(",", "[", "]"));
-
+            String json = objectMapper.writeValueAsString(documents);
             index.addDocuments(json);
-            log.info("Indexed {} posts", posts.size());
+
+            log.info("✅ Indexed {} posts", posts.size());
         } catch (Exception e) {
-            log.error("Failed to index posts", e);
+            log.error("❌ Failed to index posts", e);
             throw new RuntimeException("Failed to index posts", e);
         }
     }
 
-    // 고급 검색
     public SearchResult searchPosts(PostSearchRequest request) {
         try {
             Index index = meilisearchClient.index(INDEX_NAME);
 
-            // 필터 조건 생성
-            String filter = buildFilter(request);
+            // 검색어가 비어있으면 빈 결과 반환 (선택적)
+            if (request.getKeyword() == null || request.getKeyword().trim().isEmpty()) {
+                log.warn("⚠️ Empty keyword - returning filtered results only");
+                // 키워드 없이는 필터만으로 검색하거나, 빈 결과 반환
+            }
 
-            // 정렬 조건
+            String filter = buildFilter(request);
             String[] sort = new String[]{request.getSort()};
 
             SearchRequest.SearchRequestBuilder builder = SearchRequest.builder()
-                    .q(request.getKeyword() != null ? request.getKeyword() : "")
+                    .q(request.getKeyword() != null ? request.getKeyword().trim() : "")
                     .limit(request.getSize())
                     .offset(request.getOffset())
                     .sort(sort)
-                    .attributesToHighlight(new String[]{"content", "userName"});
+                    .attributesToHighlight(new String[]{"content", "userName"})
+                    .showMatchesPosition(true);  // 매칭 위치 표시 (디버깅용)
 
-            // 필터가 있을 때만 추가
             if (!filter.isEmpty()) {
                 builder.filter(new String[]{filter});
             }
 
-            return (SearchResult) index.search(builder.build());
+            SearchRequest searchRequest = builder.build();
+
+            // 디버깅 로그
+            log.info("   - Keyword: '{}'", request.getKeyword());
+            log.info("   - Filter: {}", filter.isEmpty() ? "(none)" : filter);
+            log.info("   - Limit: {}, Offset: {}", request.getSize(), request.getOffset());
+
+            SearchResult result = (SearchResult) index.search(searchRequest);
+
+            log.info("✅ Search completed: {} results found", result.getHits().size());
+
+            return result;
+
         } catch (Exception e) {
-            log.error("Failed to search posts", e);
+            log.error("❌ Failed to search posts with keyword: '{}'", request.getKeyword(), e);
             throw new RuntimeException("Failed to search posts", e);
         }
     }
 
-    // Post 삭제
     public void deletePost(Long postId) {
         try {
             Index index = meilisearchClient.index(INDEX_NAME);
             index.deleteDocument(String.valueOf(postId));
-            log.debug("Deleted post from index: {}", postId);
+            log.info("✅ Deleted post: {}", postId);
         } catch (Exception e) {
-            log.error("Failed to delete post from index: {}", postId, e);
+            log.error("❌ Failed to delete post: {}", postId, e);
             throw new RuntimeException("Failed to delete post", e);
         }
     }
 
-    // 인덱스 통계 조회
     public Object getIndexStats() {
         try {
             Index index = meilisearchClient.index(INDEX_NAME);
@@ -111,7 +124,6 @@ public class SearchService {
         }
     }
 
-    // 필터 조건 생성
     private String buildFilter(PostSearchRequest request) {
         List<String> filters = new ArrayList<>();
 
@@ -127,7 +139,6 @@ public class SearchService {
             filters.add("subCategory = '" + escapeFilterValue(request.getSubCategory()) + "'");
         }
 
-        // 날짜 범위 필터
         if (request.getStartDate() != null && request.getEndDate() != null) {
             filters.add("mmCreatedAt >= " + request.getStartDate() +
                     " AND mmCreatedAt <= " + request.getEndDate());
@@ -140,7 +151,6 @@ public class SearchService {
         return String.join(" AND ", filters);
     }
 
-    // Post를 Document로 변환
     private Map<String, Object> postToDocument(Post post) {
         Map<String, Object> document = new HashMap<>();
         document.put("id", post.getId());
@@ -150,7 +160,6 @@ public class SearchService {
         document.put("content", post.getContent());
         document.put("mmCreatedAt", post.getMmCreatedAt());
 
-        // 카테고리 필드 추가 (Notice가 있을 경우)
         if (post.getNotice() != null) {
             document.put("mainCategory", post.getNotice().getMaincode());
             document.put("subCategory", post.getNotice().getSubcode());
@@ -162,34 +171,6 @@ public class SearchService {
         return document;
     }
 
-    // Map을 JSON 문자열로 변환
-    private String toJson(Map<String, Object> map) {
-        return "{" + map.entrySet().stream()
-                .map(e -> "\"" + e.getKey() + "\":" + formatValue(e.getValue()))
-                .collect(Collectors.joining(",")) + "}";
-    }
-
-    // 값 포맷팅
-    private String formatValue(Object value) {
-        if (value == null) {
-            return "null";
-        } else if (value instanceof String) {
-            return "\"" + escapeJson(value.toString()) + "\"";
-        } else {
-            return value.toString();
-        }
-    }
-
-    // JSON 이스케이프
-    private String escapeJson(String str) {
-        return str.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r")
-                .replace("\t", "\\t");
-    }
-
-    // 필터 값 이스케이프
     private String escapeFilterValue(String str) {
         return str.replace("'", "\\'");
     }
