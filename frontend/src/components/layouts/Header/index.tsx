@@ -23,7 +23,7 @@ export const Header = ({ showBackButton, onBack }: HeaderProps) => {
           <div className="w-10 h-10 rounded-xl flex items-center justify-center">
             <img src="/images/logo/logo.png" alt="logo" className="w-full h-full object-contain" />
           </div>
-          <span className="text-xl font-bold">편리햄!</span>
+          <span className="text-xl" style={{ fontWeight: 700 }}>편리햄!</span>
         </button>
       </div>
 
