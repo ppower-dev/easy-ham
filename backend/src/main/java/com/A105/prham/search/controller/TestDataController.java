@@ -45,7 +45,11 @@ public class TestDataController {
             log.info("Post saved to DB with ID: {}", savedPost.getId());
 
             // 2. Meilisearch에 자동 인덱싱
-            searchService.indexPost(savedPost);
+            searchService.indexPostWithCategories(
+                    savedPost,
+                    request.getMainCategory(),
+                    request.getSubCategory()
+            );
             log.info("Post indexed to Meilisearch: {}", savedPost.getId());
 
             Map<String, Object> response = new HashMap<>();
@@ -87,7 +91,11 @@ public class TestDataController {
                             .build();
 
                     Post savedPost = postRepository.save(post);
-                    searchService.indexPost(savedPost);
+                    searchService.indexPostWithCategories(
+                            savedPost,
+                            request.getMainCategory(),
+                            request.getSubCategory()
+                    );
                     successCount++;
                 } catch (Exception e) {
                     log.error("Failed to create post: {}", request, e);
