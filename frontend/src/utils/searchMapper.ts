@@ -143,7 +143,7 @@ export function convertSearchItemToNotice(item: SearchResultItem): Notice {
     dday: null,
     deadline: undefined,
 
-    // Mattermost 링크
-    mattermostUrl: `https://mattermost.ssafy.com/message/${item.mmMessageId}`,
+    // Mattermost 원문 링크 (백엔드에서 제공)
+    mattermostUrl: item.originalLink || `https://mattermost.ssafy.com/message/${item.mmMessageId}`,
   };
 }

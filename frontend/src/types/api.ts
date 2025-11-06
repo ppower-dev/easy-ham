@@ -101,6 +101,7 @@ export interface SearchResultItem {
   subCategory: number | null;
   files: SearchFileItem[] | null;
   isLiked?: boolean;  // 나중에 추가될 예정
+  originalLink?: string;  // Mattermost 원문 링크
 }
 
 /**

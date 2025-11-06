@@ -77,6 +77,12 @@ export function SearchFilterBar({
           <Input
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                onSearch();
+              }
+            }}
             placeholder="공지사항, 채널, 키워드 검색..."
             className="pl-10 h-12 border-0 bg-gray-50 rounded-lg"
           />
