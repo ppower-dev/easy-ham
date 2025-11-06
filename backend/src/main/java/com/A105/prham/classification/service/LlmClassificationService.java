@@ -1,36 +1,133 @@
-// package com.A105.prham.classification.service;
-//
-// import org.springframework.stereotype.Service;
-// import org.springframework.web.client.RestTemplate;
-//
-// import com.A105.prham.classification.dto.LlmClassificationResult;
-// import com.A105.prham.common.code.dto.reponse.MaincodeResponseDto;
-// import com.A105.prham.common.code.service.CodeService;
-// import com.A105.prham.webhook.entity.Post;
-// import com.fasterxml.jackson.databind.ObjectMapper;
-//
-// import lombok.RequiredArgsConstructor;
-// import lombok.Value;
-// import lombok.extern.slf4j.Slf4j;
-//
-// @Service
-// @Slf4j
-// @RequiredArgsConstructor
-// public class LlmClassificationService {
-// 	private final CodeService codeService;
-// 	private final RestTemplate restTemplate = new RestTemplate();
-// 	private final ObjectMapper objectMapper = new ObjectMapper();
-//
-// 	@Value("${llm.api.key}")
-// 	private String llmApiKey;
-//
-// 	@Value("${llm.api.url")
-// 	private String llmApiUrl;
-//
-// 	public LlmClassificationResult classify(Post post){
-// 		List<MaincodeResponseDto>
-// 	}
-//
-//
-//
-// }
+package com.A105.prham.classification.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.A105.prham.campus.service.CampusService;
+import com.A105.prham.classification.dto.LlmClassificationResult;
+import com.A105.prham.common.code.dto.reponse.MaincodeResponseDto;
+import com.A105.prham.common.code.dto.reponse.SubcodeResponseDto;
+import com.A105.prham.common.code.service.CodeService;
+import com.A105.prham.webhook.entity.Post;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class LlmClassificationService {
+	private final CodeService codeService;
+	private final CampusService campusService;
+	private final RestTemplate restTemplate = new RestTemplate();
+	private final ObjectMapper objectMapper = new ObjectMapper();
+
+	@Value("${llm.api.key}")
+	private String llmApiKey;
+
+	@Value("${llm.api.url}")
+	private String llmApiUrl;
+
+	public LlmClassificationResult classify(Post post){
+		// db에서 카테고리 목록 가져오기
+		List<MaincodeResponseDto> mainCodes = codeService.getAllMaincodes();
+		String categoryListString = formatCategoriesForPrompt(mainCodes);
+
+		List<String> campusNames = campusService.getAllCampusNames();
+		String campusListString = String.join(",", campusNames);
+
+		// 프롬프트 생성
+		String prompt = createFullPrompt(post, categoryListString, campusListString);
+
+		// llm 호출
+		// 구현 필요
+
+		// 임시 테스트용 스텁 응담
+		log.warn("LLM API 호출이 스텁됨. 실제 API 연동 해야함 ㅠㅠ");
+		log.info("llm에 전달될 프롬프트 \n{}", prompt);
+		String llmResponseJson = generateStubResponse(post.getOriginalText());
+
+		try {
+			return objectMapper.readValue(llmResponseJson, LlmClassificationResult.class);
+		} catch (Exception e) {
+			log.error("llm 응답 json 파싱 실패: {}", e.getMessage(), e);
+			return null;
+		}
+	}
+
+	private String formatCategoriesForPrompt(List<MaincodeResponseDto> mainCodes) {
+		return mainCodes.stream()
+			.map(main -> "-" + main.getMainCodeName() + ": " +
+					main.getSubcodes().stream()
+						.map(SubcodeResponseDto::getSubcodeName)
+						.collect(Collectors.joining(", ")))
+			.collect(Collectors.joining(", "));
+	}
+
+	private String createFullPrompt(Post post, String categoryListString, String campusListString) {
+
+		return """
+			당신은 삼성 청년 SW AI 아카데미(SSAFY) 공지사항 분석 AI입니다.
+			주어진 [채널명]과 [메시지]를 [분류 규칙]에 따라 분석하여, [출력 형식]에 맞는 JSON 객체만 반환하세요.
+			
+			[채널명]: %s
+			
+			[메시지]:
+			%s
+			
+			[카테고리 목록]:
+			%s
+			
+			[캠퍼스 목록]:
+			%s
+			
+			[분류 규칙]:
+			1. 채널 힌트: [채널명]에 "[취업]"이 있으면 '취업'으로, "공지사항"이 있으면 '학사'로 우선 판단합니다 (가중치 70%).
+			2. 의무/필수 액션: "제출", "설문" 등 *필수* 작업이 명시되면, 내용이 '특강'이라도 subCategory를 '할일'로 분류합니다. (예: "특강 퇴실설문" -> "취업-할일")
+			3. 선택적 액션: "신청", "참여" 등 *선택* 작업은 원래 카테고리('특강', '이벤트')를 유지합니다.
+			4. 캠퍼스 추출: *오직* mainCategory가 "취업"이고 subCategory가 "특강"일 *경우에만*, [캠퍼스 목록]에서 해당 캠퍼스를 리스트로 추출합니다. 그 외 모든 경우(전국, 전 캠퍼스, 학사 공지 등)는 null로 설정합니다.
+			5. 제목: [메시지]의 핵심 내용을 15단어 이내로 요약합니다.
+			6. 마감일: "YYYY-MM-DDTHH:MM:SS" 형식으로 추출합니다. 없으면 null입니다.
+			
+			[출력 형식 (JSON)]
+			{
+				"title": "string",
+				"mainCategory": "string",
+				"subCategory": "string",
+				"deadline": "YYYY-MM-DDTHH:MM:SS" | null,
+				"campusList": ["string"] | null
+			}
+			""".formatted(post.getChannelName(), post.getOriginalText(), categoryListString, campusListString);
+	}
+		// llm 연동 전 테스트하려고 만든 임시 메서드
+		private String generateStubResponse(String text){
+			if (text.contains("퇴실설문")) {
+				return """
+				{
+					"title": "10월 취업특강 퇴실설문 진행 안내 (부울경)",
+					"mainCategory": "취업",
+					"subCategory": "할일",
+					"deadline": "2025-10-30T19:00:00",
+					"campusList": null
+				}
+				""";
+			} else {
+				return """
+				{
+					"title": "B형 대비 연습 문제 안내",
+					"mainCategory": "학사",
+					"subCategory": "정보",
+					"deadline": null,
+					"campusList": null
+				}
+				""";
+			}
+		}
+
+	}
+

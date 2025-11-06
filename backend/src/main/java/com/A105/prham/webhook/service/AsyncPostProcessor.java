@@ -1,6 +1,8 @@
 package com.A105.prham.webhook.service;
 
 // ✨ 필요한 임포트 추가
+import com.A105.prham.classification.dto.LlmClassificationResult;
+import com.A105.prham.classification.service.LlmClassificationService;
 import com.A105.prham.webhook.entity.File;
 import com.A105.prham.webhook.entity.Post;
 import com.A105.prham.webhook.entity.PostStatus;
@@ -28,10 +30,8 @@ public class AsyncPostProcessor {
 
 	private final PostRepository postRepository;
 	private final EmojiRemoveService emojiRemovalService;
-	private final DeadlineParserService dateParserService; // (이름을 변경하셨다면 수정 필요)
-
 	private final MattermostFileService fileService;
-	// private final LLMClassificationService llmService;
+	private final LlmClassificationService llmService;
 
 	@Async
 	@TransactionalEventListener
@@ -73,18 +73,23 @@ public class AsyncPostProcessor {
 
 			// 3. 텍스트 전처리
 			String cleanedText = emojiRemovalService.removeEmojis(post.getOriginalText());
-			LocalDateTime deadlineDt = dateParserService.parseDeadline(cleanedText);
-			String deadline = (deadlineDt != null) ? deadlineDt.toString() : null;
+			post.setCleanedText(cleanedText); //llm 전 원본 메시지 저장
 
-			// 4. LLM 분류
-			String llmMainCategory = "학사"; //임시
-			String llmSubCategory = "정보"; //임시
+			LlmClassificationResult result = llmService.classify(post);
+
+			if(result == null) {
+				throw new RuntimeException("llm 분류 실패");
+			}
 
 			// 5. DB에 최종 결과 업데이트
-			post.setCleanedText(cleanedText);
-			post.setDeadline(deadline);
-			post.setMainCategory(llmMainCategory);
-			post.setSubCategory(llmSubCategory);
+			post.setTitle(result.getTitle());
+			post.setMainCategory(result.getMainCategory());
+			post.setSubCategory(result.getSubCategory());
+			post.setDeadline(result.getDeadline());
+
+			if (result.getCampusList() != null && !result.getCampusList().isEmpty()) {
+				post.setCampusList(String.join(",", result.getCampusList()));
+			}
 
 			if(fileProcessingFailed) {
 				post.setStatus(PostStatus.FAILED);
