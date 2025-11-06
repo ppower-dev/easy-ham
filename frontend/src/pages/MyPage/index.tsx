@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,16 +7,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  User,
-  Camera,
-  GraduationCap,
   Briefcase,
   Code,
   Bell,
@@ -24,41 +14,31 @@ import {
   X,
 } from "lucide-react";
 import { PageLayout } from "@/components/layouts/PageLayout";
-import {
-  CAMPUS_OPTIONS,
-  JOB_OPTIONS,
-  TECH_STACK_OPTIONS,
-} from "@/constants/options";
+import { getUserProfile, updateUserProfile } from "@/services/api/auth";
+import { getPositions, getSkills } from "@/services/api/codes";
+import type { UserProfileResponse } from "@/services/api/auth";
+import type { Position, Skill } from "@/services/api/codes";
 
 export function MyPage() {
   const navigate = useNavigate();
 
-  // 프로필 정보 상태
-  const [nickname, setNickname] = useState("김싸피");
-  const [profileImage, setProfileImage] = useState("");
-  const [campus, setCampus] = useState("서울");
-  const [classNumber, setClassNumber] = useState("1");
-  const [selectedJobs, setSelectedJobs] = useState<string[]>([
-    "백엔드 개발자",
-    "풀스택 개발자",
-  ]);
+  // 프로필 정보
+  const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // 수정 가능한 상태
+  const [classroom, setClassroom] = useState("");
+  const [selectedPositionIds, setSelectedPositionIds] = useState<number[]>([]);
+  const [selectedSkillIds, setSelectedSkillIds] = useState<number[]>([]);
+
+  // 코드 데이터
+  const [positions, setPositions] = useState<Position[]>([]);
+  const [skills, setSkills] = useState<Skill[]>([]);
 
   // 구독 키워드 상태
-  const [subscribedKeywords, setSubscribedKeywords] = useState<string[]>([
-    "프로젝트",
-    "취업",
-    "특강",
-  ]);
+  const [subscribedKeywords, setSubscribedKeywords] = useState<string[]>([]);
   const [customKeyword, setCustomKeyword] = useState("");
-
-  // 기술 스택 상태
-  const [selectedTechStack, setSelectedTechStack] = useState<string[]>([
-    "Java",
-    "Spring",
-    "MySQL",
-    "React",
-  ]);
-  const [customTech, setCustomTech] = useState("");
 
   const availableKeywords = [
     "프로젝트",
@@ -78,34 +58,91 @@ export function MyPage() {
     "발표",
   ];
 
-  // 희망 직무 토글
-  const handleToggleJob = (job: string) => {
-    if (selectedJobs.includes(job)) {
-      setSelectedJobs(selectedJobs.filter((j) => j !== job));
+  // 데이터 로드
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+
+        // 포지션, 기술, 프로필 목록 조회
+        const [positionsRes, skillsRes, profileRes] = await Promise.all([
+          getPositions(),
+          getSkills(),
+          getUserProfile(),
+        ]);
+
+        // 포지션 설정
+        let positionsData: Position[] = [];
+        if (positionsRes.data?.positions) {
+          positionsData = positionsRes.data.positions;
+          setPositions(positionsData);
+        }
+
+        // 기술 설정
+        let skillsData: Skill[] = [];
+        if (skillsRes.data?.skills) {
+          skillsData = skillsRes.data.skills;
+          setSkills(skillsData);
+        }
+
+        // 사용자 프로필 설정
+        if (profileRes.data) {
+          setUserProfile(profileRes.data);
+          setClassroom(profileRes.data.classroom.toString());
+
+          // 포지션 ID 매핑
+          if (profileRes.data.userPositions && positionsData.length > 0) {
+            const positionIds = profileRes.data.userPositions
+              .map(
+                (posName) => positionsData.find((p) => p.name === posName)?.id
+              )
+              .filter((id): id is number => id !== undefined);
+            setSelectedPositionIds(positionIds);
+          }
+
+          // 기술 ID 매핑
+          if (profileRes.data.userSkills && skillsData.length > 0) {
+            const skillIds = profileRes.data.userSkills
+              .map(
+                (skillName) => skillsData.find((s) => s.name === skillName)?.id
+              )
+              .filter((id): id is number => id !== undefined);
+            setSelectedSkillIds(skillIds);
+          }
+        }
+      } catch (error) {
+        console.error("데이터 로드 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  // 포지션 토글
+  const handleTogglePosition = (positionId: number) => {
+    if (selectedPositionIds.includes(positionId)) {
+      setSelectedPositionIds(
+        selectedPositionIds.filter((id) => id !== positionId)
+      );
     } else {
-      setSelectedJobs([...selectedJobs, job]);
+      setSelectedPositionIds([...selectedPositionIds, positionId]);
     }
   };
 
-  // 기술 스택 추가
-  const handleAddTech = (tech: string) => {
-    if (!selectedTechStack.includes(tech)) {
-      setSelectedTechStack([...selectedTechStack, tech]);
+  // 기술 추가/제거
+  const handleAddSkill = (skillId: number) => {
+    if (!selectedSkillIds.includes(skillId)) {
+      setSelectedSkillIds([...selectedSkillIds, skillId]);
     }
   };
 
-  const handleRemoveTech = (tech: string) => {
-    setSelectedTechStack(selectedTechStack.filter((t) => t !== tech));
+  const handleRemoveSkill = (skillId: number) => {
+    setSelectedSkillIds(selectedSkillIds.filter((id) => id !== skillId));
   };
 
-  const handleAddCustomTech = () => {
-    if (customTech.trim() && !selectedTechStack.includes(customTech.trim())) {
-      setSelectedTechStack([...selectedTechStack, customTech.trim()]);
-      setCustomTech("");
-    }
-  };
-
-  // 구독 키워드 추가
+  // 구독 키워드 추가/제거
   const handleAddKeyword = (keyword: string) => {
     if (
       subscribedKeywords.length < 5 &&
@@ -130,117 +167,94 @@ export function MyPage() {
     }
   };
 
-  // 저장 핸들러
-  const handleSave = () => {
-    // TODO: 백엔드에 저장
-    alert("프로필이 저장되었습니다!");
+  // 저장
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+
+      const updateData = {
+        classroom: parseInt(classroom),
+        positionIds: selectedPositionIds,
+        skillIds: selectedSkillIds,
+      };
+
+      await updateUserProfile(updateData);
+      alert("프로필이 저장되었습니다!");
+    } catch (error) {
+      console.error("저장 실패:", error);
+      alert("프로필 저장에 실패했습니다.");
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <PageLayout>
+        <div className="max-w-4xl mx-auto p-8 text-center">
+          <p>로딩 중...</p>
+        </div>
+      </PageLayout>
+    );
+  }
+
+  if (!userProfile) {
+    return (
+      <PageLayout>
+        <div className="max-w-4xl mx-auto p-8 text-center">
+          <p>사용자 정보를 불러올 수 없습니다.</p>
+        </div>
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout>
       <div className="max-w-4xl mx-auto p-8">
-        <div className="mb-6">
-          <h1 className="text-3xl mb-2" style={{ fontWeight: 700 }}>
-            마이페이지
+        <div className="mb-8">
+          <h1 className="text-3xl" style={{ fontWeight: 700 }}>
+            안녕하세요, <span className="text-[var(--brand-orange)]">{userProfile.name}</span>님
           </h1>
-          <p className="text-gray-600">
-            회원 정보를 수정하고 알림 설정을 관리하세요
-          </p>
         </div>
 
         <div className="space-y-6">
-          {/* 프로필 정보 */}
+          {/* 회원정보 */}
           <Card className="p-6">
             <div className="flex items-center gap-2 mb-6">
-              <User className="w-5 h-5 text-[var(--brand-orange)]" />
               <h2 className="text-xl" style={{ fontWeight: 700 }}>
-                프로필 정보
+                회원정보
               </h2>
             </div>
 
-            <div className="space-y-6">
-              {/* 프로필 사진 */}
+            <div className="space-y-4 max-w-md">
+              {/* 이메일 - 읽기 전용 */}
               <div>
-                <Label className="mb-2 block">프로필 사진</Label>
-                <div className="flex items-center gap-4">
-                  <div className="w-24 h-24 rounded-full bg-[var(--brand-orange)] flex items-center justify-center relative group cursor-pointer">
-                    {profileImage ? (
-                      <img
-                        src={profileImage}
-                        alt="Profile"
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                      <User className="w-12 h-12 text-white" />
-                    )}
-                    <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Camera className="w-8 h-8 text-white" />
-                    </div>
-                  </div>
-                  <div>
-                    <Button variant="outline" size="sm">
-                      사진 업로드
-                    </Button>
-                    <p className="text-xs text-gray-500 mt-2">
-                      JPG, PNG 형식 (최대 5MB)
-                    </p>
-                  </div>
-                </div>
+                <Label className="mb-2 block text-sm text-gray-600">이메일</Label>
+                <p className="text-base">{userProfile.email}</p>
               </div>
 
-              {/* 닉네임 */}
+              {/* 캠퍼스 - 읽기 전용 */}
               <div>
-                <Label htmlFor="nickname" className="mb-2 block">
-                  닉네임
-                </Label>
-                <Input
-                  id="nickname"
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                  placeholder="닉네임을 입력하세요"
-                  className="max-w-md"
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* 캠퍼스 및 반 정보 */}
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-6">
-              <GraduationCap className="w-5 h-5 text-[var(--brand-orange)]" />
-              <h2 className="text-xl" style={{ fontWeight: 700 }}>
-                캠퍼스 및 반 정보
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 max-w-md">
-              <div>
-                <Label htmlFor="campus" className="mb-2 block">
-                  캠퍼스
-                </Label>
-                <Select value={campus} onValueChange={setCampus}>
-                  <SelectTrigger id="campus">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {CAMPUS_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="mb-2 block text-sm text-gray-600">캠퍼스</Label>
+                <p className="text-base">{userProfile.campus}</p>
               </div>
 
+              {/* 기수 - 읽기 전용 */}
               <div>
-                <Label htmlFor="class" className="mb-2 block">
+                <Label className="mb-2 block text-sm text-gray-600">기수</Label>
+                <p className="text-base">{userProfile.generation}기</p>
+              </div>
+
+              {/* 반 - 수정 가능 */}
+              <div>
+                <Label htmlFor="classroom" className="mb-2 block">
                   반
                 </Label>
                 <Input
-                  id="class"
+                  id="classroom"
                   type="number"
-                  value={classNumber}
-                  onChange={(e) => setClassNumber(e.target.value)}
+                  value={classroom}
+                  onChange={(e) => setClassroom(e.target.value)}
                   placeholder="반 번호"
                   min="1"
                   max="99"
@@ -359,22 +373,25 @@ export function MyPage() {
 
             <div className="space-y-4">
               {/* 선택된 직무 */}
-              {selectedJobs.length > 0 && (
+              {selectedPositionIds.length > 0 && (
                 <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg">
-                  {selectedJobs.map((job) => (
-                    <Badge
-                      key={job}
-                      className="bg-[var(--brand-orange)] text-white px-3 py-1.5 flex items-center gap-2"
-                    >
-                      {job}
-                      <button
-                        onClick={() => handleToggleJob(job)}
-                        className="hover:opacity-70"
+                  {selectedPositionIds.map((posId) => {
+                    const position = positions.find((p) => p.id === posId);
+                    return position ? (
+                      <Badge
+                        key={posId}
+                        className="bg-[var(--brand-orange)] text-white px-3 py-1.5 flex items-center gap-2"
                       >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
+                        {position.name}
+                        <button
+                          onClick={() => handleTogglePosition(posId)}
+                          className="hover:opacity-70"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ) : null;
+                  })}
                 </div>
               )}
 
@@ -384,31 +401,29 @@ export function MyPage() {
                   className="text-sm text-gray-600"
                   style={{ fontWeight: 500 }}
                 >
-                  자주 선택하는 직무
+                  직무 선택
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {JOB_OPTIONS.map((job) => (
+                  {positions.map((position) => (
                     <button
-                      key={job}
+                      key={position.id}
                       type="button"
-                      onClick={() => handleToggleJob(job)}
-                      disabled={selectedJobs.includes(job)}
+                      onClick={() => handleTogglePosition(position.id)}
+                      disabled={selectedPositionIds.includes(position.id)}
                       className={`px-4 py-3 text-sm rounded-lg border transition-colors ${
-                        selectedJobs.includes(job)
+                        selectedPositionIds.includes(position.id)
                           ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
                           : "bg-white hover:bg-[var(--brand-orange-light)] hover:border-[var(--brand-orange)] border-gray-300"
                       }`}
                       style={{ fontWeight: 500 }}
                     >
-                      {job}
+                      {position.name}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
           </Card>
-
-
 
           {/* 기술 스택 */}
           <Card className="p-6">
@@ -421,22 +436,25 @@ export function MyPage() {
 
             <div className="space-y-4">
               {/* 선택된 기술 스택 */}
-              {selectedTechStack.length > 0 && (
+              {selectedSkillIds.length > 0 && (
                 <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg">
-                  {selectedTechStack.map((tech) => (
-                    <Badge
-                      key={tech}
-                      className="bg-[var(--brand-orange)] text-white px-3 py-1.5 flex items-center gap-2"
-                    >
-                      {tech}
-                      <button
-                        onClick={() => handleRemoveTech(tech)}
-                        className="hover:opacity-70"
+                  {selectedSkillIds.map((skillId) => {
+                    const skill = skills.find((s) => s.id === skillId);
+                    return skill ? (
+                      <Badge
+                        key={skillId}
+                        className="bg-[var(--brand-orange)] text-white px-3 py-1.5 flex items-center gap-2"
                       >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
+                        {skill.name}
+                        <button
+                          onClick={() => handleRemoveSkill(skillId)}
+                          className="hover:opacity-70"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ) : null;
+                  })}
                 </div>
               )}
 
@@ -446,23 +464,23 @@ export function MyPage() {
                   className="text-sm text-gray-600"
                   style={{ fontWeight: 500 }}
                 >
-                  자주 사용하는 기술
+                  기술 선택
                 </p>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-48 overflow-y-auto">
-                  {TECH_STACK_OPTIONS.map((tech) => (
+                  {skills.map((skill) => (
                     <button
-                      key={tech}
+                      key={skill.id}
                       type="button"
-                      onClick={() => handleAddTech(tech)}
-                      disabled={selectedTechStack.includes(tech)}
+                      onClick={() => handleAddSkill(skill.id)}
+                      disabled={selectedSkillIds.includes(skill.id)}
                       className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                        selectedTechStack.includes(tech)
+                        selectedSkillIds.includes(skill.id)
                           ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
                           : "bg-white hover:bg-[var(--brand-orange-light)] hover:border-[var(--brand-orange)] border-gray-300"
                       }`}
                       style={{ fontWeight: 500 }}
                     >
-                      {tech}
+                      {skill.name}
                     </button>
                   ))}
                 </div>
@@ -477,10 +495,11 @@ export function MyPage() {
             </Button>
             <Button
               onClick={handleSave}
+              disabled={isSaving}
               className="bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white"
             >
               <Save className="w-4 h-4 mr-2" />
-              저장하기
+              {isSaving ? "저장 중..." : "저장하기"}
             </Button>
           </div>
         </div>
