@@ -1,99 +1,86 @@
-# Compose v2에서는 version 키 생략 권장
+version: '3.8'
 
 services:
-  # --- Spring Boot (백엔드) ---
-  spring:
-    build: ./spring
-    container_name: prham-spring
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-mymm_db}?useSSL=false&serverTimezone=Asia/Seoul
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-prham_user}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-prham_password}
-    expose:
-      - '8080'
-    depends_on:
-      mysql:
-        condition: service_healthy
-    healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -qO- http://localhost:8080/actuator/health | grep -q ''"status":"UP"'' || exit 1',
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    restart: always
-    networks: [prham-network]
-
-  # --- Nginx (정적 프론트 + /api 프록시) ---
-  nginx:
-    build: ./nginx
-    container_name: prham-nginx
-    ports:
-      - '80:80' # 우선 HTTP만 오픈(SSL은 나중에 443 추가)
-      # - "443:443"  # SSL 적용할 때 열기
-    depends_on:
-      spring:
-        condition: service_healthy
-    restart: always
-    networks: [prham-network]
-    # SSL 쓰면 인증서 마운트
-    # volumes:
-    #   - ./ssl:/etc/letsencrypt:ro
-
-  # --- MySQL ---
+  # MySQL
   mysql:
-    image: mysql:${MYSQL_VERSION:-8.0}
-    container_name: prham-mysql
-    command: >
-      --default-authentication-plugin=mysql_native_password
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci
-      --lower_case_table_names=2
+    image: mysql:8.0
+    container_name: prham-mysql-local
+    restart: unless-stopped
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --lower_case_table_names=2
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-mymm_db}
-      MYSQL_USER: ${MYSQL_USER:-prham_user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-prham_password}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      MYSQL_ROOT_PASSWORD: ssafy
+      MYSQL_DATABASE: prham
       TZ: Asia/Seoul
-    volumes:
-      - mysql-data:/var/lib/mysql
     ports:
-      - '${MYSQL_HOST_PORT:-3306}:3306'
+      - "3306:3306"
+    volumes:
+      - mysql_data_local:/var/lib/mysql
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent',
-        ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pssafy"]
       interval: 10s
       timeout: 5s
       retries: 10
-    restart: always
-    networks: [prham-network]
 
-  # --- MongoDB (필요 시) ---
-  mongodb:
-    image: mongo:${MONGO_VERSION:-7.0}
-    container_name: prham-mongodb
+  # Meilisearch
+  meilisearch:
+    image: getmeili/meilisearch:v1.11
+    container_name: prham-meilisearch-local
+    restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin_password}
-      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-prham_db}
+      MEILI_MASTER_KEY: masterKey-A105-ham
       TZ: Asia/Seoul
-    volumes:
-      - mongodb-data:/data/db
     ports:
-      - '${MONGO_HOST_PORT:-27017}:27017'
-    restart: always
-    networks: [prham-network]
+      - "7700:7700"
+    volumes:
+      - meili_data_local:/meili_data
+
+  # PostgreSQL for Mattermost
+  postgres:
+    image: postgres:15
+    container_name: prham-postgres-local
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mmuser
+      POSTGRES_PASSWORD: mmuser_password
+      POSTGRES_DB: mattermost
+      TZ: Asia/Seoul
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_local:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mmuser -d mattermost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Mattermost
+  mattermost:
+    image: mattermost/mattermost-team-edition:latest
+    container_name: prham-mattermost-local
+    restart: unless-stopped
+    environment:
+      MM_SQLSETTINGS_DRIVERNAME: postgres
+      MM_SQLSETTINGS_DATASOURCE: postgres://mmuser:mmuser_password@postgres:5432/mattermost?sslmode=disable
+      MM_SERVICESETTINGS_SITEURL: http://localhost:8065
+      MM_LOGSETTINGS_CONSOLELEVEL: INFO
+      MM_SERVICESETTINGS_ALLOWEDUNTRUSTEDINTERNALCONNECTIONS: 0.0.0.0/0
+      MM_SERVICESETTINGS_ENABLEUSERACCESSTOKENS: true
+      TZ: Asia/Seoul
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8065:8065"
+    volumes:
+      - mattermost_data_local:/mattermost/data
 
 volumes:
-  mysql-data:
-  mongodb-data:
-
-networks:
-  prham-network:
-    driver: bridge
+  mysql_data_local:
+  meili_data_local:
+  postgres_data_local:
+  mattermost_data_local:
