@@ -96,7 +96,7 @@ public class UserService {
         }
 
         // 5️⃣ 완전히 신규 사용자 생성
-        log.info("신규 사용자 생성");
+//        log.info("신규 사용자 생성");
         User user = User.builder()
                 .name(request.getName())
                 .classroom(request.getClassroom())
