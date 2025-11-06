@@ -38,4 +38,10 @@ public class NotificationSetting extends BaseTimeEntity {
         this.keywordAlertEnabled = keywordAlertEnabled;
         this.user = user;
     }
+
+    public void updateNotificationSetting(Integer deadlineAlertHours, Boolean jobAlertEnabled, Boolean keywordAlertEnabled) {
+        this.deadlineAlertHours = deadlineAlertHours;
+        this.jobAlertEnabled = jobAlertEnabled;
+        this.keywordAlertEnabled = keywordAlertEnabled;
+    }
 }

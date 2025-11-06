@@ -3,13 +3,16 @@ package com.A105.prham.notification.controller;
 import com.A105.prham.common.response.ApiResponseDto;
 import com.A105.prham.common.response.SuccessCode;
 import com.A105.prham.notification.dto.request.KeywordCreateRequest;
+import com.A105.prham.notification.dto.request.NotificationSettingUpdateRequest;
 import com.A105.prham.notification.dto.response.KeywordListGetResponse;
 import com.A105.prham.notification.dto.response.NotificationSettingGetResponse;
 import com.A105.prham.notification.service.NotificationService;
 import com.A105.prham.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,5 +47,18 @@ public class NotificationController {
     @GetMapping("/settings")
     public ApiResponseDto<NotificationSettingGetResponse> getNotificationSetting(@AuthenticationPrincipal User user) {
         return ApiResponseDto.success(SuccessCode.NOTIFICATION_SETTING_GET_SUCCESS, notificationService.getNotificationSetting(user));
+    }
+
+    @PatchMapping("/settings")
+    public ApiResponseDto updateNotificationSetting(@AuthenticationPrincipal User user, @RequestBody NotificationSettingUpdateRequest  notificationSettingUpdateRequest) {
+        notificationService.updateNotificationSetting(user, notificationSettingUpdateRequest);
+        return ApiResponseDto.success(SuccessCode.NOTIFICATION_SETTING_UPDATE_SUCCESS);
+    }
+
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter connect(@AuthenticationPrincipal User user,
+                                              @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "")
+                                              String lastEventId) {
+        return notificationService.subscribe(user, lastEventId);
     }
 }

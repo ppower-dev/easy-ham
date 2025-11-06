@@ -2,6 +2,7 @@ package com.A105.prham.search.service;
 
 import com.A105.prham.messages.dto.FileInfo;
 import com.A105.prham.messages.dto.ProcessedMessage;
+import com.A105.prham.messages.service.MattermostService;
 import com.A105.prham.search.dto.request.PostSearchRequest;
 import com.A105.prham.search.dto.response.PostSearchItem;
 import com.A105.prham.search.dto.response.PostSearchResponse;
@@ -26,7 +27,7 @@ public class SearchService {
     private final Client meilisearchClient;
     private static final String INDEX_NAME = "posts";
     private final ObjectMapper objectMapper = new ObjectMapper();
-
+    private final MattermostService mattermostService;
     // TODO: 좋아요 리포지토리 주입 필요
     // private final LikeRepository likeRepository;
 
@@ -189,7 +190,27 @@ public class SearchService {
         return meilisearchResult.getHits().stream()
                 .map(this::convertToSearchItem)
                 .collect(Collectors.toList());
+
     }
+
+    //원문링크 추가
+    @SuppressWarnings("unchecked")
+    private String buildOriginalLinkFromHit(Object hit) {
+        try {
+            if (hit == null) return null;
+            Map<String, Object> hitMap = (Map<String, Object>) hit;
+
+            Object postIdObj = hitMap.get("postId");
+            if (postIdObj == null) return null;
+
+            String postId = String.valueOf(postIdObj);
+            return mattermostService.getPostLink(postId);
+        } catch (Exception e) {
+            log.warn("Failed to build original link from hit: {}", e.getMessage());
+            return null;
+        }
+    }
+
 
     /**
      * 좋아요 필터링 (후처리)
@@ -253,38 +274,6 @@ public class SearchService {
                 .metadata(metadata)
                 .build();
     }
-
-//    /**
-//     * Meilisearch Hit를 PostSearchItem으로 변환
-//     */
-//    private PostSearchItem convertToSearchItem(Object hit) {
-//        try {
-//            @SuppressWarnings("unchecked")
-//            Map<String, Object> hitMap = (Map<String, Object>) hit;
-//
-//            // _formatted에서 하이라이트된 content 추출
-//            @SuppressWarnings("unchecked")
-//            Map<String, Object> formatted = (Map<String, Object>) hitMap.get("_formatted");
-//            String highlightedContent = formatted != null ?
-//                    (String) formatted.get("cleanedText") :
-//                    (String) hitMap.get("cleanedText");
-//
-//            return PostSearchItem.builder()
-//                    .id(getLongValue(hitMap.get("postId")))  // postId를 id로 사용
-//                    .mmMessageId((String) hitMap.get("postId"))  // postId를 mmMessageId로 매핑
-//                    .mmChannelId((String) hitMap.get("channelId"))  // channelId를 mmChannelId로 매핑
-//                    .userName((String) hitMap.get("userId"))  // userId를 userName으로 사용
-//                    .content((String) hitMap.get("cleanedText"))
-//                    .highlightedContent(highlightedContent)
-//                    .mmCreatedAt(getLongValue(hitMap.get("timestamp")))  // timestamp를 mmCreatedAt로 매핑 (이미 Long)
-//                    .mainCategory(getLongValue(hitMap.get("mainCategory")))
-//                    .subCategory(getLongValue(hitMap.get("subCategory")))
-//                    .build();
-//        } catch (Exception e) {
-//            log.error("Failed to convert search item", e);
-//            throw new RuntimeException("Failed to convert search item", e);
-//        }
-//    }
 
     /**
      * Object를 Long으로 안전하게 변환
@@ -441,7 +430,8 @@ public class SearchService {
                     .mmCreatedAt(getLongValue(hitMap.get("timestamp")))
                     .mainCategory(getLongValue(hitMap.get("mainCategory")))
                     .subCategory(getLongValue(hitMap.get("subCategory")))
-                    .files(files)  // 파일 정보 추가
+                    .files(files)
+                    .originalLink(mattermostService.getPostLink((String) hitMap.get("postId")))
                     .build();
         } catch (Exception e) {
             log.error("Failed to convert search item", e);
@@ -488,7 +478,6 @@ public class SearchService {
         return fileInfo;
     }
 
-    // 4. getIntValue 헬퍼 메서드 추가 (기존에 없다면)
     private Integer getIntValue(Object value) {
         if (value == null) {
             return null;
