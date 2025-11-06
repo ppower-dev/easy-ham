@@ -1,6 +1,8 @@
 package com.A105.prham.webhook.controller;
 
 
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,7 +40,7 @@ public class FileDownloadController {
 		HttpHeaders headers = new HttpHeaders();
 
 		headers.setContentDisposition(ContentDisposition.builder("attachment")
-			.filename(fileInfo.getFileName())
+			.filename(fileInfo.getFileName(), StandardCharsets.UTF_8)
 			.build());
 
 		headers.setContentType(MediaType.parseMediaType(fileInfo.getMimeType()));
