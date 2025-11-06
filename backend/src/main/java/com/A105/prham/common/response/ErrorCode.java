@@ -33,7 +33,9 @@ public enum ErrorCode {
     //500 INTERNAL SERVER ERROR
     INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다."),
     WEBHOOK_PROCESSING_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "웹훅 처리 중 오류가 발생했습니다."),
-    FILE_PROCESSING_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "파일 처리 중 오류가 발생했습니다.");
+    FILE_PROCESSING_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "파일 처리 중 오류가 발생했습니다."),
+    SSE_DATA_SEND_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "SSE 데이터 전송 중 오류가 발생했습니다.")
+    ;
 
 
     private final int code;
