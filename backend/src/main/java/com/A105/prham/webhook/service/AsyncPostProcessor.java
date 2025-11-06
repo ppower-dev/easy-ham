@@ -41,36 +41,34 @@ public class AsyncPostProcessor {
 		log.info("[Async] Processing post ID: {}", postId);
 
 		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new RuntimeException("Post not found: " + postId));
+			.orElseThrow(() -> new RuntimeException("Post 없음: " + postId));
+
+		//파일 처리 실패 추적 플러그
+		boolean fileProcessingFailed = false;
 
 		try {
 			// 1. 상태 변경: PROCESSING
 			post.setStatus(PostStatus.PROCESSING);
-			// ✨ 이 시점의 save는 PROCESSING 상태만 업데이트 (선택 사항)
-			// postRepository.save(post);
 
-			// ✨ 2. 파일 처리 (실제 로직으로 대체)
-			String extractedFileText = ""; // (Tika 등으로 텍스트 추출 시 여기에 저장)
-
-			String fileIdsString = post.getFileIds(); // "id1,id2,id3"
+			String fileIdsString = post.getFileIds();
 
 			if (StringUtils.hasText(fileIdsString)) {
-				log.info("[Async] Found files to process: {}", fileIdsString);
+				log.info("[비동기] 처리할 파일 존재: {}", fileIdsString);
 				List<String> fileIdList = Arrays.asList(fileIdsString.split(","));
 
-				for (String fileId : fileIdList) {
+				for(String fileId : fileIdList) {
 					if (StringUtils.hasText(fileId)) {
-						// MattermostFileService를 호출하여 파일 다운로드 및 File 엔티티 생성
-						File fileEntity = fileService.downloadAndSaveFile(fileId.trim()); // 공백 제거
+						File fileEntity = fileService.getFileInfoAndCreateEntity(fileId.trim());
 
-						if (fileEntity != null) {
-							// Post.java의 addFile 메서드를 사용하여 연관관계 설정
+						if(fileEntity != null) {
 							post.addFile(fileEntity);
-							log.info("File entity created for mmFileId: {}", fileId);
+							log.info("파일 엔티티 만들어졌음: {}", fileId);
+						} else {
+							log.warn("[비동기] 파일 처리 실패, 파일 아이디: {}", fileId);
+							fileProcessingFailed = true;
 						}
 					}
 				}
-				log.info("[Async] Finished processing {} files.", fileIdList.size());
 			}
 
 			// 3. 텍스트 전처리
@@ -79,25 +77,29 @@ public class AsyncPostProcessor {
 			String deadline = (deadlineDt != null) ? deadlineDt.toString() : null;
 
 			// 4. LLM 분류 (STUB)
-			String combinedText = cleanedText + "\n" + extractedFileText;
 			String category = "학사-정보"; // 임시
 
 			// 5. DB에 최종 결과 업데이트
 			post.setCleanedText(cleanedText);
 			post.setDeadline(deadline);
 			post.setCategory(category);
-			// post.setStorageFileUrls(...); // ✨ 이 줄은 File 엔티티를 사용하므로 불필요
-			post.setStatus(PostStatus.PROCESSED);
+
+			if(fileProcessingFailed) {
+				post.setStatus(PostStatus.FAILED);
+				log.warn("[비동기] 파일 에러로 post 처리 실패, post 아이디: {}", postId);
+			}else {
+				post.setStatus(PostStatus.PROCESSED);
+				log.info("[비동기] post 처리 성공, post 아이디: {}", postId );
+			}
+
 			post.setProcessedAt(LocalDateTime.now().toString());
-
-			// ✨ 마지막 save 한 번으로 Post 업데이트와 File 신규 저장이 동시에 일어남 (Cascade)
 			postRepository.save(post);
-			log.info("[Async] Successfully processed post ID: {}", postId);
-
 		} catch (Exception e) {
-			log.error("[Async] Failed to process post ID: {}", postId, e);
-			post.setStatus(PostStatus.FAILED);
-			postRepository.save(post);
+			log.error("[비동기] post 처리 실패: {}", postId, e);
+			if (post.getStatus() != PostStatus.FAILED) {
+				post.setStatus(PostStatus.FAILED);
+				postRepository.save(post);
+			}
 		}
 	}
 }

@@ -36,61 +36,50 @@ public class MattermostFileService {
 	private String mattermostApiToken;
 
 	// 파일을 저장할 EC2 내부 경로 (S3를 사용하기 전 임시 경로)
-	private final String localFileStoragePath = "/home/ubuntu/files/";
-
+	private final String localFileStoragePath = "C:\\Users\\SSAFY\\Desktop\\S13P31A105\\backend/files/";
 	// 이 메서드가 핵심입니다.
-	public File downloadAndSaveFile(String fileId) {
+	public File getFileInfoAndCreateEntity(String fileId){
 		try {
-			// 1. Mattermost API 헤더 준비 (봇 토큰)
 			HttpHeaders headers = new HttpHeaders();
 			headers.setBearerAuth(mattermostApiToken);
 			HttpEntity<String> entity = new HttpEntity<>(headers);
 
-			// 2. 파일 메타데이터(정보) 먼저 가져오기 (파일명, 타입 등)
+			// 파일 메타데잍 가져오기
 			String fileInfoUrl = mattermostApiBaseUrl + "/api/v4/files/" + fileId + "/info";
 			MattermostFileInfoDto fileInfo = restTemplate.exchange(
 				fileInfoUrl, HttpMethod.GET, entity, MattermostFileInfoDto.class
 			).getBody();
 
-			if (fileInfo == null) {
-				log.error("Failed to get file info for ID: {}", fileId);
+			if(fileInfo == null){
+				log.error("파일 정보 가져오기 실패 파일 아이디: {}", fileId);
 				return null;
 			}
 
-			// 3. 실제 파일 바이너리(데이터) 가져오기
+			return File.builder()
+				.mmFileId(fileId)
+				.fileName(fileInfo.getName())
+				.mimeType(fileInfo.getMimeType())
+				.build();
+		} catch (Exception e) {
+			log.error("파일 아이디 못가져옴 파일 아이디 {}: {}", fileId, e.getMessage(), e);
+			return null;
+		}
+	}
+
+	public byte[] getFileData(String fileId){
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setBearerAuth(mattermostApiToken);
+			HttpEntity<String> entity = new HttpEntity<>(headers);
+
 			String fileUrl = mattermostApiBaseUrl + "/api/v4/files/" + fileId;
 			ResponseEntity<byte[]> response = restTemplate.exchange(
 				fileUrl, HttpMethod.GET, entity, byte[].class
 			);
-			byte[] fileData = response.getBody();
 
-			if (fileData == null) {
-				log.error("Failed to download file data for ID: {}", fileId);
-				return null;
-			}
-
-			// 4. 로컬 스토리지에 파일 저장 (S3로 변경하기 전 임시 방식)
-			// (파일 이름 중복을 피하기 위해 UUID + 원본 파일명 사용)
-			String newFileName = UUID.randomUUID().toString() + "_" + fileInfo.getName();
-			Path targetPath = Paths.get(localFileStoragePath, newFileName);
-
-			// 디렉터리가 없으면 생성
-			Files.createDirectories(targetPath.getParent());
-			Files.write(targetPath, fileData);
-
-			// 5. File 엔티티 생성 (DB에 저장할 정보)
-			File fileEntity = File.builder()
-				.mmFileId(fileId)
-				.fileName(fileInfo.getName()) // 원본 파일명
-				.mimeType(fileInfo.getMimeType())
-				.fileUrl(targetPath.toString()) // EC2 내부 경로 (나중에 S3 URL로 대체)
-				.build();
-
-			log.info("File saved to local storage: {}", targetPath);
-			return fileEntity; // 이 엔티티는 Post에 연결되어 저장될 것임
-
+			return response.getBody();
 		} catch (Exception e) {
-			log.error("Error processing file ID {}: {}", fileId, e.getMessage(), e);
+			log.error("파일 다운로드 실패, 파일 아이디: {}", fileId, e);
 			return null;
 		}
 	}

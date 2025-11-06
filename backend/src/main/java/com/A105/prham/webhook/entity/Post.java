@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.A105.prham.common.domain.BaseTimeEntity;
+
 @Entity
 @Table(name = "posts")
 @Data
