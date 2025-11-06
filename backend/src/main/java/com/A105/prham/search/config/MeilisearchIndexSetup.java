@@ -22,7 +22,7 @@ public class MeilisearchIndexSetup implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         try {
             try {
-                meilisearchClient.createIndex("posts", "id");
+                meilisearchClient.createIndex("posts", "postId");
             } catch (Exception e) {
                 log.debug("Index already exists, updating settings...");
             }
@@ -31,21 +31,21 @@ public class MeilisearchIndexSetup implements ApplicationRunner {
 
             // 1. 필터 가능 속성
             index.updateFilterableAttributesSettings(new String[]{
-                    "mmChannelId",
+                    "channelId",      // mmChannelId -> channelId
                     "mainCategory",
                     "subCategory",
-                    "mmCreatedAt"
+                    "timestamp"       // mmCreatedAt -> timestamp
             });
 
             // 2. 정렬 가능 속성
             index.updateSortableAttributesSettings(new String[]{
-                    "mmCreatedAt"
+                    "timestamp"       // mmCreatedAt -> timestamp
             });
 
             // 3. 검색 가능 속성 (우선순위 순서)
             index.updateSearchableAttributesSettings(new String[]{
-                    "content",    // 가장 중요
-                    "userName"    // 덜 중요
+                    "cleanedText",    // content -> cleanedText (가장 중요)
+                    "userId"          // userName -> userId (덜 중요)
             });
 
             // 4. 랭킹 규칙 (한국어에 최적화)
@@ -72,12 +72,14 @@ public class MeilisearchIndexSetup implements ApplicationRunner {
             index.updateTypoToleranceSettings(typoTolerance);
 
             log.info("✅ Meilisearch index settings configured successfully");
-            log.info("   - Searchable: content, userName");
-            log.info("   - Filterable: mmChannelId, mainCategory, subCategory, mmCreatedAt");
+            log.info("   - Primary Key: postId");
+            log.info("   - Searchable: cleanedText, userId");
+            log.info("   - Filterable: channelId, mainCategory, subCategory, timestamp");
+            log.info("   - Sortable: timestamp");
             log.info("   - Typo tolerance: oneTypo=5chars, twoTypos=9chars");
 
         } catch (Exception e) {
-            log.warn("⚠️ Meilisearch unavailable — skipping index setup: {}", e.getMessage());
+            log.warn("⚠️ Meilisearch unavailable – skipping index setup: {}", e.getMessage());
         }
     }
 }
