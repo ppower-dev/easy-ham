@@ -6,6 +6,7 @@ import com.A105.prham.auth.dto.response.DetailUserInfoResponse;
 import com.A105.prham.auth.dto.response.LoginResponse;
 import com.A105.prham.auth.dto.response.RefreshTokenResponse;
 import com.A105.prham.auth.service.SsoAuthService;
+import com.A105.prham.auth.util.JwtUtils;
 import com.A105.prham.common.response.ApiResponseDto;
 import com.A105.prham.common.response.ErrorCode;
 import com.A105.prham.common.response.SuccessCode;
@@ -33,6 +34,7 @@ public class AuthController {
 
     private final SsoAuthService ssoAuthService;
     private final UserService userService;
+    private final JwtUtils jwtUtils;
 
     @GetMapping("/sso/login-url")
     public ApiResponseDto<String> getURL() {
@@ -58,9 +60,12 @@ public class AuthController {
                     .entRegn(userInfo.getEntRegn())
                     .build();
 
+            // 토큰에서 SSAFY SSO UUID 추출
+            String ssoSubId = jwtUtils.getUserIdFromToken(tokenResponse.getAccessToken());
             // 4. 이미 가입된 사용자 여부 확인
             try {
-                User user = userService.findByEmail(userInfo.getEmail());
+
+                User user = userService.findBySsoSubId(ssoSubId);
                 loginResponse.setUserId(user.getId());
                 return ApiResponseDto.success(SuccessCode.LOGIN_SUCCESS, loginResponse);
             } catch (Exception e) {
