@@ -4,6 +4,7 @@ import com.A105.prham.common.response.ApiResponseDto;
 import com.A105.prham.common.response.SuccessCode;
 import com.A105.prham.notification.dto.request.KeywordCreateRequest;
 import com.A105.prham.notification.dto.response.KeywordListGetResponse;
+import com.A105.prham.notification.dto.response.NotificationSettingGetResponse;
 import com.A105.prham.notification.service.NotificationService;
 import com.A105.prham.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,10 @@ public class NotificationController {
     public ApiResponseDto createNotificationSetting(@AuthenticationPrincipal User user) {
         notificationService.createNotificationSetting(user);
         return ApiResponseDto.success(SuccessCode.NOTIFICATION_SETTING_CREATE_SUCCESS);
+    }
+
+    @GetMapping("/settings")
+    public ApiResponseDto<NotificationSettingGetResponse> getNotificationSetting(@AuthenticationPrincipal User user) {
+        return ApiResponseDto.success(SuccessCode.NOTIFICATION_SETTING_GET_SUCCESS, notificationService.getNotificationSetting(user));
     }
 }
