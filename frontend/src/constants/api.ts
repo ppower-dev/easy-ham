@@ -23,6 +23,7 @@ export const API_ENDPOINTS = {
     campuses: "/campus",
     skills: "/skill",
     positions: "/position",
+    categories: "/code", // 공지사항 분류 코드
   },
 
   // 공지사항 엔드포인트
@@ -33,8 +34,19 @@ export const API_ENDPOINTS = {
 
   // 북마크 엔드포인트
   bookmarks: {
-    list: "/v1/bookmarks",
-    add: (userNoticeId: number) => `/v1/bookmarks/${userNoticeId}`,
-    remove: (userNoticeId: number) => `/v1/bookmarks/${userNoticeId}`,
+    list: "/bookmarks",
+    add: (userNoticeId: number) => `/bookmarks/${userNoticeId}`,
+    remove: (userNoticeId: number) => `/bookmarks/${userNoticeId}`,
+  },
+
+  // 검색 엔드포인트
+  search: {
+    posts: "/search/posts",
+  },
+
+  // 파일 엔드포인트 (Mattermost)
+  files: {
+    thumbnail: (fileId: string) => `https://k13a105.p.ssafy.io/chat/api/v4/files/${fileId}/thumbnail`,
+    download: (fileId: string) => `https://k13a105.p.ssafy.io/chat/api/v4/files/${fileId}`,
   },
 } as const;

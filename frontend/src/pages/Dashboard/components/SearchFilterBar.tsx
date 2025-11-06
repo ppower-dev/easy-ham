@@ -36,6 +36,7 @@ interface SearchFilterBarProps {
   showBookmarkedOnly: boolean;
   onBookmarkFilterToggle: () => void;
   onReset: () => void;
+  onSearch: () => void; // 검색 버튼 클릭 핸들러
 }
 
 const SUBCATEGORIES: Subcategory[] = ["할일", "특강", "정보", "행사"];
@@ -65,6 +66,7 @@ export function SearchFilterBar({
   showBookmarkedOnly,
   onBookmarkFilterToggle,
   onReset,
+  onSearch, // 추가된 prop
 }: SearchFilterBarProps) {
   return (
     <Card className="p-5 shadow-md">
@@ -79,7 +81,10 @@ export function SearchFilterBar({
             className="pl-10 h-12 border-0 bg-gray-50 rounded-lg"
           />
         </div>
-        <Button className="h-12 px-6 bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white">
+        <Button
+          onClick={onSearch}
+          className="h-12 px-6 bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white"
+        >
           <Search className="w-4 h-4 mr-2" />
           검색
         </Button>

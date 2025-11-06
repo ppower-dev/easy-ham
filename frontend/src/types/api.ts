@@ -71,3 +71,74 @@ export interface BookmarksListParams {
   type?: "channel" | "dm";
   sort?: "recent" | "oldest";
 }
+
+/**
+ * 검색 API - 첨부파일 타입
+ */
+export interface SearchFileItem {
+  id: string;
+  name: string;
+  extension: string;
+  size: number;
+  mimeType: string;
+  width: number;
+  height: number;
+  hasPreviewImage: boolean;
+}
+
+/**
+ * 검색 API - 검색 결과 아이템
+ */
+export interface SearchResultItem {
+  id: number | null;
+  mmMessageId: string;
+  mmChannelId: string;
+  userName: string;
+  content: string;
+  highlightedContent: string;
+  mmCreatedAt: number;
+  mainCategory: number | null;
+  subCategory: number | null;
+  files: SearchFileItem[] | null;
+  isLiked?: boolean;  // 나중에 추가될 예정
+}
+
+/**
+ * 검색 API - 메타데이터
+ */
+export interface SearchMetadata {
+  query: string;
+  totalHits: number;
+  page: number;
+  size: number;
+  totalPages: number;
+  processingTimeMs: number;
+  appliedFilters: {
+    channelIds: string[] | null;
+    categoryIds: number[] | null;
+    startDate: string | null;
+    endDate: string | null;
+    isLiked: boolean | null;
+  };
+}
+
+/**
+ * 검색 API - 응답 데이터
+ */
+export interface SearchResponse {
+  items: SearchResultItem[];
+  metadata: SearchMetadata;
+}
+
+/**
+ * 검색 API - 요청 파라미터
+ */
+export interface SearchParams {
+  keyword?: string;
+  channelIds?: string[];
+  categoryIds?: number[];  // subCodeId 배열 (1~8)
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  size?: number;
+}
