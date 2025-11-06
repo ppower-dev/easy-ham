@@ -32,6 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         LEFT JOIN FETCH u.userPositions up
         LEFT JOIN FETCH up.position
         WHERE u.ssoSubId = :ssoSubId
+        AND u.exited = false
     """)
     Optional<User> findBySsoSubId(@Param("ssoSubId") String ssoSubId);
 
