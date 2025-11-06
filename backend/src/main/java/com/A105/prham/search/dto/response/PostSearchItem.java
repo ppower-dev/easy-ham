@@ -1,7 +1,10 @@
 package com.A105.prham.search.dto.response;
 
+import com.A105.prham.messages.dto.FileInfo;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -15,4 +18,5 @@ public class PostSearchItem {
     private Long mmCreatedAt;               // 작성 시간 (timestamp)
     private Long mainCategory;              // 메인 카테고리
     private Long subCategory;               // 서브 카테고리
+    private List<FileInfo> files;           // 첨부 파일 메타데이터 리스트
 }

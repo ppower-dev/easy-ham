@@ -1,5 +1,6 @@
 package com.A105.prham.search.service;
 
+import com.A105.prham.messages.dto.FileInfo;
 import com.A105.prham.messages.dto.ProcessedMessage;
 import com.A105.prham.search.dto.request.PostSearchRequest;
 import com.A105.prham.search.dto.response.PostSearchItem;
@@ -253,37 +254,37 @@ public class SearchService {
                 .build();
     }
 
-    /**
-     * Meilisearch Hit를 PostSearchItem으로 변환
-     */
-    private PostSearchItem convertToSearchItem(Object hit) {
-        try {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> hitMap = (Map<String, Object>) hit;
-
-            // _formatted에서 하이라이트된 content 추출
-            @SuppressWarnings("unchecked")
-            Map<String, Object> formatted = (Map<String, Object>) hitMap.get("_formatted");
-            String highlightedContent = formatted != null ?
-                    (String) formatted.get("cleanedText") :
-                    (String) hitMap.get("cleanedText");
-
-            return PostSearchItem.builder()
-                    .id(getLongValue(hitMap.get("postId")))  // postId를 id로 사용
-                    .mmMessageId((String) hitMap.get("postId"))  // postId를 mmMessageId로 매핑
-                    .mmChannelId((String) hitMap.get("channelId"))  // channelId를 mmChannelId로 매핑
-                    .userName((String) hitMap.get("userId"))  // userId를 userName으로 사용
-                    .content((String) hitMap.get("cleanedText"))
-                    .highlightedContent(highlightedContent)
-                    .mmCreatedAt(getLongValue(hitMap.get("timestamp")))  // timestamp를 mmCreatedAt로 매핑 (이미 Long)
-                    .mainCategory(getLongValue(hitMap.get("mainCategory")))
-                    .subCategory(getLongValue(hitMap.get("subCategory")))
-                    .build();
-        } catch (Exception e) {
-            log.error("Failed to convert search item", e);
-            throw new RuntimeException("Failed to convert search item", e);
-        }
-    }
+//    /**
+//     * Meilisearch Hit를 PostSearchItem으로 변환
+//     */
+//    private PostSearchItem convertToSearchItem(Object hit) {
+//        try {
+//            @SuppressWarnings("unchecked")
+//            Map<String, Object> hitMap = (Map<String, Object>) hit;
+//
+//            // _formatted에서 하이라이트된 content 추출
+//            @SuppressWarnings("unchecked")
+//            Map<String, Object> formatted = (Map<String, Object>) hitMap.get("_formatted");
+//            String highlightedContent = formatted != null ?
+//                    (String) formatted.get("cleanedText") :
+//                    (String) hitMap.get("cleanedText");
+//
+//            return PostSearchItem.builder()
+//                    .id(getLongValue(hitMap.get("postId")))  // postId를 id로 사용
+//                    .mmMessageId((String) hitMap.get("postId"))  // postId를 mmMessageId로 매핑
+//                    .mmChannelId((String) hitMap.get("channelId"))  // channelId를 mmChannelId로 매핑
+//                    .userName((String) hitMap.get("userId"))  // userId를 userName으로 사용
+//                    .content((String) hitMap.get("cleanedText"))
+//                    .highlightedContent(highlightedContent)
+//                    .mmCreatedAt(getLongValue(hitMap.get("timestamp")))  // timestamp를 mmCreatedAt로 매핑 (이미 Long)
+//                    .mainCategory(getLongValue(hitMap.get("mainCategory")))
+//                    .subCategory(getLongValue(hitMap.get("subCategory")))
+//                    .build();
+//        } catch (Exception e) {
+//            log.error("Failed to convert search item", e);
+//            throw new RuntimeException("Failed to convert search item", e);
+//        }
+//    }
 
     /**
      * Object를 Long으로 안전하게 변환
@@ -386,17 +387,125 @@ public class SearchService {
      * ProcessedMessage를 Meilisearch Document로 변환
      * timestamp는 Long 타입으로 저장됨
      */
+    // SearchService.java의 수정 사항
+
+// 1. messageToDocument 메서드에서 파일 정보 추가
     private Map<String, Object> messageToDocument(ProcessedMessage message) {
         Map<String, Object> document = new HashMap<>();
         document.put("postId", message.getPostId());
         document.put("channelId", message.getChannelId());
         document.put("userId", message.getUserId());
         document.put("cleanedText", message.getCleanedText());
-        document.put("timestamp", message.getTimestamp());  // Long 타입 그대로 저장
+        document.put("timestamp", message.getTimestamp());
         document.put("mainCategory", message.getMainCategory());
         document.put("subCategory", message.getSubCategory());
         document.put("deadline", message.getDeadline());
         document.put("processedAt", message.getProcessedAt());
+
+        // 파일 정보 추가 (JSON으로 직렬화)
+        if (message.getFiles() != null && !message.getFiles().isEmpty()) {
+            document.put("files", message.getFiles());
+            // 파일 개수도 저장 (검색/필터에 활용 가능)
+            document.put("fileCount", message.getFiles().size());
+        } else {
+            document.put("files", null);
+            document.put("fileCount", 0);
+        }
+
         return document;
     }
+
+    // 2. convertToSearchItem 메서드에서 파일 정보 파싱
+    private PostSearchItem convertToSearchItem(Object hit) {
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> hitMap = (Map<String, Object>) hit;
+
+            // _formatted에서 하이라이트된 content 추출
+            @SuppressWarnings("unchecked")
+            Map<String, Object> formatted = (Map<String, Object>) hitMap.get("_formatted");
+            String highlightedContent = formatted != null ?
+                    (String) formatted.get("cleanedText") :
+                    (String) hitMap.get("cleanedText");
+
+            // 파일 정보 파싱
+            List<FileInfo> files = parseFileInfos(hitMap.get("files"));
+
+            return PostSearchItem.builder()
+                    .id(getLongValue(hitMap.get("postId")))
+                    .mmMessageId((String) hitMap.get("postId"))
+                    .mmChannelId((String) hitMap.get("channelId"))
+                    .userName((String) hitMap.get("userId"))
+                    .content((String) hitMap.get("cleanedText"))
+                    .highlightedContent(highlightedContent)
+                    .mmCreatedAt(getLongValue(hitMap.get("timestamp")))
+                    .mainCategory(getLongValue(hitMap.get("mainCategory")))
+                    .subCategory(getLongValue(hitMap.get("subCategory")))
+                    .files(files)  // 파일 정보 추가
+                    .build();
+        } catch (Exception e) {
+            log.error("Failed to convert search item", e);
+            throw new RuntimeException("Failed to convert search item", e);
+        }
+    }
+
+    // 3. 파일 정보 파싱 헬퍼 메서드 추가
+    @SuppressWarnings("unchecked")
+    private List<FileInfo> parseFileInfos(Object filesObj) {
+        if (filesObj == null) {
+            return null;
+        }
+
+        try {
+            if (filesObj instanceof List) {
+                List<Map<String, Object>> filesList = (List<Map<String, Object>>) filesObj;
+                return filesList.stream()
+                        .map(this::mapToFileInfo)
+                        .collect(Collectors.toList());
+            }
+        } catch (Exception e) {
+            log.warn("Failed to parse file infos: {}", e.getMessage());
+        }
+
+        return null;
+    }
+
+    private FileInfo mapToFileInfo(Map<String, Object> map) {
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setId((String) map.get("id"));
+        fileInfo.setName((String) map.get("name"));
+        fileInfo.setExtension((String) map.get("extension"));
+        fileInfo.setSize(getLongValue(map.get("size")));
+        fileInfo.setMimeType((String) map.get("mimeType"));
+        fileInfo.setWidth(getIntValue(map.get("width")));
+        fileInfo.setHeight(getIntValue(map.get("height")));
+
+        Object hasPreview = map.get("hasPreviewImage");
+        if (hasPreview instanceof Boolean) {
+            fileInfo.setHasPreviewImage((Boolean) hasPreview);
+        }
+
+        return fileInfo;
+    }
+
+    // 4. getIntValue 헬퍼 메서드 추가 (기존에 없다면)
+    private Integer getIntValue(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        if (value instanceof String) {
+            try {
+                return Integer.parseInt((String) value);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+
+
 }
