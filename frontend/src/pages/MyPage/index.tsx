@@ -153,8 +153,17 @@ export function MyPage() {
         skillIds: selectedSkillIds,
       };
 
-      await updateUserProfile(updateData);
+      const response = await updateUserProfile(updateData);
+      console.log("[MyPage] 저장 응답:", response);
+
+      // 저장 성공 후 초기값 업데이트
+      setInitialClassroom(classroom);
+      setInitialPositionIds(selectedPositionIds);
+      setInitialSkillIds(selectedSkillIds);
+
       alert("프로필이 저장되었습니다!");
+      // 대시보드로 이동
+      navigate("/dashboard");
     } catch (error) {
       console.error("저장 실패:", error);
       alert("프로필 저장에 실패했습니다.");

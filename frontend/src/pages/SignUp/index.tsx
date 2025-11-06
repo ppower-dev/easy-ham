@@ -156,7 +156,7 @@ export function SignUpPage() {
       };
 
       const response = await signup(signupData);
-      console.log("회원가입 응답:", response);
+      // console.log("회원가입 응답:", response);
 
       if (response.status === 200) {
         toast.success("회원가입 성공했습니다!");

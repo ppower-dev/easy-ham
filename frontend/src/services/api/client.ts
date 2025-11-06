@@ -184,8 +184,12 @@ export const apiClient = {
     }
   },
 
-  patch: async <T>(endpoint: string, data: unknown): Promise<ApiResponse<T>> => {
+  patch: async <T>(
+    endpoint: string,
+    data: unknown
+  ): Promise<ApiResponse<T>> => {
     try {
+      // console.log(`[API PATCH] ${API_BASE_URL}${endpoint}`, data);
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "PATCH",
         headers: {
@@ -210,15 +214,19 @@ export const apiClient = {
         if (!retryResponse.ok) {
           throw new Error(`HTTP error! status: ${retryResponse.status}`);
         }
-        return await retryResponse.json();
+        const retryData = await retryResponse.json();
+        // console.log(`[API PATCH RESPONSE] ${API_BASE_URL}${endpoint}`, retryData);
+        return retryData;
       }
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return await response.json();
+      const responseData = await response.json();
+      // console.log(`[API PATCH RESPONSE] ${API_BASE_URL}${endpoint}`, responseData);
+      return responseData;
     } catch (error) {
-      console.error("API PATCH error:", error);
+      // console.error("API PATCH error:", error);
       throw error;
     }
   },
