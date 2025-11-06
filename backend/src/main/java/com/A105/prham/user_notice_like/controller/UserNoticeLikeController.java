@@ -24,4 +24,9 @@ public class UserNoticeLikeController {
     public ApiResponseDto deleteBookmark(@UserId(required = true) Long userId, @PathVariable Long userNoticeId) {
         return ApiResponseDto.success(SuccessCode.BOOKMARK_DELETE_SUCCESS, userNoticeLikeService.deleteBookmarks(userId, userNoticeId));
     }
+
+    @GetMapping
+    public ApiResponseDto getBookmarks(@UserId(required = true) Long userId) {
+        return ApiResponseDto.success(SuccessCode.BOOKMARK_GET_SUCCESS, userNoticeLikeService.getBookmarks(userId));
+    }
 }
