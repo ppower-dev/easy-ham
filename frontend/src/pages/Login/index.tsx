@@ -66,8 +66,8 @@ export function LoginPage() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-12">
-            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <span className="text-2xl">🐹</span>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center">
+              <img src="/images/logo/logo.png" alt="logo" className="w-full h-full object-contain" />
             </div>
             <span className="text-3xl" style={{ fontWeight: 700 }}>
               편리햄!
@@ -138,8 +138,8 @@ export function LoginPage() {
 
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-2 justify-center">
-            <div className="w-10 h-10 rounded-xl bg-[var(--brand-orange)] flex items-center justify-center">
-              <span className="text-xl">🐹</span>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+              <img src="/images/logo/logo.png" alt="logo" className="w-full h-full object-contain" />
             </div>
             <span className="text-2xl" style={{ fontWeight: 700 }}>
               편리햄!
