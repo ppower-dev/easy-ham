@@ -27,6 +27,9 @@ public class Post {
 	@Column(name = "channel_id", nullable = false)
 	private String channelId;
 
+	@Column(name = "channel_name")
+	private String channelName;
+
 	@Column(name = "user_id", nullable = false)
 	private String userId;
 
@@ -42,7 +45,7 @@ public class Post {
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<File> files = new ArrayList<>();
 
-	// --- 비동기 처리로 채워질 필드들 ---
+	// after llm
 	@Column(name = "cleaned_text", columnDefinition = "TEXT")
 	private String cleanedText;
 
@@ -55,11 +58,17 @@ public class Post {
 	@Column(name = "sub_category")
 	private String subCategory;
 
-	@Enumerated(EnumType.STRING) // ✨ 처리 상태
+	@Column(name = "title", length=500)
+	private String title;
+
+	@Column(name = "campus_list")
+	private String campusList;
+
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private PostStatus status;
 
-	@Column(name = "processed_at") // 처리 완료 시간
+	@Column(name = "processed_at")
 	private String processedAt;
 
 	@Column(name = "created_at", nullable = false)

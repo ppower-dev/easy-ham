@@ -38,9 +38,9 @@ public class WebhookIngestionService {
 		post.setUserId(payload.getUserId());
 		post.setOriginalText(payload.getText());
 		post.setWebhookTimestamp(payload.getTimestamp());
-		post.setStatus(PostStatus.PENDING); // ✨ 상태 설정
-
-		// 3. ✨ 원본 File ID 문자열 저장 (비동기 프로세서가 이 값을 사용)
+		post.setStatus(PostStatus.PENDING);
+		post.setChannelName(payload.getChannelName());
+		// 3.  원본 File ID 문자열 저장 (비동기 프로세서가 이 값을 사용)
 		post.setFileIds(payload.getFileIds());
 
 		// 4. DB에 저장
