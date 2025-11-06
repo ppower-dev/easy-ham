@@ -88,4 +88,70 @@ public class MattermostService {
         }
         return list;
     }
+
+
+    public String getPostLink(String postId) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(mattermostApiToken);
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            // 1. post_id → channel_id
+            String postUrl = mattermostApiUrl + "/api/v4/posts/" + postId;
+            ResponseEntity<String> postResponse = restTemplate.exchange(
+                    postUrl, HttpMethod.GET, entity, String.class);
+
+            if (!postResponse.getStatusCode().is2xxSuccessful() || postResponse.getBody() == null) {
+                log.warn("Failed to get post info: {}", postResponse.getStatusCode());
+                return null;
+            }
+
+            JsonNode postNode = objectMapper.readTree(postResponse.getBody());
+            String channelId = postNode.path("channel_id").asText(null);
+            if (channelId == null) {
+                log.warn("No channel_id found for post {}", postId);
+                return null;
+            }
+
+            // 2.️ channel_id → team_id, channel_name
+            String channelUrl = mattermostApiUrl + "/api/v4/channels/" + channelId;
+            ResponseEntity<String> channelResponse = restTemplate.exchange(
+                    channelUrl, HttpMethod.GET, entity, String.class);
+
+            if (!channelResponse.getStatusCode().is2xxSuccessful() || channelResponse.getBody() == null) {
+                log.warn("Failed to get channel info: {}", channelResponse.getStatusCode());
+                return null;
+            }
+
+            JsonNode channelNode = objectMapper.readTree(channelResponse.getBody());
+            String teamId = channelNode.path("team_id").asText(null);
+//            String channelName = channelNode.path("name").asText(null);
+
+            // 3. team_id → team_name
+            String teamUrl = mattermostApiUrl + "/api/v4/teams/" + teamId;
+            ResponseEntity<String> teamResponse = restTemplate.exchange(
+                    teamUrl, HttpMethod.GET, entity, String.class);
+
+            if (!teamResponse.getStatusCode().is2xxSuccessful() || teamResponse.getBody() == null) {
+                log.warn("Failed to get team info: {}", teamResponse.getStatusCode());
+                return null;
+            }
+
+            JsonNode teamNode = objectMapper.readTree(teamResponse.getBody());
+            String teamName = teamNode.path("name").asText(null);
+
+            // 4. 최종 링크 조합
+            String link = String.format("%s/%s/pl/%s",
+                    mattermostApiUrl, teamName, postId);
+
+            log.info("✅ Generated Mattermost post link: {}", link);
+            return link;
+
+        } catch (Exception e) {
+            log.error("Error while building Mattermost post link for {}: {}", postId, e.getMessage(), e);
+            return null;
+        }
+    }
+
 }
