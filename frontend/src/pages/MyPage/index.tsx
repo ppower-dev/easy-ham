@@ -249,66 +249,6 @@ export function MyPage() {
             </div>
           </Card>
 
-          {/* 희망 직무 */}
-          <Card className="p-6">
-            <div className="flex items-center gap-2 mb-6">
-              <Briefcase className="w-5 h-5 text-[var(--brand-orange)]" />
-              <h2 className="text-xl" style={{ fontWeight: 700 }}>
-                희망 직무
-              </h2>
-            </div>
-
-            <div className="space-y-4">
-              {/* 선택된 직무 */}
-              {selectedJobs.length > 0 && (
-                <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg">
-                  {selectedJobs.map((job) => (
-                    <Badge
-                      key={job}
-                      className="bg-[var(--brand-orange)] text-white px-3 py-1.5 flex items-center gap-2"
-                    >
-                      {job}
-                      <button
-                        onClick={() => handleToggleJob(job)}
-                        className="hover:opacity-70"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-
-              {/* 직무 선택 그리드 */}
-              <div className="p-4 border rounded-lg space-y-3">
-                <p
-                  className="text-sm text-gray-600"
-                  style={{ fontWeight: 500 }}
-                >
-                  자주 선택하는 직무
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {JOB_OPTIONS.map((job) => (
-                    <button
-                      key={job}
-                      type="button"
-                      onClick={() => handleToggleJob(job)}
-                      disabled={selectedJobs.includes(job)}
-                      className={`px-4 py-3 text-sm rounded-lg border transition-colors ${
-                        selectedJobs.includes(job)
-                          ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-                          : "bg-white hover:bg-[var(--brand-orange-light)] hover:border-[var(--brand-orange)] border-gray-300"
-                      }`}
-                      style={{ fontWeight: 500 }}
-                    >
-                      {job}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </Card>
-
           {/* 구독 키워드 */}
           <Card className="p-6">
             <div className="flex items-center justify-between mb-6">
@@ -407,6 +347,68 @@ export function MyPage() {
               </div>
             </div>
           </Card>
+
+          {/* 희망 직무 */}
+          <Card className="p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <Briefcase className="w-5 h-5 text-[var(--brand-orange)]" />
+              <h2 className="text-xl" style={{ fontWeight: 700 }}>
+                희망 직무
+              </h2>
+            </div>
+
+            <div className="space-y-4">
+              {/* 선택된 직무 */}
+              {selectedJobs.length > 0 && (
+                <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg">
+                  {selectedJobs.map((job) => (
+                    <Badge
+                      key={job}
+                      className="bg-[var(--brand-orange)] text-white px-3 py-1.5 flex items-center gap-2"
+                    >
+                      {job}
+                      <button
+                        onClick={() => handleToggleJob(job)}
+                        className="hover:opacity-70"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* 직무 선택 그리드 */}
+              <div className="p-4 border rounded-lg space-y-3">
+                <p
+                  className="text-sm text-gray-600"
+                  style={{ fontWeight: 500 }}
+                >
+                  자주 선택하는 직무
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {JOB_OPTIONS.map((job) => (
+                    <button
+                      key={job}
+                      type="button"
+                      onClick={() => handleToggleJob(job)}
+                      disabled={selectedJobs.includes(job)}
+                      className={`px-4 py-3 text-sm rounded-lg border transition-colors ${
+                        selectedJobs.includes(job)
+                          ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                          : "bg-white hover:bg-[var(--brand-orange-light)] hover:border-[var(--brand-orange)] border-gray-300"
+                      }`}
+                      style={{ fontWeight: 500 }}
+                    >
+                      {job}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Card>
+
+
 
           {/* 기술 스택 */}
           <Card className="p-6">
