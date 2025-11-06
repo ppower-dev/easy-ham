@@ -7,6 +7,7 @@ import {
   GraduationCap,
   Briefcase,
   Check,
+  Star,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,10 @@ interface SearchFilterBarProps {
   onCareerCategoryToggle: (category: Subcategory) => void;
   periodFilter: PeriodFilter;
   onPeriodChange: (period: PeriodFilter) => void;
+  showBookmarkedOnly: boolean;
+  onBookmarkFilterToggle: () => void;
   onReset: () => void;
+  onSearch: () => void; // 검색 버튼 클릭 핸들러
 }
 
 const SUBCATEGORIES: Subcategory[] = ["할일", "특강", "정보", "행사"];
@@ -59,7 +63,10 @@ export function SearchFilterBar({
   onCareerCategoryToggle,
   periodFilter,
   onPeriodChange,
+  showBookmarkedOnly,
+  onBookmarkFilterToggle,
   onReset,
+  onSearch, // 추가된 prop
 }: SearchFilterBarProps) {
   return (
     <Card className="p-5 shadow-md">
@@ -74,13 +81,16 @@ export function SearchFilterBar({
             className="pl-10 h-12 border-0 bg-gray-50 rounded-lg"
           />
         </div>
-        <Button className="h-12 px-6 bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white">
+        <Button
+          onClick={onSearch}
+          className="h-12 px-6 bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white"
+        >
           <Search className="w-4 h-4 mr-2" />
           검색
         </Button>
       </div>
 
-      {/* 기간 필터 */}
+      {/* 기간 필터 & 북마크 필터 */}
       <div className="flex items-center gap-4 mb-2 min-h-[40px]">
         <span
           className="text-xs whitespace-nowrap flex items-center gap-1.5"
@@ -89,7 +99,7 @@ export function SearchFilterBar({
           <CalendarIcon className="w-3.5 h-3.5" />
           기간
         </span>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           {PERIOD_OPTIONS.map((period) => (
             <Button
               key={period}
@@ -114,6 +124,25 @@ export function SearchFilterBar({
               <SelectItem value="custom">기간 설정</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* 구분선 */}
+          <div className="h-6 w-px bg-gray-300 mx-2" />
+
+          {/* 북마크 필터 토글 */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onBookmarkFilterToggle}
+            className={`h-8 px-3 rounded-md ${
+              showBookmarkedOnly
+                ? "bg-yellow-100 text-yellow-700 border-yellow-300 hover:bg-yellow-200"
+                : "bg-white text-gray-600 hover:bg-gray-50"
+            }`}
+            style={{ fontWeight: 500 }}
+          >
+            <Star className={`w-3.5 h-3.5 mr-1.5 ${showBookmarkedOnly ? 'fill-current' : ''}`} />
+            북마크만
+          </Button>
         </div>
       </div>
 

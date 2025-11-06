@@ -1,5 +1,6 @@
 import { Bookmark, Check } from 'lucide-react';
 import { DdayBadge } from '@/components/common/Badge/DdayBadge';
+import { formatRelativeTime } from '@/utils/dateFormatter';
 import type { Notice } from '@/types/notice';
 
 interface NoticeListProps {
@@ -7,6 +8,8 @@ interface NoticeListProps {
   onBookmarkToggle: (id: number) => void;
   onCompleteToggle: (id: number) => void;
   onNoticeClick: (notice: Notice) => void;
+  lastNoticeRef?: (node: HTMLDivElement | null) => void; // 무한스크롤용
+  isLoading?: boolean;
 }
 
 export function NoticeList({
@@ -14,25 +17,27 @@ export function NoticeList({
   onBookmarkToggle,
   onCompleteToggle,
   onNoticeClick,
+  lastNoticeRef,
+  isLoading,
 }: NoticeListProps) {
-  if (notices.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <p className="text-gray-500 text-base mb-2">공지사항이 없습니다</p>
-        <p className="text-gray-400 text-sm">필터를 조정하거나 나중에 다시 확인해주세요</p>
-      </div>
-    );
+  // 로딩 중이 아닌데 결과가 없으면 빈 상태 표시
+  if (!isLoading && notices.length === 0) {
+    return null; // Dashboard에서 별도 메시지 표시
   }
 
   return (
     <div>
-      {notices.map((notice) => (
-        <div
-          key={notice.id}
-          className={`px-6 py-4 border-b last:border-b-0 hover:bg-gray-50 transition-colors ${
-            notice.completed ? 'opacity-60' : ''
-          }`}
-        >
+      {notices.map((notice, index) => {
+        const isLast = index === notices.length - 1;
+
+        return (
+          <div
+            key={notice.id}
+            ref={isLast ? lastNoticeRef : null} // 마지막 아이템에만 ref 연결
+            className={`px-6 py-4 border-b last:border-b-0 hover:bg-gray-50 transition-colors ${
+              notice.completed ? 'opacity-60' : ''
+            }`}
+          >
           <div className="flex items-center justify-between">
             <div
               className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
@@ -56,7 +61,7 @@ export function NoticeList({
                 <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
                   <span>{notice.channel}</span>
                   <span>•</span>
-                  <span>{notice.createdAt}</span>
+                  <span>{formatRelativeTime(notice.createdAt)}</span>
                 </div>
               </div>
             </div>
@@ -95,7 +100,8 @@ export function NoticeList({
             </div>
           </div>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
