@@ -85,6 +85,7 @@ public class User extends BaseTimeEntity {
         this.campus = campus;
         this.exited = exited;
     }
+    public void setSsoSubId(String ssoSubId) {this.ssoSubId=ssoSubId;}
     public void setExited(Boolean exited) {this.exited= exited;}
     public void setName(String name) { this.name = name; }
     public void setClassroom(Integer classroom) { this.classroom = classroom; }
