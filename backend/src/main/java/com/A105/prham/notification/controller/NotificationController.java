@@ -3,6 +3,7 @@ package com.A105.prham.notification.controller;
 import com.A105.prham.common.response.ApiResponseDto;
 import com.A105.prham.common.response.SuccessCode;
 import com.A105.prham.notification.dto.request.KeywordCreateRequest;
+import com.A105.prham.notification.dto.request.NotificationSettingUpdateRequest;
 import com.A105.prham.notification.dto.response.KeywordListGetResponse;
 import com.A105.prham.notification.dto.response.NotificationSettingGetResponse;
 import com.A105.prham.notification.service.NotificationService;
@@ -44,5 +45,11 @@ public class NotificationController {
     @GetMapping("/settings")
     public ApiResponseDto<NotificationSettingGetResponse> getNotificationSetting(@AuthenticationPrincipal User user) {
         return ApiResponseDto.success(SuccessCode.NOTIFICATION_SETTING_GET_SUCCESS, notificationService.getNotificationSetting(user));
+    }
+
+    @PatchMapping("/settings")
+    public ApiResponseDto updateNotificationSetting(@AuthenticationPrincipal User user, @RequestBody NotificationSettingUpdateRequest  notificationSettingUpdateRequest) {
+        notificationService.updateNotificationSetting(user, notificationSettingUpdateRequest);
+        return ApiResponseDto.success(SuccessCode.NOTIFICATION_SETTING_UPDATE_SUCCESS);
     }
 }

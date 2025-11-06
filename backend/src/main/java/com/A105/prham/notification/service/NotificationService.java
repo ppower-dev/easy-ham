@@ -5,6 +5,7 @@ import com.A105.prham.common.response.ErrorCode;
 import com.A105.prham.keyword.Keyword;
 import com.A105.prham.keyword.repository.KeywordRepository;
 import com.A105.prham.notification.dto.request.KeywordCreateRequest;
+import com.A105.prham.notification.dto.request.NotificationSettingUpdateRequest;
 import com.A105.prham.notification.dto.response.KeywordDto;
 import com.A105.prham.notification.dto.response.KeywordListGetResponse;
 import com.A105.prham.notification.dto.response.NotificationSettingGetResponse;
@@ -72,5 +73,16 @@ public class NotificationService {
                 .jobAlertEnabled(notificationSetting.getJobAlertEnabled())
                 .keywordAlertEnabled(notificationSetting.getKeywordAlertEnabled())
                 .build();
+    }
+
+    @Transactional
+    public void updateNotificationSetting(User user, NotificationSettingUpdateRequest notificationSettingUpdateRequest){
+        NotificationSetting notificationSetting = notificationSettingRepository.findByUser(user);
+        notificationSetting.updateNotificationSetting(
+                notificationSettingUpdateRequest.deadlineAlertHours(),
+                notificationSettingUpdateRequest.jobAlertEnabled(),
+                notificationSettingUpdateRequest.keywordAlertEnabled()
+        );
+        notificationSettingRepository.save(notificationSetting);
     }
 }
