@@ -30,13 +30,13 @@ public class Post {
 	@Column(name = "user_id", nullable = false)
 	private String userId;
 
-	@Column(name = "webhook_timestamp") // 💡 원본 DTO의 timestamp 필드
+	@Column(name = "webhook_timestamp")
 	private String webhookTimestamp;
 
 	@Column(name = "original_text", columnDefinition = "TEXT")
 	private String originalText;
 
-	@Column(name = "file_ids") // ✨ 파일 ID 필드 추가
+	@Column(name = "file_ids")
 	private String fileIds;
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -49,11 +49,11 @@ public class Post {
 	@Column(name = "deadline")
 	private String deadline;
 
-	@Column(name = "category") // ✨ LLM 분류 결과
-	private String category;
+	@Column(name = "main_category")
+	private String mainCategory;
 
-	@Column(name = "storage_file_urls", columnDefinition = "TEXT") // ✨ S3 등 저장된 URL
-	private String storageFileUrls;
+	@Column(name = "sub_category")
+	private String subCategory;
 
 	@Enumerated(EnumType.STRING) // ✨ 처리 상태
 	@Column(name = "status", nullable = false)

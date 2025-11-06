@@ -76,13 +76,15 @@ public class AsyncPostProcessor {
 			LocalDateTime deadlineDt = dateParserService.parseDeadline(cleanedText);
 			String deadline = (deadlineDt != null) ? deadlineDt.toString() : null;
 
-			// 4. LLM 분류 (STUB)
-			String category = "학사-정보"; // 임시
+			// 4. LLM 분류
+			String llmMainCategory = "학사"; //임시
+			String llmSubCategory = "정보"; //임시
 
 			// 5. DB에 최종 결과 업데이트
 			post.setCleanedText(cleanedText);
 			post.setDeadline(deadline);
-			post.setCategory(category);
+			post.setMainCategory(llmMainCategory);
+			post.setSubCategory(llmSubCategory);
 
 			if(fileProcessingFailed) {
 				post.setStatus(PostStatus.FAILED);
