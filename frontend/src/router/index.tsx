@@ -7,6 +7,7 @@ import { SignUpPage } from "../pages/SignUp";
 import DashboardPage from "../pages/Dashboard";
 import CalendarPage from "../pages/Calendar";
 import { MyPage } from "../pages/MyPage";
+import OverviewPage from "../pages/Overview";
 
 export const router = createBrowserRouter([
   {
@@ -48,5 +49,9 @@ export const router = createBrowserRouter([
         <MyPage />
       // </ProtectedRoute>
     ),
+  },
+  {
+    path: "/overview",
+    element: <OverviewPage />,
   },
 ]);
