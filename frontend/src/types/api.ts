@@ -90,17 +90,20 @@ export interface SearchFileItem {
  * 검색 API - 검색 결과 아이템
  */
 export interface SearchResultItem {
-  id: number | null;
+  id: number;
   mmMessageId: string;
   mmChannelId: string;
+  channelName: string;
+  title: string;
   userName: string;
   content: string;
   highlightedContent: string;
   mmCreatedAt: number;
+  deadline: string | null;
   mainCategory: number | null;
   subCategory: number | null;
   files: SearchFileItem[] | null;
-  isLiked?: boolean;  // 나중에 추가될 예정
+  isLiked?: boolean;
   originalLink?: string;  // Mattermost 원문 링크
 }
 
