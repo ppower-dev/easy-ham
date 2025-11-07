@@ -46,12 +46,14 @@ export const API_ENDPOINTS = {
 
   // 파일 엔드포인트 (Mattermost)
   files: {
-    thumbnail: (fileId: string) => `https://k13a105.p.ssafy.io/chat/api/v4/files/${fileId}/thumbnail`,
-    download: (fileId: string) => `https://k13a105.p.ssafy.io/chat/api/v4/files/${fileId}`,
+    thumbnail: (fileId: string) =>
+      `https://k13a105.p.ssafy.io/chat/api/v4/files/${fileId}/thumbnail`,
+    download: (fileId: string) =>
+      `https://k13a105.p.ssafy.io/chat/api/v4/files/${fileId}`,
   },
 
   // 알림 설정 엔드포인트
   notifications: {
-    initializeSettings: "/v1/notifications/settings",
+    initializeSettings: "/notifications/settings",
   },
 } as const;
