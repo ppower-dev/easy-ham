@@ -55,5 +55,7 @@ export const API_ENDPOINTS = {
   // 알림 설정 엔드포인트
   notifications: {
     initializeSettings: "/notifications/settings",
+    getSettings: "/notifications/settings",
+    updateSettings: "/notifications/settings",
   },
 } as const;
