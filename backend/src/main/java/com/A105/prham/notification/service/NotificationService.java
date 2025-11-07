@@ -44,10 +44,14 @@ public class NotificationService {
 
     @Transactional
     public void addKeyword(User user, KeywordCreateRequest keywordCreateRequest) {
+        if(keywordRepository.existsByUserAndWord(user, keywordCreateRequest.word())) {
+            throw new CustomException(ErrorCode.DUPLICATED_KEYWORD);
+        }
         Keyword keyword = Keyword.builder()
                 .word(keywordCreateRequest.word())
                 .user(user)
                 .build();
+
         keywordRepository.save(keyword);
     }
 
@@ -62,6 +66,7 @@ public class NotificationService {
         List<Keyword> keywordList = keywordRepository.findByUser(user);
         List<KeywordDto> keywordDtoList = keywordList.stream()
                 .map(keyword -> KeywordDto.builder()
+                        .keywordId(keyword.getId())
                         .keyword(keyword.getWord())
                         .build()).toList();
         return KeywordListGetResponse.builder()
@@ -71,6 +76,12 @@ public class NotificationService {
 
     @Transactional
     public void createNotificationSetting(User user){
+
+        // 유효성 검사
+        if(notificationSettingRepository.findByUser(user) != null){
+            throw new CustomException(ErrorCode.DUPLICATED_NOTIFICATION_SETTING);
+        }
+
         NotificationSetting notificationSetting = NotificationSetting.builder()
                 .deadlineAlertHours(6)
                 .jobAlertEnabled(true)
