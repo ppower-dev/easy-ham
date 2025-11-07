@@ -13,6 +13,8 @@ public enum ErrorCode {
     DUPLICATED_USER_NOTICE_LIKE(400, HttpStatus.BAD_REQUEST, "이미 북마크 된 공지사항입니다."),
     INVALID_WEBHOOK_PAYLOAD(400, HttpStatus.BAD_REQUEST, "유효하지 않은 웹훅 데이터입니다."),
     INVALID_USER_NOTICE_LIKE(400, HttpStatus.BAD_REQUEST, "유효하지 않은 북마크입니다."),
+    DUPLICATED_NOTIFICATION_SETTING(400, HttpStatus.BAD_REQUEST, "이미 알림 설정 초기화 된 유저입니다."),
+    DUPLICATED_KEYWORD(400, HttpStatus.BAD_REQUEST, "이미 구독된 키워드입니다."),
 
     //403 FORBIDDEN
     NOT_REGISTERED(403,HttpStatus.FORBIDDEN, "회원가입 후 이용해주세요."),
