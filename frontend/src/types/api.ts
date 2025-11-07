@@ -161,3 +161,18 @@ export interface NotificationSettingsResponse {
   jobAlertEnabled: boolean;
   keywordAlertEnabled: boolean;
 }
+
+/**
+ * 구독 키워드 데이터
+ */
+export interface SubscriptionKeyword {
+  keywordId: number;
+  keyword: string;
+}
+
+/**
+ * 구독 키워드 목록 조회 응답
+ */
+export interface KeywordListResponse {
+  keywordList: SubscriptionKeyword[];
+}

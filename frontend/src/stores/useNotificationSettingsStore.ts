@@ -1,15 +1,20 @@
 /**
  * 알림 설정 상태 관리 스토어
- * Zustand 기반 알림 설정 (deadline, job alert, keyword alert) 관리
+ * Zustand 기반 알림 설정 (deadline, job alert, keyword alert) 및 구독 키워드 관리
  */
 
 import { create } from 'zustand';
-import { getNotificationSettings, updateNotificationSettings } from '@/services/api/notifications';
-import type { NotificationSettings } from '@/types/api';
+import { getNotificationSettings, updateNotificationSettings, getSubscriptionKeywords, addSubscriptionKeyword, deleteSubscriptionKeyword } from '@/services/api/notifications';
+import type { NotificationSettings, SubscriptionKeyword } from '@/types/api';
 
 interface NotificationSettingsState extends NotificationSettings {
   isLoading: boolean;
   error: string | null;
+
+  // 구독 키워드 상태
+  subscribedKeywords: SubscriptionKeyword[];
+  keywordLoading: boolean;
+  keywordError: string | null;
 
   // 액션
   fetchSettings: () => Promise<void>;
@@ -17,6 +22,12 @@ interface NotificationSettingsState extends NotificationSettings {
   updateJobAlertEnabled: (enabled: boolean) => Promise<void>;
   updateKeywordAlertEnabled: (enabled: boolean) => Promise<void>;
   clearError: () => void;
+
+  // 구독 키워드 액션
+  fetchSubscribedKeywords: () => Promise<void>;
+  addKeyword: (word: string) => Promise<void>;
+  removeKeyword: (keywordId: number) => Promise<void>;
+  clearKeywordError: () => void;
 }
 
 export const useNotificationSettingsStore = create<NotificationSettingsState>((set, get) => ({
@@ -25,6 +36,9 @@ export const useNotificationSettingsStore = create<NotificationSettingsState>((s
   keywordAlertEnabled: true,
   isLoading: false,
   error: null,
+  subscribedKeywords: [],
+  keywordLoading: false,
+  keywordError: null,
 
   /**
    * 알림 설정 조회
@@ -130,5 +144,67 @@ export const useNotificationSettingsStore = create<NotificationSettingsState>((s
    */
   clearError: () => {
     set({ error: null });
+  },
+
+  /**
+   * 구독 키워드 목록 조회
+   * 서버에서 사용자의 구독 키워드 목록을 가져와 스토어에 저장
+   */
+  fetchSubscribedKeywords: async () => {
+    set({ keywordLoading: true, keywordError: null });
+    try {
+      const response = await getSubscriptionKeywords();
+      set({
+        subscribedKeywords: response.data.keywordList,
+        keywordLoading: false,
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '구독 키워드 조회 실패';
+      set({ keywordError: errorMessage, keywordLoading: false });
+      throw error;
+    }
+  },
+
+  /**
+   * 키워드 추가
+   * 새로운 키워드를 구독 목록에 추가하는 API 호출
+   * @param word 추가할 키워드
+   */
+  addKeyword: async (word: string) => {
+    set({ keywordLoading: true, keywordError: null });
+    try {
+      await addSubscriptionKeyword(word);
+      // 추가 후 최신 목록 재조회
+      await get().fetchSubscribedKeywords();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '키워드 추가 실패';
+      set({ keywordError: errorMessage, keywordLoading: false });
+      throw error;
+    }
+  },
+
+  /**
+   * 키워드 삭제
+   * 구독 중인 키워드를 삭제하는 API 호출
+   * @param keywordId 삭제할 키워드 ID
+   */
+  removeKeyword: async (keywordId: number) => {
+    set({ keywordLoading: true, keywordError: null });
+    try {
+      await deleteSubscriptionKeyword(keywordId);
+      // 삭제 후 최신 목록 재조회
+      await get().fetchSubscribedKeywords();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '키워드 삭제 실패';
+      set({ keywordError: errorMessage, keywordLoading: false });
+      throw error;
+    }
+  },
+
+  /**
+   * 키워드 에러 메시지 초기화
+   */
+  clearKeywordError: () => {
+    set({ keywordError: null });
   },
 }));

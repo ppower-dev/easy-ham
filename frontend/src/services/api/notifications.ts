@@ -4,7 +4,7 @@
 
 import { apiClient } from './client';
 import { API_ENDPOINTS } from '@/constants/api';
-import type { ApiResponse, NotificationSettings, NotificationSettingsResponse } from '@/types/api';
+import type { ApiResponse, NotificationSettings, NotificationSettingsResponse, KeywordListResponse } from '@/types/api';
 
 // ===== 타입 정의 =====
 
@@ -50,5 +50,47 @@ export const updateNotificationSettings = async (
   return apiClient.patch<{ message: string }>(
     API_ENDPOINTS.notifications.updateSettings,
     settings
+  );
+};
+
+// ===== 구독 키워드 관련 API =====
+
+/**
+ * 구독 키워드 목록 조회
+ * 사용자가 구독 중인 키워드 목록을 조회하는 API
+ * @returns 구독 키워드 목록
+ */
+export const getSubscriptionKeywords = async (): Promise<ApiResponse<KeywordListResponse>> => {
+  return apiClient.get<KeywordListResponse>(
+    API_ENDPOINTS.notifications.keywords.list
+  );
+};
+
+/**
+ * 구독 키워드 추가
+ * 새로운 키워드를 구독하는 API
+ * @param word - 추가할 키워드
+ * @returns 성공 메시지
+ */
+export const addSubscriptionKeyword = async (
+  word: string
+): Promise<ApiResponse<{ message: string }>> => {
+  return apiClient.post<{ message: string }>(
+    API_ENDPOINTS.notifications.keywords.add,
+    { word }
+  );
+};
+
+/**
+ * 구독 키워드 삭제
+ * 구독 중인 키워드를 삭제하는 API
+ * @param keywordId - 삭제할 키워드 ID
+ * @returns 성공 메시지
+ */
+export const deleteSubscriptionKeyword = async (
+  keywordId: number
+): Promise<ApiResponse<{ message: string }>> => {
+  return apiClient.delete<{ message: string }>(
+    API_ENDPOINTS.notifications.keywords.remove(keywordId)
   );
 };

@@ -43,7 +43,6 @@ export function SubscriptionKeywordModal({
   isOpen,
   onOpenChange,
 }: SubscriptionKeywordModalProps) {
-  const [subscribedKeywords, setSubscribedKeywords] = useState<string[]>([]);
   const [customKeyword, setCustomKeyword] = useState("");
   const [localDeadlineHours, setLocalDeadlineHours] = useState(6);
   const [isSavingDeadline, setIsSavingDeadline] = useState(false);
@@ -54,21 +53,31 @@ export function SubscriptionKeywordModal({
     keywordAlertEnabled,
     isLoading,
     error,
+    subscribedKeywords,
+    keywordLoading,
+    keywordError,
     fetchSettings,
+    fetchSubscribedKeywords,
     updateDeadlineAlertHours,
     updateJobAlertEnabled,
     updateKeywordAlertEnabled,
+    addKeyword,
+    removeKeyword,
     clearError,
+    clearKeywordError,
   } = useNotificationSettingsStore();
 
-  // 모달 열림 시 알림 설정 조회
+  // 모달 열림 시 알림 설정 및 구독 키워드 조회
   useEffect(() => {
     if (isOpen) {
       fetchSettings().catch(() => {
         toast.error("알림 설정을 불러오지 못했습니다.");
       });
+      fetchSubscribedKeywords().catch(() => {
+        toast.error("구독 키워드를 불러오지 못했습니다.");
+      });
     }
-  }, [isOpen, fetchSettings]);
+  }, [isOpen, fetchSettings, fetchSubscribedKeywords]);
 
   // 스토어 값 변경 감지
   useEffect(() => {
@@ -83,27 +92,74 @@ export function SubscriptionKeywordModal({
     }
   }, [error, clearError]);
 
-  const handleAddKeyword = (keyword: string) => {
-    if (
-      subscribedKeywords.length < 5 &&
-      !subscribedKeywords.includes(keyword)
-    ) {
-      setSubscribedKeywords([...subscribedKeywords, keyword]);
+  // 키워드 에러 발생 시 토스트 표시
+  useEffect(() => {
+    if (keywordError) {
+      toast.error(keywordError);
+      clearKeywordError();
+    }
+  }, [keywordError, clearKeywordError]);
+
+  const handleAddPresetKeyword = async (keyword: string) => {
+    const isAlreadySubscribed = subscribedKeywords.some(
+      (k) => k.keyword === keyword
+    );
+
+    if (isAlreadySubscribed) {
+      toast.error("이미 구독 중인 키워드입니다.");
+      return;
+    }
+
+    if (subscribedKeywords.length >= 5) {
+      toast.error("최대 5개까지만 구독할 수 있습니다.");
+      return;
+    }
+
+    try {
+      await addKeyword(keyword);
+      toast.success(`'${keyword}' 키워드를 구독했습니다.`);
+    } catch {
+      // 에러는 스토어에서 처리됨
     }
   };
 
-  const handleRemoveKeyword = (keyword: string) => {
-    setSubscribedKeywords(subscribedKeywords.filter((k) => k !== keyword));
+  const handleAddCustomKeyword = async () => {
+    const trimmedKeyword = customKeyword.trim();
+
+    if (!trimmedKeyword) {
+      toast.error("키워드를 입력해주세요.");
+      return;
+    }
+
+    const isAlreadySubscribed = subscribedKeywords.some(
+      (k) => k.keyword === trimmedKeyword
+    );
+
+    if (isAlreadySubscribed) {
+      toast.error("이미 구독 중인 키워드입니다.");
+      return;
+    }
+
+    if (subscribedKeywords.length >= 5) {
+      toast.error("최대 5개까지만 구독할 수 있습니다.");
+      return;
+    }
+
+    try {
+      await addKeyword(trimmedKeyword);
+      setCustomKeyword("");
+      toast.success(`'${trimmedKeyword}' 키워드를 구독했습니다.`);
+    } catch {
+      // 에러는 스토어에서 처리됨
+    }
   };
 
-  const handleAddCustomKeyword = () => {
-    if (
-      customKeyword.trim() &&
-      subscribedKeywords.length < 5 &&
-      !subscribedKeywords.includes(customKeyword.trim())
-    ) {
-      setSubscribedKeywords([...subscribedKeywords, customKeyword.trim()]);
-      setCustomKeyword("");
+  const handleRemoveKeyword = async (keywordId: number) => {
+    try {
+      await removeKeyword(keywordId);
+      toast.success("키워드가 삭제되었습니다.");
+    } catch {
+      // 에러는 스토어에서 처리됨
     }
   };
 
@@ -238,15 +294,16 @@ export function SubscriptionKeywordModal({
             <div>
               <Label className="mb-2 block text-xs">선택된 키워드</Label>
               <div className="flex flex-wrap gap-2">
-                {subscribedKeywords.map((keyword) => (
+                {subscribedKeywords.map((item) => (
                   <Badge
-                    key={keyword}
+                    key={item.keywordId}
                     className="bg-[var(--brand-orange)] text-white px-3 py-1.5 flex items-center gap-2"
                   >
-                    {keyword}
+                    {item.keyword}
                     <button
-                      onClick={() => handleRemoveKeyword(keyword)}
+                      onClick={() => handleRemoveKeyword(item.keywordId)}
                       className="hover:opacity-70"
+                      disabled={keywordLoading}
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -263,17 +320,17 @@ export function SubscriptionKeywordModal({
             <Label className="mb-2 block text-xs">사용 가능한 키워드</Label>
             <div className="flex flex-wrap gap-2">
               {availableKeywords
-                .filter((k) => !subscribedKeywords.includes(k))
+                .filter((k) => !subscribedKeywords.some((sub) => sub.keyword === k))
                 .map((keyword) => (
                   <Badge
                     key={keyword}
                     variant="outline"
                     className={`px-3 py-1.5 cursor-pointer transition-colors ${
-                      subscribedKeywords.length >= 5
+                      subscribedKeywords.length >= 5 || keywordLoading
                         ? "opacity-50 cursor-not-allowed"
                         : "hover:bg-[var(--brand-orange-light)] hover:border-[var(--brand-orange)]"
                     }`}
-                    onClick={() => handleAddKeyword(keyword)}
+                    onClick={() => handleAddPresetKeyword(keyword)}
                   >
                     {keyword}
                   </Badge>
@@ -297,30 +354,23 @@ export function SubscriptionKeywordModal({
                     handleAddCustomKeyword();
                   }
                 }}
-                disabled={subscribedKeywords.length >= 5}
+                disabled={subscribedKeywords.length >= 5 || keywordLoading}
               />
               <Button
                 onClick={handleAddCustomKeyword}
                 variant="outline"
-                disabled={subscribedKeywords.length >= 5}
+                disabled={subscribedKeywords.length >= 5 || keywordLoading}
                 className="border-[var(--brand-orange)] text-[var(--brand-orange)] hover:bg-[var(--brand-orange-light)]"
               >
-                추가
+                {keywordLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "추가"
+                )}
               </Button>
             </div>
           </div>
         </div>
-
-        {/* 닫기 버튼 */}
-        {/* <div className="flex justify-end gap-2 mt-6">
-          <Button
-            variant="default"
-            onClick={() => onOpenChange(false)}
-            className="bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white"
-          >
-            완료
-          </Button>
-        </div> */}
       </DialogContent>
     </Dialog>
   );

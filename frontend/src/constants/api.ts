@@ -57,5 +57,10 @@ export const API_ENDPOINTS = {
     initializeSettings: "/notifications/settings",
     getSettings: "/notifications/settings",
     updateSettings: "/notifications/settings",
+    keywords: {
+      list: "/notifications/keywords",
+      add: "/notifications/keywords",
+      remove: (keywordId: number) => `/notifications/keywords/${keywordId}`,
+    },
   },
 } as const;
