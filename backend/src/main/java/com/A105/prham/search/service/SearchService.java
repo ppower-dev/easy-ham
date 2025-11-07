@@ -335,9 +335,7 @@ public class SearchService {
             Index index = meilisearchClient.index(INDEX_NAME);
             PostIndexDocument doc = postProcessorService.preprocess(post);
 
-            log.info(doc.getFiles().get(0).getName());
             String json = objectMapper.writeValueAsString(List.of(doc));
-            log.info("✅ {}",json);
             index.addDocuments(json);
 
             log.info("✅ Indexed Post: {}", post.getPostId());
