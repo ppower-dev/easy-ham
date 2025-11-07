@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
     signup: "/users",
     getMe: "/users/me",
     updateMe: "/users/me",
+    delete: "/users/delete",
   },
 
   // Code lookups (campus, skill, position)
