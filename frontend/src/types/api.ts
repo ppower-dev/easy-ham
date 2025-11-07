@@ -143,3 +143,21 @@ export interface SearchParams {
   page?: number;
   size?: number;
 }
+
+/**
+ * 알림 설정 데이터
+ */
+export interface NotificationSettings {
+  deadlineAlertHours: number;
+  jobAlertEnabled: boolean;
+  keywordAlertEnabled: boolean;
+}
+
+/**
+ * 알림 설정 조회 응답
+ */
+export interface NotificationSettingsResponse {
+  deadlineAlertHours: number;
+  jobAlertEnabled: boolean;
+  keywordAlertEnabled: boolean;
+}
