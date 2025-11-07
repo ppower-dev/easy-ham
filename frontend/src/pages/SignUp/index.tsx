@@ -21,6 +21,7 @@ import {
   type Skill,
 } from "@/services/api/codes";
 import { signup, type SignupRequest } from "@/services/api/auth";
+import { initializeNotificationSettings } from "@/services/api/notifications";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { toast } from "sonner";
 
@@ -161,6 +162,20 @@ export function SignUpPage() {
       if (response.status === 200) {
         toast.success("회원가입 성공했습니다!");
         clearSsoData(); // SSO 데이터 제거
+
+        // 알림 설정 초기화
+        try {
+          const notificationResponse = await initializeNotificationSettings();
+          // console.log("알림 설정 초기화 응답:", notificationResponse);
+
+          if (notificationResponse.status === 201) {
+            console.log("알림 설정이 초기화되었습니다.");
+          }
+        } catch (notificationError) {
+          console.error("알림 설정 초기화 실패:", notificationError);
+          // 알림 설정 초기화 실패는 로그만 남기고 진행
+        }
+
         // 회원가입 성공 후 대시보드로 이동 (이미 로그인된 상태)
         setTimeout(() => {
           navigate("/dashboard");

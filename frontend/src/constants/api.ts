@@ -28,8 +28,8 @@ export const API_ENDPOINTS = {
 
   // 공지사항 엔드포인트
   notices: {
-    list: "/v1/notices",
-    detail: (id: number) => `/v1/notices/${id}`,
+    list: "/notices",
+    detail: (id: number) => `/notices/${id}`,
   },
 
   // 북마크 엔드포인트
@@ -48,5 +48,10 @@ export const API_ENDPOINTS = {
   files: {
     thumbnail: (fileId: string) => `https://k13a105.p.ssafy.io/chat/api/v4/files/${fileId}/thumbnail`,
     download: (fileId: string) => `https://k13a105.p.ssafy.io/chat/api/v4/files/${fileId}`,
+  },
+
+  // 알림 설정 엔드포인트
+  notifications: {
+    initializeSettings: "/v1/notifications/settings",
   },
 } as const;
