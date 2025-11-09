@@ -39,26 +39,26 @@ public class MattermostAdminService {
 	}
 
 	// 이메일로 mattermost 유저 id 조회
-	@Cacheable(value = "mattermostUser", key = "#email", cacheManager = "cacheManager10Min")
+	// @Cacheable(value = "mattermostUser", key = "#email", cacheManager = "cacheManager10Min")
 	public String getUserIdByEmail(String email) {
 		log.info(" mattermost API 호출: getUserIdByEmail");
 		try {
 			String url = mattermostApiBaseUrl + "/api/v4/users/email/" + email;
 
-			Map<String, String> user = restTemplate.exchange(
+			Map<String, Object> user = restTemplate.exchange(
 				url, HttpMethod.GET, createAuthHeader(),
-				new ParameterizedTypeReference<Map<String, String>>() {}
+				new ParameterizedTypeReference<Map<String, Object>>() {}
 			).getBody();
 
-			return (user != null) ? user.get("id") : null;
+			return (user != null) ? (String) user.get("id") : null;
 		} catch (Exception e) {
-			log.warn("mattermost 유저 아이디 조회 실패, 이메일: {} : {}", email, e.getMessage());
+			log.error("mattermost 유저 아이디 조회 실패, 이메일: {} : {}", email, e);
 			return null;
 		}
 	}
 
 	// 사용자가 속한 팀 목록 조회
-	@Cacheable(value = "mattermostTeams", key = "##mmUserId", cacheManager = "cacheManager10Min")
+	// @Cacheable(value = "mattermostTeams", key = "#mmUserId", cacheManager = "cacheManager10Min")
 	public List<MattermostTeam> getTeamsByUserId(String mmUserId) {
 		log.info("mm api 호출: getTeamsByUserId");
 		try{
@@ -74,7 +74,7 @@ public class MattermostAdminService {
 	}
 
 	// team에서 사용자 팀 목록 채널 조회
-	@Cacheable(value = "mattermostTeamChannels", key = "#mmUserId + ':' + #teamId", cacheManager = "cacheManager10Min")
+	// @Cacheable(value = "mattermostTeamChannels", key = "#mmUserId + ':' + #teamId", cacheManager = "cacheManager10Min")
 	public List<MattermostChannel> getChannelsForUsersInTeam(String mmUserId, String teamId) {
 		log.info("mm api 호출");
 		try {
