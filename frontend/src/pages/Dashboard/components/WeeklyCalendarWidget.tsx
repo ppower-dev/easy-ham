@@ -117,13 +117,16 @@ export default function WeeklyCalendarWidget({
                   {/* 날짜 */}
                   <div className="flex items-start justify-between mb-2">
                     <span
-                      className={`inline-flex items-center justify-center w-7 h-7 text-sm rounded-full ${
+                      className={`flex items-center justify-center w-7 h-7 text-sm rounded-full ${
                         today
                           ? "bg-[var(--brand-orange)] text-white"
                           : "text-gray-700"
                       }`}
                       style={{
                         fontWeight: today ? 700 : 500,
+                        aspectRatio: '1',
+                        minWidth: '1.75rem',
+                        minHeight: '1.75rem',
                       }}
                     >
                       {date.getDate()}
