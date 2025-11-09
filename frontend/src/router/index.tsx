@@ -5,6 +5,7 @@ import { LoginPage } from "../pages/Login";
 import { CallbackPage } from "../pages/Callback";
 import { SignUpPage } from "../pages/SignUp";
 import DashboardPage from "../pages/Dashboard";
+import SearchPage from "../pages/Search";
 import CalendarPage from "../pages/Calendar";
 import { MyPage } from "../pages/MyPage";
 import OverviewPage from "../pages/Overview";
@@ -31,6 +32,14 @@ export const router = createBrowserRouter([
     element: (
       // <ProtectedRoute>
         <DashboardPage />
+      // </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/search",
+    element: (
+      // <ProtectedRoute>
+        <SearchPage />
       // </ProtectedRoute>
     ),
   },
