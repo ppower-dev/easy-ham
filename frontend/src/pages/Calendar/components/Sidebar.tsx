@@ -97,7 +97,7 @@ export function Sidebar({
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <div className="text-sm" style={{ fontWeight: 700 }}>
+          <div className="text-base" style={{ fontWeight: 700 }}>
             {formatMonthYear(currentDate)}
           </div>
           <Button
@@ -129,7 +129,7 @@ export function Sidebar({
         >
           {/* 요일 헤더 */}
           <div className="grid grid-cols-7 gap-1 mb-1">
-            {["일", "월", "화", "수", "목", "금", "토"].map((day, idx) => (
+            {["일", "월", "화", "��", "목", "금", "토"].map((day, idx) => (
               <div
                 key={day}
                 className="text-center text-[10px] text-gray-500 h-6 flex items-center justify-center"
@@ -217,7 +217,7 @@ export function Sidebar({
           >
             <Hash className="w-3.5 h-3.5 text-gray-500" />
             <h3
-              className="text-xs text-gray-600 flex-1 text-left"
+              className="text-sm text-gray-600 flex-1 text-left"
               style={{ fontWeight: 700 }}
             >
               채널
@@ -234,7 +234,7 @@ export function Sidebar({
                 <button
                   key={channel}
                   onClick={() => onToggleChannel(channel)}
-                  className="w-full h-8 px-3 rounded-md text-xs text-left flex items-center gap-2 transition-colors hover:bg-gray-100"
+                  className="w-full h-8 px-3 rounded-md text-sm text-left flex items-center gap-2 transition-colors hover:bg-gray-100"
                   style={{
                     fontWeight: selectedChannels.includes(channel) ? 700 : 500,
                   }}
@@ -271,7 +271,7 @@ export function Sidebar({
         <div>
           <div className="flex items-center gap-1.5 mb-2">
             <GraduationCap className="w-3.5 h-3.5 text-gray-500" />
-            <span className="text-xs text-gray-600" style={{ fontWeight: 700 }}>
+            <span className="text-sm text-gray-600" style={{ fontWeight: 700 }}>
               학사
             </span>
           </div>
@@ -280,14 +280,14 @@ export function Sidebar({
               <button
                 key={category}
                 onClick={() => onToggleCategory(category, true)}
-                className={`h-8 rounded-md text-xs flex items-center justify-center gap-1 border transition-colors ${getCategoryButtonColor(
+                className={`h-8 rounded-md text-sm flex items-center justify-center gap-1 border transition-colors ${getCategoryButtonColor(
                   category,
                   selectedAcademicCategories.includes(category)
                 )}`}
                 style={{ fontWeight: 500 }}
               >
                 {selectedAcademicCategories.includes(category) && (
-                  <span className="text-[10px]">✓</span>
+                  <span className="text-xs">✓</span>
                 )}
                 {category}
               </button>
@@ -299,7 +299,7 @@ export function Sidebar({
         <div>
           <div className="flex items-center gap-1.5 mb-2">
             <Briefcase className="w-3.5 h-3.5 text-gray-500" />
-            <span className="text-xs text-gray-600" style={{ fontWeight: 700 }}>
+            <span className="text-sm text-gray-600" style={{ fontWeight: 700 }}>
               취업
             </span>
           </div>
@@ -308,14 +308,14 @@ export function Sidebar({
               <button
                 key={category}
                 onClick={() => onToggleCategory(category, false)}
-                className={`h-8 rounded-md text-xs flex items-center justify-center gap-1 border transition-colors ${getCategoryButtonColor(
+                className={`h-8 rounded-md text-sm flex items-center justify-center gap-1 border transition-colors ${getCategoryButtonColor(
                   category,
                   selectedCareerCategories.includes(category)
                 )}`}
                 style={{ fontWeight: 500 }}
               >
                 {selectedCareerCategories.includes(category) && (
-                  <span className="text-[10px]">✓</span>
+                  <span className="text-xs">✓</span>
                 )}
                 {category}
               </button>

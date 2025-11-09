@@ -29,12 +29,20 @@ export function NoticeList({
     <div>
       {notices.map((notice, index) => {
         const isLast = index === notices.length - 1;
+        const isFirst = index === 0;
+        
+        // 첫 번째 항목: 위쪽 padding 제거, hover 시 확장
+        // 마지막 항목: 아래쪽 padding 제거, hover 시 확장
+        const pt = isFirst ? 'pt-0 hover:-mt-4 hover:pt-4' : 'pt-4';
+        const pb = isLast ? 'pb-0 hover:-mb-4 hover:pb-4' : 'pb-4';
+        // hover 시 좌우로도 확장하여 padding 영역까지 배경 표시
+        const hoverExpand = (isFirst || isLast) ? 'hover:-mx-6 hover:px-6' : '';
 
         return (
           <div
             key={notice.id}
             ref={isLast ? lastNoticeRef : null} // 마지막 아이템에만 ref 연결
-            className={`px-6 py-4 border-b last:border-b-0 hover:bg-gray-50 transition-colors ${
+            className={`px-6 ${pt} ${pb} border-b last:border-b-0 hover:bg-gray-50 transition-colors ${hoverExpand} ${
               notice.completed ? 'opacity-60' : ''
             }`}
           >
@@ -49,16 +57,16 @@ export function NoticeList({
               </div>
 
               {/* 카테고리 텍스트 (회색 계열, 상위·하위 형태) */}
-              <div className="flex-shrink-0 text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded whitespace-nowrap">
+              <div className="flex-shrink-0 text-sm font-semibold text-gray-600 bg-gray-100 px-2.5 py-1.5 rounded whitespace-nowrap">
                 {notice.category}·{notice.subcategory}
               </div>
 
               {/* 제목 및 정보 */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-sm text-gray-900 line-clamp-1">
+                <h3 className="font-semibold text-base text-gray-900 line-clamp-1">
                   {notice.title}
                 </h3>
-                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
                   <span>{notice.channel}</span>
                   <span>•</span>
                   <span>{formatRelativeTime(notice.createdAt)}</span>

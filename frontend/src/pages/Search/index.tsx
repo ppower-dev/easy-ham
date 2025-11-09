@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PageLayout } from '@/components/layouts/PageLayout';
-import { NoticeList } from './components/NoticeList';
+import { NoticeListContainer } from './components/NoticeListContainer';
 import { SearchFilterBar } from './components/SearchFilterBar';
 import { MiniCalendar } from './components/MiniCalendar';
 import { JobPostingsWidget } from './components/JobPostingsWidget';
@@ -344,12 +344,12 @@ export default function SearchPage() {
           {/* 공지사항 리스트 */}
           <Card className="shadow-md">
             {/* 리스트 헤더 */}
-            <div className="h-12 px-6 flex items-center justify-between border-b">
-              <h2 className="text-base" style={{ fontWeight: 700 }}>
+            <div className="h-16 px-6 flex items-center justify-between border-b">
+              <h2 className="text-lg" style={{ fontWeight: 700 }}>
                 공지사항
               </h2>
               <Select value={sortBy} onValueChange={setSortBy as any}>
-                <SelectTrigger className="w-[140px] h-8 text-sm">
+                <SelectTrigger className="w-[160px] h-10 text-base">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -361,41 +361,20 @@ export default function SearchPage() {
             </div>
 
             {/* 리스트 */}
-            <NoticeList
+            <NoticeListContainer
               notices={displayedNotices}
               onBookmarkToggle={toggleBookmark}
               onCompleteToggle={toggleComplete}
               onNoticeClick={handleNoticeClick}
               lastNoticeRef={lastNoticeElementRef}
               isLoading={isLoading}
+              hasMore={hasMore}
             />
-
-            {/* 로딩 인디케이터 */}
-            {isLoading && (
-              <div className="py-8 text-center text-gray-500">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--brand-orange)]"></div>
-                <p className="mt-2">로딩 중...</p>
-              </div>
-            )}
-
-            {/* 모든 결과 로드 완료 */}
-            {!isLoading && !hasMore && displayedNotices.length > 0 && (
-              <div className="py-8 text-center text-gray-500">
-                모든 공지사항을 불러왔습니다.
-              </div>
-            )}
-
-            {/* 검색 결과 없음 */}
-            {!isLoading && displayedNotices.length === 0 && (
-              <div className="py-12 pb-16 text-center text-gray-500">
-                검색 결과가 없습니다.
-              </div>
-            )}
           </Card>
         </div>
 
         {/* 우측 사이드바 */}
-        <div className="w-80 space-y-6">
+        <div className="w-80 space-y-6 sticky top-6 self-start">
           {/* 미니 캘린더 */}
           <MiniCalendar onNavigateToCalendar={() => navigate('/calendar')} />
 

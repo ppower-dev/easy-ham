@@ -87,8 +87,16 @@ export function MonthView({
                       </span>
                       {dayEvents.length > 3 && (
                         <span
-                          className="text-[10px] text-gray-500"
-                          style={{ fontWeight: 500 }}
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            padding: '3px 7px',
+                            backgroundColor: '#374151',
+                            color: 'white',
+                            borderRadius: '4px',
+                            display: 'inline-block',
+                            lineHeight: '1.2',
+                          }}
                         >
                           +{dayEvents.length - 3}
                         </span>
