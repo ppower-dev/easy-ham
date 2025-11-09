@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -19,7 +20,6 @@ interface SidebarProps {
   selectedWeek: Date[];
   channelOptions: string[];
   getEventsForDate: (date: Date) => any[];
-  getMiniCalendarDays: () => Date[][];
   formatMonthYear: (date: Date) => string;
   isSameDay: (date1: Date, date2: Date) => boolean;
   isToday: (date: Date) => boolean;
@@ -33,6 +33,9 @@ interface SidebarProps {
   onDateChange: (date: Date) => void;
 }
 
+// 요일 상수 정의 (한글 깨짐 방지)
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'] as const;
+
 export function Sidebar({
   currentDate,
   viewMode,
@@ -43,7 +46,6 @@ export function Sidebar({
   selectedWeek,
   channelOptions,
   getEventsForDate,
-  getMiniCalendarDays,
   formatMonthYear,
   isSameDay,
   isToday,
@@ -56,7 +58,52 @@ export function Sidebar({
   onMiniCalendarDateClick,
   onDateChange,
 }: SidebarProps) {
+  // 미니 캘린더 독립적인 날짜 상태
+  const [miniCalendarDate, setMiniCalendarDate] = useState(currentDate);
+
+  // 메인 캘린더 날짜가 변경되면 미니 캘린더도 따라감
+  useEffect(() => {
+    setMiniCalendarDate(currentDate);
+  }, [currentDate]);
+
+  // 미니 캘린더의 월 데이터 생성
+  const getMiniCalendarDays = (): Date[][] => {
+    const year = miniCalendarDate.getFullYear();
+    const month = miniCalendarDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    // 월 시작일의 주 시작(일요일)
+    const startDate = new Date(firstDay);
+    startDate.setDate(firstDay.getDate() - firstDay.getDay());
+
+    // 월 마지막일의 주 종료(토요일)
+    const endDate = new Date(lastDay);
+    endDate.setDate(lastDay.getDate() + (6 - lastDay.getDay()));
+
+    const weeks: Date[][] = [];
+    let currentDateCursor = new Date(startDate);
+
+    while (currentDateCursor <= endDate) {
+      const week: Date[] = [];
+      for (let i = 0; i < 7; i++) {
+        week.push(new Date(currentDateCursor));
+        currentDateCursor.setDate(currentDateCursor.getDate() + 1);
+      }
+      weeks.push(week);
+    }
+
+    return weeks;
+  };
+
   const miniCalendarWeeks = getMiniCalendarDays();
+
+  // 미니 캘린더 월 이동 (메인 캘린더는 그대로 유지)
+  const handleMiniCalendarMonthChange = (offset: number) => {
+    const newDate = new Date(miniCalendarDate);
+    newDate.setMonth(newDate.getMonth() + offset);
+    setMiniCalendarDate(newDate);
+  };
 
   const getCategoryButtonColor = (subcategory: string, isSelected: boolean) => {
     if (!isSelected) return "bg-white text-gray-600 border-gray-200";
@@ -89,26 +136,18 @@ export function Sidebar({
             variant="ghost"
             size="icon"
             className="w-6 h-6"
-            onClick={() => {
-              const newDate = new Date(currentDate);
-              newDate.setMonth(newDate.getMonth() - 1);
-              onDateChange(newDate);
-            }}
+            onClick={() => handleMiniCalendarMonthChange(-1)}
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
           <div className="text-base" style={{ fontWeight: 700 }}>
-            {formatMonthYear(currentDate)}
+            {formatMonthYear(miniCalendarDate)}
           </div>
           <Button
             variant="ghost"
             size="icon"
             className="w-6 h-6"
-            onClick={() => {
-              const newDate = new Date(currentDate);
-              newDate.setMonth(newDate.getMonth() + 1);
-              onDateChange(newDate);
-            }}
+            onClick={() => handleMiniCalendarMonthChange(1)}
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
@@ -129,7 +168,7 @@ export function Sidebar({
         >
           {/* 요일 헤더 */}
           <div className="grid grid-cols-7 gap-1 mb-1">
-            {["일", "월", "화", "��", "목", "금", "토"].map((day, idx) => (
+            {["일", "월", "화", "수", "목", "금", "토"].map((day, idx) => (
               <div
                 key={day}
                 className="text-center text-[10px] text-gray-500 h-6 flex items-center justify-center"
@@ -166,7 +205,7 @@ export function Sidebar({
                 {week.map((date, dayIdx) => {
                   const hasEvents = getEventsForDate(date).length > 0;
                   const today = isToday(date);
-                  const currentMonth = isCurrentMonth(date, currentDate);
+                  const currentMonth = isCurrentMonth(date, miniCalendarDate);
 
                   return (
                     <div

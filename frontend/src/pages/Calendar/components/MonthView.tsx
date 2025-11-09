@@ -1,21 +1,9 @@
-interface CalendarEvent {
-  id: number;
-  title: string;
-  startDate: Date;
-  endDate: Date;
-  startTime?: string;
-  endTime?: string;
-  description?: string;
-  location?: string;
-  channel: string;
-  category: string;
-  subcategory: string;
-}
+import type { Notice } from "@/types/notice";
 
 interface MonthViewProps {
   monthWeeks: Date[][];
   currentDate: Date;
-  getEventsForDate: (date: Date) => CalendarEvent[];
+  getEventsForDate: (date: Date) => Notice[];
   onDateClick: (date: Date, week: Date[]) => void;
   isToday: (date: Date) => boolean;
   isCurrentMonth: (date: Date, currentDate: Date) => boolean;
