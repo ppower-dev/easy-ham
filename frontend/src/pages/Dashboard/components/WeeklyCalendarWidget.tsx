@@ -1,22 +1,10 @@
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-
-interface CalendarEvent {
-  id: number;
-  title: string;
-  startDate: Date;
-  endDate: Date;
-  startTime?: string;
-  endTime?: string;
-  description?: string;
-  location?: string;
-  channel: string;
-  category: string;
-  subcategory: string;
-}
+import { Calendar } from "lucide-react";
+import type { Notice } from "@/types/notice";
 
 interface WeeklyCalendarWidgetProps {
-  events: CalendarEvent[];
+  events: Notice[];
 }
 
 export default function WeeklyCalendarWidget({
@@ -59,8 +47,12 @@ export default function WeeklyCalendarWidget({
     );
   };
 
-  const getEventsForDate = (date: Date): CalendarEvent[] => {
-    return events.filter((event) => isSameDay(event.startDate, date));
+  const getEventsForDate = (date: Date): Notice[] => {
+    return events.filter((event) => {
+      if (!event.deadline) return false;
+      const deadline = typeof event.deadline === 'string' ? new Date(event.deadline) : event.deadline;
+      return isSameDay(deadline, date);
+    });
   };
 
   const getBorderColor = (subcategory: string) => {
@@ -85,19 +77,20 @@ export default function WeeklyCalendarWidget({
 
   return (
     <Card className="shadow-md">
-      <div className="h-12 px-6 flex items-center border-b">
-        <h2 className="text-base" style={{ fontWeight: 700 }}>
-          📅 이번 주 일정
+      <div className="h-16 px-6 flex items-center border-b">
+        <Calendar className="w-5 h-5 text-[var(--brand-orange)] mr-2.5" />
+        <h2 className="text-lg" style={{ fontWeight: 700 }}>
+          이번 주 일정
         </h2>
       </div>
-      <div className="p-4">
+      <div className="px-4 py-4">
         <div className="bg-white rounded-lg border overflow-hidden">
           {/* 요일 헤더 */}
           <div className="grid grid-cols-7 border-b bg-gray-50">
             {["일", "월", "화", "수", "목", "금", "토"].map((day, idx) => (
               <div
                 key={day}
-                className="text-center py-2 text-sm border-r last:border-r-0"
+                className="text-center py-3 text-sm border-r last:border-r-0"
                 style={{
                   fontWeight: 600,
                   color:
@@ -110,7 +103,7 @@ export default function WeeklyCalendarWidget({
           </div>
 
           {/* 날짜 셀 (한 주) */}
-          <div className="grid grid-cols-7 h-32">
+          <div className="grid grid-cols-7 h-36">
             {weekDays.map((date, dayIdx) => {
               const dayEvents = getEventsForDate(date);
               const today = isToday(date);
@@ -118,13 +111,13 @@ export default function WeeklyCalendarWidget({
               return (
                 <div
                   key={dayIdx}
-                  className="border-r last:border-r-0 p-2 cursor-pointer hover:bg-gray-50 transition-colors overflow-hidden"
+                  className="border-r last:border-r-0 p-3 cursor-pointer hover:bg-gray-50 transition-colors overflow-hidden"
                   onClick={handleDateClick}
                 >
                   {/* 날짜 */}
-                  <div className="flex items-start justify-between mb-1">
+                  <div className="flex items-start justify-between mb-2">
                     <span
-                      className={`inline-flex items-center justify-center w-6 h-6 text-sm rounded-full ${
+                      className={`inline-flex items-center justify-center w-7 h-7 text-sm rounded-full ${
                         today
                           ? "bg-[var(--brand-orange)] text-white"
                           : "text-gray-700"
@@ -137,7 +130,7 @@ export default function WeeklyCalendarWidget({
                     </span>
                     {dayEvents.length > 2 && (
                       <span
-                        className="text-[10px] text-gray-500"
+                        className="text-xs text-gray-500"
                         style={{ fontWeight: 500 }}
                       >
                         +{dayEvents.length - 2}
@@ -147,11 +140,11 @@ export default function WeeklyCalendarWidget({
 
                   {/* 이벤트 제목 표시 (최대 2개) */}
                   {dayEvents.length > 0 && (
-                    <div className="space-y-0.5">
+                    <div className="space-y-1">
                       {dayEvents.slice(0, 2).map((event) => (
                         <div
                           key={event.id}
-                          className={`text-[10px] truncate pl-1.5 border-l-[3px] ${getBorderColor(
+                          className={`text-xs truncate pl-2 py-0.5 border-l-[3px] ${getBorderColor(
                             event.subcategory
                           )}`}
                           style={{

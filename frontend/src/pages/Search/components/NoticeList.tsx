@@ -29,20 +29,12 @@ export function NoticeList({
     <div>
       {notices.map((notice, index) => {
         const isLast = index === notices.length - 1;
-        const isFirst = index === 0;
-        
-        // 첫 번째 항목: 위쪽 padding 제거, hover 시 확장
-        // 마지막 항목: 아래쪽 padding 제거, hover 시 확장
-        const pt = isFirst ? 'pt-0 hover:-mt-4 hover:pt-4' : 'pt-4';
-        const pb = isLast ? 'pb-0 hover:-mb-4 hover:pb-4' : 'pb-4';
-        // hover 시 좌우로도 확장하여 padding 영역까지 배경 표시
-        const hoverExpand = (isFirst || isLast) ? 'hover:-mx-6 hover:px-6' : '';
 
         return (
           <div
             key={notice.id}
             ref={isLast ? lastNoticeRef : null} // 마지막 아이템에만 ref 연결
-            className={`px-6 ${pt} ${pb} border-b last:border-b-0 hover:bg-gray-50 transition-colors ${hoverExpand} ${
+            className={`px-6 py-4 border-b last:border-b-0 hover:bg-gray-50 transition-colors ${
               notice.completed ? 'opacity-60' : ''
             }`}
           >

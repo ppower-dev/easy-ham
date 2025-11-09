@@ -103,7 +103,7 @@ export function SearchFilterBar({
       {/* 필터 영역 토글 버튼 */}
       <button
         onClick={() => setFilterExpanded(!filterExpanded)}
-        className="flex items-center gap-2 mb-0 text-sm font-semibold text-gray-700 hover:text-gray-900 transition-colors"
+        className="flex items-center gap-2 my-3 text-sm font-semibold text-gray-700 hover:text-gray-900 transition-colors"
       >
         <ChevronDown
           className={`w-4 h-4 transition-transform ${
