@@ -3,6 +3,7 @@ package com.A105.prham.webhook.service;
 // ✨ 필요한 임포트 추가
 import com.A105.prham.classification.dto.LlmClassificationResult;
 import com.A105.prham.classification.service.LlmClassificationService;
+import com.A105.prham.sse.service.SsePostService;
 import com.A105.prham.search.service.SearchService;
 import com.A105.prham.webhook.entity.File;
 import com.A105.prham.webhook.entity.Post;
@@ -34,6 +35,7 @@ public class AsyncPostProcessor {
 	private final PostRepository postRepository;
 	private final EmojiRemoveService emojiRemovalService;
 	private final LlmClassificationService llmService;
+	private final SsePostService ssePostService;
 	private final SearchService searchService;
 
 	private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -95,6 +97,13 @@ public class AsyncPostProcessor {
 			//6. meilisearch에 저장
 			searchService.indexPost(post);
 
+			Post savedPost = postRepository.save(post);
+
+			// llm에서 분류 완료된 공지사항만 전송
+			if (savedPost.getStatus() == PostStatus.PROCESSED) {
+								ssePostService.sendNewPost(savedPost);
+				log.info("sse: 새 공지사항 전송 완료", savedPost.getPostId());
+			}
 		} catch (Exception e) {
 			log.error("[비동기] post 처리 실패: {}", postId, e);
 			if (post.getStatus() != PostStatus.FAILED) {

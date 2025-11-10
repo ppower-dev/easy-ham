@@ -34,6 +34,9 @@ public class Post {
 	@Column(name = "user_id", nullable = false)
 	private String userId;
 
+	@Column(name = "user_name")
+	private String userName;
+
 	@Column(name = "webhook_timestamp")
 	private String webhookTimestamp;
 
