@@ -145,7 +145,7 @@ public class UserChannelService {
 								.channelName(c.getDisplayName())
 								.teamId(team.getId())
 								.teamName(teamName)
-								.type("GLOBAL")  //  GLOBAL로 수정!
+								.type("GLOBAL")
 								.build()
 						));
 				}
@@ -153,7 +153,7 @@ public class UserChannelService {
 			//  현재 반 팀 처리 추가!
 			else if (teamName.startsWith(generationPrefix) &&
 				teamName.contains(campusInfix) &&
-				teamName.endsWith(classSuffix)) {  //  endsWith로 수정!
+				teamName.endsWith(classSuffix)) {
 
 				List<MattermostChannel> channels =
 					mattermostService.getChannelsForUsersInTeam(mmUserId, team.getId());
@@ -167,7 +167,7 @@ public class UserChannelService {
 								.channelName(c.getDisplayName())
 								.teamId(team.getId())
 								.teamName(teamName)
-								.type("CLASS")  // ✅ 반 팀은 CLASS
+								.type("CLASS")
 								.build()
 						));
 				}

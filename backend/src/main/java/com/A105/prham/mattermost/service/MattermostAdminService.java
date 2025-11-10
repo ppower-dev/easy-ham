@@ -39,7 +39,7 @@ public class MattermostAdminService {
 	}
 
 	// 이메일로 mattermost 유저 id 조회
-	// @Cacheable(value = "mattermostUser", key = "#email", cacheManager = "cacheManager10Min")
+	@Cacheable(value = "mattermostUser", key = "#email", cacheManager = "cacheManager10Min")
 	public String getUserIdByEmail(String email) {
 		log.info(" mattermost API 호출: getUserIdByEmail");
 		try {
@@ -58,7 +58,7 @@ public class MattermostAdminService {
 	}
 
 	// 사용자가 속한 팀 목록 조회
-	// @Cacheable(value = "mattermostTeams", key = "#mmUserId", cacheManager = "cacheManager10Min")
+	@Cacheable(value = "mattermostTeams", key = "#mmUserId", cacheManager = "cacheManager10Min")
 	public List<MattermostTeam> getTeamsByUserId(String mmUserId) {
 		log.info("mm api 호출: getTeamsByUserId");
 		try{
@@ -74,7 +74,7 @@ public class MattermostAdminService {
 	}
 
 	// team에서 사용자 팀 목록 채널 조회
-	// @Cacheable(value = "mattermostTeamChannels", key = "#mmUserId + ':' + #teamId", cacheManager = "cacheManager10Min")
+	@Cacheable(value = "mattermostTeamChannels", key = "#mmUserId + ':' + #teamId", cacheManager = "cacheManager10Min")
 	public List<MattermostChannel> getChannelsForUsersInTeam(String mmUserId, String teamId) {
 		log.info("mm api 호출");
 		try {
