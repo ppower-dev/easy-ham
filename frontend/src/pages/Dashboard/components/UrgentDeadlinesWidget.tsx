@@ -28,8 +28,8 @@ export default function UrgentDeadlinesWidget({
 
   return (
     <Card className="shadow-md">
-      <div className="h-16 px-6 flex items-center border-b">
-        <Clock className="w-5 h-5 text-[var(--brand-orange)] mr-2.5" />
+      <div className="h-16 px-6 flex items-center gap-2 border-b">
+        <Clock className="w-5 h-5 text-[var(--brand-orange)]" />
         <h2 className="text-lg" style={{ fontWeight: 700 }}>
           마감 임박
         </h2>

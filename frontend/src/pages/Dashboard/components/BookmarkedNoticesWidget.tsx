@@ -38,7 +38,7 @@ export default function BookmarkedNoticesWidget({
   return (
     <Card className="shadow-md">
       <div className="h-16 px-6 flex items-center justify-between border-b">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <Bookmark className="w-5 h-5 text-[var(--brand-orange)]" />
           <h2 className="text-lg" style={{ fontWeight: 700 }}>
             북마크 공지

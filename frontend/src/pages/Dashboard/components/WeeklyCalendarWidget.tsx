@@ -77,8 +77,8 @@ export default function WeeklyCalendarWidget({
 
   return (
     <Card className="shadow-md">
-      <div className="h-16 px-6 flex items-center border-b">
-        <Calendar className="w-5 h-5 text-[var(--brand-orange)] mr-2.5" />
+      <div className="h-16 px-6 flex items-center gap-2 border-b">
+        <Calendar className="w-5 h-5 text-[var(--brand-orange)]" />
         <h2 className="text-lg" style={{ fontWeight: 700 }}>
           이번 주 일정
         </h2>
