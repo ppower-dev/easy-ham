@@ -1,5 +1,6 @@
 package com.A105.prham.webhook.entity;
 
+import com.A105.prham.messages.dto.FileInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,8 +46,8 @@ public class Post {
 	@Column(name = "file_ids")
 	private String fileIds;
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<File> files = new ArrayList<>();
+//	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//	private List<File> files = new ArrayList<>();
 
 	// after llm
 	@Column(name = "cleaned_text", columnDefinition = "TEXT")
@@ -85,8 +86,8 @@ public class Post {
 		}
 	}
 
-	public void addFile(File file) {
-		files.add(file);
-		file.setPost(this); // File 엔티티의 setPost 메서드 호출
-	}
+//	public void addFile(File file) {
+//		files.add(file);
+//		file.setPost(this); // File 엔티티의 setPost 메서드 호출
+//	}
 }

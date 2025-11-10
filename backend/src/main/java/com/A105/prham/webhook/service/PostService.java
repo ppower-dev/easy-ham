@@ -29,4 +29,12 @@ public class PostService {
 	public List<Post> findUpcomingDeadlines() {
 		return postRepository.findByDeadlineIsNotNullOrderByDeadlineAsc();
 	}
+
+	public Long getPostIdByMMPostId(String postId){
+		return postRepository.SelectPostIdByMMPOSTID(postId);
+	}
+
+	public List<Long> getPostIdsByMMPostIds(List<String> postIds){
+		return postRepository.selectPostIdsByMMPostIds(postIds);
+	}
 }

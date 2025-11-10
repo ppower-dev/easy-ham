@@ -79,6 +79,7 @@ public class MattermostService {
                     f.setWidth(node.path("width").asInt(0));
                     f.setHeight(node.path("height").asInt(0));
                     f.setHasPreviewImage(node.path("has_preview_image").asBoolean(false));
+                    log.info("{} 포함",f.getName());
                     list.add(f);
                 }
             }
@@ -150,6 +151,44 @@ public class MattermostService {
 
         } catch (Exception e) {
             log.error("Error while building Mattermost post link for {}: {}", postId, e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public String getUserNameFromID(String userId) {
+        try {
+            String url = mattermostApiUrl + "/api/v4/users/" + userId;
+            log.info("🔍 Requesting Mattermost user info: {}", url);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(mattermostApiToken);
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                log.warn("⚠️ Failed to get user info for {}: {}", userId, response.getStatusCode());
+                return null;
+            }
+
+            JsonNode userNode = objectMapper.readTree(response.getBody());
+            String username = userNode.path("username").asText(null);
+            String nickname = userNode.path("nickname").asText("");
+            String displayName = username != null && !username.isBlank() ? username :
+                                nickname!= null && !nickname.isBlank()?nickname : "unknown";
+
+            log.info("✅ Found username for {}: {}", userId, displayName);
+            return displayName;
+
+        } catch (Exception e) {
+            log.error("❌ Error fetching Mattermost username for {}: {}", userId, e.getMessage(), e);
             return null;
         }
     }
