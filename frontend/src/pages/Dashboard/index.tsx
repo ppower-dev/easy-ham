@@ -2,6 +2,8 @@ import { useEffect, useState, useMemo } from "react";
 import { PageLayout } from "@/components/layouts/PageLayout";
 import { getMockDashboardData } from "@/services/mock/dashboardData";
 import { searchApi } from "@/services/api/search";
+import { bookmarksApi } from "@/services/api/bookmarks";
+import { convertBookmarkItemToNotice } from "@/utils/bookmarkMapper";
 import type { Notice } from "@/types/notice";
 import BookmarkedNoticesWidget from "./components/BookmarkedNoticesWidget";
 import UrgentDeadlinesWidget from "./components/UrgentDeadlinesWidget";
@@ -14,6 +16,22 @@ export default function DashboardPage() {
   const [allNotices, setAllNotices] = useState<Notice[]>([]);
   const [bookmarkedNotices, setBookmarkedNotices] = useState<Notice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // 북마크 데이터 갱신 함수
+  // 북마크 전용 API 사용: 북마크된 것만 정확하게 가져옴 (검색 API의 size 제한 문제 해결)
+  const refreshBookmarks = async () => {
+    try {
+      const { notices: bookmarkItems } = await bookmarksApi.getList({
+        sort: 'recent', // 최신순 정렬
+      });
+      const bookmarked = bookmarkItems.map(convertBookmarkItemToNotice);
+      // console.log('[Dashboard] 조회된 북마크 개수:', bookmarked.length);
+      // console.log('[Dashboard] 북마크 ID 목록:', bookmarked.map(n => n.id));
+      setBookmarkedNotices(bookmarked);
+    } catch (error) {
+      console.error('[Dashboard] 북마크 갱신 실패:', error);
+    }
+  };
 
   // Search API 호출 (전체 공지 + 북마크 공지)
   useEffect(() => {
@@ -29,12 +47,7 @@ export default function DashboardPage() {
         setAllNotices(notices);
 
         // 2. 북마크된 공지사항 조회
-        const { notices: bookmarked } = await searchApi.searchPosts({
-          isLiked: true,
-          page: 0,
-          size: 5, // 최대 5개만
-        });
-        setBookmarkedNotices(bookmarked);
+        await refreshBookmarks();
       } catch (error) {
         console.error('[Dashboard] 데이터 로드 실패:', error);
       } finally {
@@ -43,6 +56,7 @@ export default function DashboardPage() {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Mock 데이터 (채용공고용)
@@ -102,7 +116,10 @@ export default function DashboardPage() {
 
         {/* 상단 3개 위젯 (북마크 / 마감 임박 / 채용공고) */}
         <div className="grid grid-cols-3 gap-6 mb-6">
-          <BookmarkedNoticesWidget notices={bookmarkedNotices} />
+          <BookmarkedNoticesWidget
+            notices={bookmarkedNotices.slice(0, 5)} // 위젯에서는 상위 5개만 표시
+            onRefresh={refreshBookmarks}
+          />
           <UrgentDeadlinesWidget notices={urgentDeadlines} />
           <PersonalizedJobsWidget jobs={jobs} />
         </div>

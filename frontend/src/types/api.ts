@@ -17,7 +17,7 @@ export interface ApiResponse<T> {
  * 백엔드 공지사항 API 응답 (Notice 목록 조회)
  */
 export interface NoticeApiResponse {
-  noticeId: number;
+  postId: number; // 북마크 API에서는 postId 사용
   title: string;
   contentPreview: string;
   mainCategory: string; // "공지사항" 등
@@ -28,7 +28,7 @@ export interface NoticeApiResponse {
   createdAt: string;
   deadline: string | null;
   isLiked: boolean; // 프론트엔드의 bookmarked
-  isCompleted: boolean; // 프론트엔드의 completed
+  isCompleted?: boolean; // 프론트엔드의 completed (북마크 API에서는 없을 수 있음)
 }
 
 /**
