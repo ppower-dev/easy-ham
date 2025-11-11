@@ -182,3 +182,21 @@ export interface SubscriptionKeyword {
 export interface KeywordListResponse {
   keywordList: SubscriptionKeyword[];
 }
+
+/**
+ * 사용자 채널 정보
+ */
+export interface UserChannel {
+  channelId: string;
+  channelName: string;
+  teamId: string;
+  teamName: string;
+  type: 'GLOBAL' | 'CLASS';
+}
+
+/**
+ * 사용자 채널 목록 조회 응답
+ */
+export interface UserChannelsResponse {
+  channels: UserChannel[];
+}

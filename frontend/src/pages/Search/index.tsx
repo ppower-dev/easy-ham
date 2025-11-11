@@ -21,6 +21,7 @@ import { bookmarksApi } from '@/services/api/bookmarks';
 import { completionsApi } from '@/services/api/completions';
 import { searchApi } from '@/services/api/search';
 import { getNoticeCategories, mapCategoriesToIds, type NoticeCategory } from '@/services/api/codes';
+import { getUserChannels } from '@/services/api/channels';
 import { getPeriodRange } from '@/utils/dateUtils';
 import type { Notice } from '@/types';
 import type { SearchParams } from '@/types/api';
@@ -31,6 +32,7 @@ export default function SearchPage() {
   // Zustand 필터 스토어
   const filterStore = useFilterStore();
   const {
+    availableChannels,
     selectedChannels,
     selectedAcademicCategories,
     selectedCareerCategories,
@@ -39,6 +41,7 @@ export default function SearchPage() {
     sortBy,
     showBookmarkedOnly,
     showCompletedOnly,
+    setAvailableChannels,
     toggleChannel,
     toggleAcademicCategory,
     toggleCareerCategory,
@@ -67,6 +70,25 @@ export default function SearchPage() {
 
   // 카테고리 데이터 (API에서 받아온 카테고리 목록)
   const [categories, setCategories] = useState<NoticeCategory[]>([]);
+
+  /**
+   * 채널 데이터 로드
+   * 컴포넌트 마운트 시 1회 실행
+   */
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const response = await getUserChannels();
+        setAvailableChannels(response.data);
+        // console.log('[채널 API] 로드 성공:', response.data);
+      } catch (error) {
+        // console.error('[채널 API] 로드 실패:', error);
+        toast.error('채널 정보를 불러오지 못했습니다.');
+      }
+    };
+
+    fetchChannels();
+  }, [setAvailableChannels]);
 
   /**
    * 카테고리 데이터 로드
@@ -121,11 +143,8 @@ export default function SearchPage() {
     }
 
     // 2. 채널 필터
-    // ⚠️ TODO: [백엔드 채널 API 연동 후 수정 필요]
-    // 현재: 하드코딩된 4개 채널 (CHANNEL_OPTIONS에서 "전체" 제외)
-    // 나중에: 백엔드에서 받은 사용자별 availableChannels.length와 비교
-    const TOTAL_CHANNELS = 4;
-    const isAllChannelsSelected = selectedChannels.length === TOTAL_CHANNELS;
+    // 모든 채널 선택 = 필터 없음
+    const isAllChannelsSelected = selectedChannels.length === availableChannels.length;
     if (!isAllChannelsSelected && selectedChannels.length > 0) {
       params.channelIds = selectedChannels;
     }
@@ -357,6 +376,7 @@ export default function SearchPage() {
           <SearchFilterBar
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
+            availableChannels={availableChannels}
             selectedChannels={selectedChannels}
             onChannelToggle={toggleChannel}
             selectedAcademicCategories={selectedAcademicCategories}
