@@ -100,7 +100,7 @@ export const MessageDetailModal = ({
                 ),
                 a: ({ node, ...props }) => (
                   <a
-                    className="text-[var(--brand-orange)] hover:underline"
+                    className="text-(--brand-orange) hover:underline"
                     target="_blank"
                     rel="noopener noreferrer"
                     {...props}

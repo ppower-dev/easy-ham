@@ -97,7 +97,7 @@ export function SearchFilterBar({
         </div>
         <Button
           onClick={onSearch}
-          className="h-12 px-6 bg-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)] text-white"
+          className="h-12 px-6 bg-(--brand-orange) hover:bg-(--brand-orange-dark) text-white"
         >
           <Search className="w-4 h-4 mr-2" />
           검색
@@ -138,7 +138,7 @@ export function SearchFilterBar({
                   onClick={() => onPeriodChange(period as PeriodFilter)}
                   className={`h-8 px-4 rounded-md text-sm ${
                     periodFilter === period
-                      ? "bg-[var(--brand-orange)] text-white hover:bg-[var(--brand-orange-dark)]"
+                      ? "bg-(--brand-orange) text-white hover:bg-(--brand-orange-dark)"
                       : "bg-white hover:bg-gray-50"
                   }`}
                   style={{ fontWeight: 500 }}
@@ -215,7 +215,7 @@ export function SearchFilterBar({
                     onClick={() => onChannelToggle(channel)}
                     className={`h-8 px-4 rounded-md text-sm ${
                       isSelected
-                        ? "bg-[var(--brand-orange)] text-white border-[var(--brand-orange)] hover:bg-[var(--brand-orange-dark)]"
+                        ? "bg-(--brand-orange) text-white border-(--brand-orange) hover:bg-(--brand-orange-dark)"
                         : "bg-white hover:bg-gray-50"
                     }`}
                     style={{ fontWeight: 500 }}

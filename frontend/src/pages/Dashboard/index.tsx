@@ -110,7 +110,7 @@ export default function DashboardPage() {
       <div className="px-8 py-6 bg-gray-50 min-h-screen">
         {/* 페이지 제목 */}
         <h1 className="text-3xl mb-6 flex items-center gap-3" style={{ fontWeight: 700 }}>
-          <LayoutDashboard className="w-8 h-8 text-[var(--brand-orange)]" />
+          <LayoutDashboard className="w-8 h-8 text-(--brand-orange)" />
           Dashboard
         </h1>
 
