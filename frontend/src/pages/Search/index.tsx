@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PageLayout } from '@/components/layouts/PageLayout';
@@ -18,6 +18,7 @@ import {
 import { useFilterStore } from '@/stores/useFilterStore';
 import { getMockJobPostings } from '@/services/mock';
 import { bookmarksApi } from '@/services/api/bookmarks';
+import { completionsApi } from '@/services/api/completions';
 import { searchApi } from '@/services/api/search';
 import { getNoticeCategories, mapCategoriesToIds, type NoticeCategory } from '@/services/api/codes';
 import { getPeriodRange } from '@/utils/dateUtils';
@@ -37,6 +38,7 @@ export default function SearchPage() {
     periodFilter,
     sortBy,
     showBookmarkedOnly,
+    showCompletedOnly,
     toggleChannel,
     toggleAcademicCategory,
     toggleCareerCategory,
@@ -44,6 +46,7 @@ export default function SearchPage() {
     setPeriodFilter,
     setSortBy,
     toggleBookmarkFilter,
+    toggleCompletedFilter,
     resetFilters,
   } = filterStore;
 
@@ -150,6 +153,16 @@ export default function SearchPage() {
       }
     }
 
+    // 5. 북마크 필터
+    if (showBookmarkedOnly) {
+      params.isLiked = true;
+    }
+
+    // 6. 완료 숨기기 필터 (완료되지 않은 것만 표시)
+    if (showCompletedOnly) {
+      params.isCompleted = false;
+    }
+
     return params;
   };
 
@@ -230,16 +243,6 @@ export default function SearchPage() {
     [isLoading, hasMore] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  /**
-   * 북마크 필터는 클라이언트 사이드에서 처리
-   * (백엔드 검색 API에 isLiked 파라미터가 아직 연동 안됨)
-   */
-  const displayedNotices = useMemo(() => {
-    if (showBookmarkedOnly) {
-      return notices.filter((n) => n.bookmarked);
-    }
-    return notices;
-  }, [notices, showBookmarkedOnly]);
 
   /**
    * 북마크 토글 (낙관적 업데이트)
@@ -279,12 +282,42 @@ export default function SearchPage() {
     }
   };
 
-  const toggleComplete = (id: number) => {
+  /**
+   * 완료 토글 (낙관적 업데이트)
+   */
+  const toggleComplete = async (id: number) => {
+    const notice = notices.find((n) => n.id === id);
+    if (!notice) return;
+
+    const wasCompleted = notice.completed;
+
+    // 1. 즉시 UI 업데이트 (낙관적 업데이트)
     setNotices((prev) =>
-      prev.map((notice) =>
-        notice.id === id ? { ...notice, completed: !notice.completed } : notice
+      prev.map((n) =>
+        n.id === id ? { ...n, completed: !n.completed } : n
       )
     );
+
+    // console.log(`[완료 토글] ID: ${id}, ${wasCompleted ? '해제' : '완료'}`);
+
+    try {
+      // 2. API 호출
+      await completionsApi.toggle(id);
+      // console.log(`[완료 API] ${wasCompleted ? '해제' : '완료'} 성공`);
+
+      toast.success(
+        wasCompleted ? '완료가 해제되었습니다.' : '완료 처리되었습니다.'
+      );
+    } catch (error) {
+      // 3. 실패 시 롤백
+      console.error('[완료 API] 호출 실패:', error);
+      setNotices((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, completed: !n.completed } : n
+        )
+      );
+      toast.error('완료 처리에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   /**
@@ -334,6 +367,8 @@ export default function SearchPage() {
             onPeriodChange={setPeriodFilter}
             showBookmarkedOnly={showBookmarkedOnly}
             onBookmarkFilterToggle={toggleBookmarkFilter}
+            showCompletedOnly={showCompletedOnly}
+            onCompletedFilterToggle={toggleCompletedFilter}
             onReset={resetFilters}
             onSearch={() => {
               setIsFilteredSearch(true); // 필터 적용 상태로 변경
@@ -362,7 +397,7 @@ export default function SearchPage() {
 
             {/* 리스트 */}
             <NoticeListContainer
-              notices={displayedNotices}
+              notices={notices}
               onBookmarkToggle={toggleBookmark}
               onCompleteToggle={toggleComplete}
               onNoticeClick={handleNoticeClick}
