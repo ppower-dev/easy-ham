@@ -18,6 +18,7 @@ import {
 import { useFilterStore } from '@/stores/useFilterStore';
 import { getMockJobPostings } from '@/services/mock';
 import { bookmarksApi } from '@/services/api/bookmarks';
+import { completionsApi } from '@/services/api/completions';
 import { searchApi } from '@/services/api/search';
 import { getNoticeCategories, mapCategoriesToIds, type NoticeCategory } from '@/services/api/codes';
 import { getPeriodRange } from '@/utils/dateUtils';
@@ -281,12 +282,42 @@ export default function SearchPage() {
     }
   };
 
-  const toggleComplete = (id: number) => {
+  /**
+   * 완료 토글 (낙관적 업데이트)
+   */
+  const toggleComplete = async (id: number) => {
+    const notice = notices.find((n) => n.id === id);
+    if (!notice) return;
+
+    const wasCompleted = notice.completed;
+
+    // 1. 즉시 UI 업데이트 (낙관적 업데이트)
     setNotices((prev) =>
-      prev.map((notice) =>
-        notice.id === id ? { ...notice, completed: !notice.completed } : notice
+      prev.map((n) =>
+        n.id === id ? { ...n, completed: !n.completed } : n
       )
     );
+
+    // console.log(`[완료 토글] ID: ${id}, ${wasCompleted ? '해제' : '완료'}`);
+
+    try {
+      // 2. API 호출
+      await completionsApi.toggle(id);
+      // console.log(`[완료 API] ${wasCompleted ? '해제' : '완료'} 성공`);
+
+      toast.success(
+        wasCompleted ? '완료가 해제되었습니다.' : '완료 처리되었습니다.'
+      );
+    } catch (error) {
+      // 3. 실패 시 롤백
+      console.error('[완료 API] 호출 실패:', error);
+      setNotices((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, completed: !n.completed } : n
+        )
+      );
+      toast.error('완료 처리에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   /**
