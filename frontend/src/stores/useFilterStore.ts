@@ -16,6 +16,7 @@ interface FilterState {
   periodFilter: PeriodFilter;
   sortBy: SortOption;
   showBookmarkedOnly: boolean;
+  showCompletedOnly: boolean;
 
   // 액션
   toggleChannel: (channel: string) => void;
@@ -25,6 +26,7 @@ interface FilterState {
   setPeriodFilter: (period: PeriodFilter) => void;
   setSortBy: (sortBy: SortOption) => void;
   toggleBookmarkFilter: () => void;
+  toggleCompletedFilter: () => void;
   resetFilters: () => void;
 }
 
@@ -41,6 +43,7 @@ const initialState = {
   periodFilter: "전체" as PeriodFilter,
   sortBy: "latest" as SortOption,
   showBookmarkedOnly: false,
+  showCompletedOnly: false,
 };
 
 export const useFilterStore = create<FilterState>((set) => ({
@@ -79,6 +82,9 @@ export const useFilterStore = create<FilterState>((set) => ({
 
   toggleBookmarkFilter: () =>
     set((state) => ({ showBookmarkedOnly: !state.showBookmarkedOnly })),
+
+  toggleCompletedFilter: () =>
+    set((state) => ({ showCompletedOnly: !state.showCompletedOnly })),
 
   resetFilters: () => set(initialState),
 }));

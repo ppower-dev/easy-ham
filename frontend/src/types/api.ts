@@ -104,6 +104,7 @@ export interface SearchResultItem {
   subCategory: number | null;
   files: SearchFileItem[] | null;
   isLiked?: boolean;
+  isCompleted?: boolean;
   originalLink?: string;  // Mattermost 원문 링크
 }
 
@@ -143,6 +144,8 @@ export interface SearchParams {
   categoryIds?: number[];  // subCodeId 배열 (1~8)
   startDate?: string;
   endDate?: string;
+  isLiked?: boolean;       // 북마크 필터
+  isCompleted?: boolean;   // 완료 필터
   page?: number;
   size?: number;
 }

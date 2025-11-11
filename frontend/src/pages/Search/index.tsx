@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PageLayout } from '@/components/layouts/PageLayout';
@@ -37,6 +37,7 @@ export default function SearchPage() {
     periodFilter,
     sortBy,
     showBookmarkedOnly,
+    showCompletedOnly,
     toggleChannel,
     toggleAcademicCategory,
     toggleCareerCategory,
@@ -44,6 +45,7 @@ export default function SearchPage() {
     setPeriodFilter,
     setSortBy,
     toggleBookmarkFilter,
+    toggleCompletedFilter,
     resetFilters,
   } = filterStore;
 
@@ -150,6 +152,16 @@ export default function SearchPage() {
       }
     }
 
+    // 5. 북마크 필터
+    if (showBookmarkedOnly) {
+      params.isLiked = true;
+    }
+
+    // 6. 완료 숨기기 필터 (완료되지 않은 것만 표시)
+    if (showCompletedOnly) {
+      params.isCompleted = false;
+    }
+
     return params;
   };
 
@@ -230,16 +242,6 @@ export default function SearchPage() {
     [isLoading, hasMore] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  /**
-   * 북마크 필터는 클라이언트 사이드에서 처리
-   * (백엔드 검색 API에 isLiked 파라미터가 아직 연동 안됨)
-   */
-  const displayedNotices = useMemo(() => {
-    if (showBookmarkedOnly) {
-      return notices.filter((n) => n.bookmarked);
-    }
-    return notices;
-  }, [notices, showBookmarkedOnly]);
 
   /**
    * 북마크 토글 (낙관적 업데이트)
@@ -334,6 +336,8 @@ export default function SearchPage() {
             onPeriodChange={setPeriodFilter}
             showBookmarkedOnly={showBookmarkedOnly}
             onBookmarkFilterToggle={toggleBookmarkFilter}
+            showCompletedOnly={showCompletedOnly}
+            onCompletedFilterToggle={toggleCompletedFilter}
             onReset={resetFilters}
             onSearch={() => {
               setIsFilteredSearch(true); // 필터 적용 상태로 변경
@@ -362,7 +366,7 @@ export default function SearchPage() {
 
             {/* 리스트 */}
             <NoticeListContainer
-              notices={displayedNotices}
+              notices={notices}
               onBookmarkToggle={toggleBookmark}
               onCompleteToggle={toggleComplete}
               onNoticeClick={handleNoticeClick}

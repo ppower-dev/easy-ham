@@ -37,6 +37,8 @@ interface SearchFilterBarProps {
   onPeriodChange: (period: PeriodFilter) => void;
   showBookmarkedOnly: boolean;
   onBookmarkFilterToggle: () => void;
+  showCompletedOnly: boolean;
+  onCompletedFilterToggle: () => void;
   onReset: () => void;
   onSearch: () => void; // 검색 버튼 클릭 핸들러
 }
@@ -67,8 +69,10 @@ export function SearchFilterBar({
   onPeriodChange,
   showBookmarkedOnly,
   onBookmarkFilterToggle,
+  showCompletedOnly,
+  onCompletedFilterToggle,
   onReset,
-  onSearch, // 추가된 prop
+  onSearch,
 }: SearchFilterBarProps) {
   const [filterExpanded, setFilterExpanded] = useState(true);
 
@@ -168,6 +172,22 @@ export function SearchFilterBar({
               >
                 <Star className={`w-4 h-4 mr-1.5 ${showBookmarkedOnly ? 'fill-current' : ''}`} />
                 북마크만
+              </Button>
+
+              {/* 완료 필터 토글 */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onCompletedFilterToggle}
+                className={`h-8 px-3 rounded-md text-sm ${
+                  showCompletedOnly
+                    ? "bg-green-100 text-green-700 border-green-300 hover:bg-green-200"
+                    : "bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+                style={{ fontWeight: 500 }}
+              >
+                <Check className="w-4 h-4 mr-1.5" />
+                완료 숨기기
               </Button>
             </div>
           </div>
