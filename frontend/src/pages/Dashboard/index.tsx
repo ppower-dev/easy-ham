@@ -12,18 +12,29 @@ import { LayoutDashboard } from "lucide-react";
 
 export default function DashboardPage() {
   const [allNotices, setAllNotices] = useState<Notice[]>([]);
+  const [bookmarkedNotices, setBookmarkedNotices] = useState<Notice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Search API 한 번만 호출
+  // Search API 호출 (전체 공지 + 북마크 공지)
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+
+        // 1. 전체 공지사항 조회 (마감 임박, 이번 주 일정용)
         const { notices } = await searchApi.searchPosts({
           page: 0,
           size: 100, // 충분한 개수
         });
         setAllNotices(notices);
+
+        // 2. 북마크된 공지사항 조회
+        const { notices: bookmarked } = await searchApi.searchPosts({
+          isLiked: true,
+          page: 0,
+          size: 5, // 최대 5개만
+        });
+        setBookmarkedNotices(bookmarked);
       } catch (error) {
         console.error('[Dashboard] 데이터 로드 실패:', error);
       } finally {
@@ -34,11 +45,8 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
-  // Mock 데이터 (북마크용)
+  // Mock 데이터 (채용공고용)
   const { notices: mockNotices } = getMockDashboardData();
-
-  // 북마크된 공지 최대 5개 (Mock 데이터 사용)
-  const bookmarkedNotices = mockNotices.filter((n) => n.bookmarked).slice(0, 5);
 
   // 마감 임박 할일 (D-7 이내, deadline 있는 것만, 마감일 지난 것 제외)
   const urgentDeadlines = useMemo(() => {
