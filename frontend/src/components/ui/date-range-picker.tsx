@@ -34,7 +34,7 @@ export function DateRangePicker({
     });
   }, [startDate, endDate]);
 
-  const handleSelect = (range: DateRange | undefined) => {
+  const handleRangeSelect = (range: DateRange | undefined) => {
     setDate(range);
     if (range?.from && range?.to) {
       onDateRangeChange(range.from, range.to);
@@ -73,26 +73,16 @@ export function DateRangePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
-          <div className="flex">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={date?.from}
-              selected={date}
-              onSelect={handleSelect}
-              numberOfMonths={1}
-              locale={ko}
-            />
-            <div className="w-px bg-border my-4" />
-            <Calendar
-              mode="range"
-              defaultMonth={date?.from ? new Date(date.from.getFullYear(), date.from.getMonth() + 1) : undefined}
-              selected={date}
-              onSelect={handleSelect}
-              numberOfMonths={1}
-              locale={ko}
-            />
-          </div>
+          <Calendar
+            initialFocus
+            mode="range"
+            defaultMonth={date?.from}
+            selected={date}
+            onSelect={handleRangeSelect}
+            numberOfMonths={1}
+            locale={ko}
+            disabled={(date) => date > new Date()}
+          />
         </PopoverContent>
       </Popover>
     </div>
