@@ -157,9 +157,17 @@ export function Sidebar({
 
         {/* 달력 그리드 */}
         <div
-          className={viewMode === "month" ? "rounded-md" : ""}
+          className={
+            viewMode === "month" &&
+            miniCalendarDate.getFullYear() === currentDate.getFullYear() &&
+            miniCalendarDate.getMonth() === currentDate.getMonth()
+              ? "rounded-md"
+              : ""
+          }
           style={
-            viewMode === "month"
+            viewMode === "month" &&
+            miniCalendarDate.getFullYear() === currentDate.getFullYear() &&
+            miniCalendarDate.getMonth() === currentDate.getMonth()
               ? {
                   backgroundColor: "rgba(255, 138, 61, 0.08)",
                 }
@@ -229,7 +237,8 @@ export function Sidebar({
                         if (viewMode === "week") {
                           onMiniCalendarWeekClick(week);
                         } else {
-                          onMiniCalendarDateClick(date);
+                          // 월간 뷰일 때는 날짜만 변경하고 뷰 모드 유지
+                          onDateChange(date);
                         }
                       }}
                     >
