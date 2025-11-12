@@ -223,6 +223,7 @@ export default function CalendarPage() {
       const newDate = new Date(prev);
       if (viewMode === "week") {
         newDate.setDate(prev.getDate() - 7);
+        setSelectedWeek(getWeekDays(newDate));
       } else {
         newDate.setMonth(prev.getMonth() - 1);
       }
@@ -235,6 +236,7 @@ export default function CalendarPage() {
       const newDate = new Date(prev);
       if (viewMode === "week") {
         newDate.setDate(prev.getDate() + 7);
+        setSelectedWeek(getWeekDays(newDate));
       } else {
         newDate.setMonth(prev.getMonth() + 1);
       }
@@ -243,7 +245,11 @@ export default function CalendarPage() {
   };
 
   const goToToday = () => {
-    setCurrentDate(new Date());
+    const today = new Date();
+    setCurrentDate(today);
+    if (viewMode === "week") {
+      setSelectedWeek(getWeekDays(today));
+    }
   };
 
   const [selectedWeek, setSelectedWeek] = useState<Date[]>(
