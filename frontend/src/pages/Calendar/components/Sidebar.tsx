@@ -220,7 +220,7 @@ export function Sidebar({
                       key={dayIdx}
                       className={`h-8 flex flex-col items-center justify-center text-[11px] relative cursor-pointer rounded ${
                         today
-                          ? "bg-[var(--brand-orange)] text-white"
+                          ? "bg-(--brand-orange) text-white"
                           : currentMonth
                           ? "text-gray-700 hover:bg-gray-100"
                           : "text-gray-300"
@@ -244,7 +244,7 @@ export function Sidebar({
                     >
                       {date.getDate()}
                       {hasEvents && !today && (
-                        <div className="absolute bottom-0.5 w-1 h-1 bg-[var(--brand-orange)] rounded-full" />
+                        <div className="absolute bottom-0.5 w-1 h-1 bg-(--brand-orange) rounded-full" />
                       )}
                     </div>
                   );
@@ -290,12 +290,12 @@ export function Sidebar({
                   <div
                     className={`w-3 h-3 rounded-full border-2 flex items-center justify-center ${
                       selectedChannels.includes(channel)
-                        ? "border-[var(--brand-orange)]"
+                        ? "border-(--brand-orange)"
                         : "border-gray-300"
                     }`}
                   >
                     {selectedChannels.includes(channel) && (
-                      <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand-orange)]" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-(--brand-orange)" />
                     )}
                   </div>
                   <span
