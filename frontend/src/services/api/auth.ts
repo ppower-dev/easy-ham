@@ -90,3 +90,11 @@ export const getUserProfile = async (): Promise<ApiResponse<UserProfileResponse>
 export const updateUserProfile = async (data: UpdateUserRequest): Promise<ApiResponse<void>> => {
   return apiClient.patch<void>(API_ENDPOINTS.users.updateMe, data);
 };
+
+/**
+ * 회원탈퇴 (계정 삭제)
+ * @returns 성공 메시지
+ */
+export const deleteUser = async (): Promise<ApiResponse<void>> => {
+  return apiClient.post<void>(API_ENDPOINTS.users.delete, {});
+};

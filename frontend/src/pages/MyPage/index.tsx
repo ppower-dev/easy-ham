@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, Code, Save, X } from "lucide-react";
+import { Briefcase, Code, Save, X, LogOut } from "lucide-react";
 import { PageLayout } from "@/components/layouts/PageLayout";
-import { getUserProfile, updateUserProfile } from "@/services/api/auth";
+import { getUserProfile, updateUserProfile, deleteUser } from "@/services/api/auth";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { getPositions, getSkills } from "@/services/api/codes";
 import type { UserProfileResponse } from "@/services/api/auth";
 import type { Position, Skill } from "@/services/api/codes";
@@ -24,6 +25,7 @@ const styles = `
 
 export function MyPage() {
   const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
 
   // 프로필 정보
   const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(
@@ -31,6 +33,7 @@ export function MyPage() {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // 수정 가능한 상태
   const [classroom, setClassroom] = useState("");
@@ -169,6 +172,35 @@ export function MyPage() {
       alert("프로필 저장에 실패했습니다.");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // 회원탈퇴
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      "정말 회원탈퇴 하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await deleteUser();
+      console.log("[MyPage] 회원탈퇴 성공");
+
+      // 로그아웃 처리
+      logout();
+
+      alert("회원탈퇴가 완료되었습니다.");
+      // 로그인 페이지로 이동
+      navigate("/login");
+    } catch (error) {
+      console.error("회원탈퇴 실패:", error);
+      alert("회원탈퇴에 실패했습니다.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -390,6 +422,19 @@ export function MyPage() {
             >
               <Save className="w-4 h-4 mr-2" />
               {isSaving ? "저장 중..." : "저장하기"}
+            </Button>
+          </div>
+
+          {/* 회원탈퇴 버튼 */}
+          <div className="flex justify-end border-t pt-6 mt-6">
+            <Button
+              onClick={handleDeleteAccount}
+              disabled={isDeleting}
+              variant="outline"
+              className="text-red-600 border-red-300 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              {isDeleting ? "처리 중..." : "회원탈퇴"}
             </Button>
           </div>
         </div>

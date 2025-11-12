@@ -44,21 +44,21 @@ export function NoticeList({
               onClick={() => onNoticeClick(notice)}
             >
               {/* D-day 배지 (고정 너비로 정렬 통일) */}
-              <div className="flex-shrink-0 w-12">
+              <div className="shrink-0 w-12">
                 <DdayBadge dday={notice.dday} />
               </div>
 
               {/* 카테고리 텍스트 (회색 계열, 상위·하위 형태) */}
-              <div className="flex-shrink-0 text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded whitespace-nowrap">
+              <div className="shrink-0 text-sm font-semibold text-gray-600 bg-gray-100 px-2.5 py-1.5 rounded whitespace-nowrap">
                 {notice.category}·{notice.subcategory}
               </div>
 
               {/* 제목 및 정보 */}
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-sm text-gray-900 line-clamp-1">
+                <h3 className="font-semibold text-base text-gray-900 line-clamp-1">
                   {notice.title}
                 </h3>
-                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
                   <span>{notice.channel}</span>
                   <span>•</span>
                   <span>{formatRelativeTime(notice.createdAt)}</span>
@@ -67,7 +67,7 @@ export function NoticeList({
             </div>
 
             {/* 액션 버튼들 */}
-            <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+            <div className="flex items-center gap-2 shrink-0 ml-4">
               {/* 완료 버튼 */}
               <button
                 onClick={(e) => {
