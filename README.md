@@ -105,6 +105,5 @@ React Frontend (Vite)
 | 김은재 | Backend |
 | 이예린 | Backend |
 | 석예은 | Backend |
-| 봉혜린 | Infra |
 
 ---
