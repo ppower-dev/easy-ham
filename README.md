@@ -104,7 +104,7 @@ React Frontend (Vite)
 | Backend | Backend | Backend |
 
 | 👑 [이현석(Me)](https://github.com/ppower-dev) | [조영우](https://github.com/evermate) |
-| --- | --- | --- |
+| --- | --- |
 | Frontend | Frontend |
 
 ---
